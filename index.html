@@ -456,6 +456,16 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .wlc-footer{font-size:15px;color:#6a90b0;letter-spacing:1px}
 
 /* ── TARGET PANEL (Phase 3) ── */
+/* ── STP SOURCE PANEL ── */
+.stp-src-panel{background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;margin-bottom:16px;display:none}
+.stp-src-panel.show{display:block}
+.stp-src-title{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.stp-src-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.stp-src-tab{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-family:inherit;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:1px}
+.stp-src-tab.active{border-color:var(--green);color:var(--green);background:rgba(0,229,160,.06)}
+.stp-src-sub{display:none}
+.stp-src-sub.show{display:block}
+.stp-path-hint{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.6}
 .target-panel{background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;margin-bottom:16px;display:none}
 .target-panel.show{display:block}
 .target-panel-title{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
@@ -747,15 +757,36 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
       <div class="out-scroll" id="out-scroll" onscroll="toggleScrollTop(this)">
 <button id="scroll-top-btn" onclick="document.getElementById('out-scroll').scrollTop=0" style="display:none;position:fixed;bottom:140px;left:20px;z-index:50;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:12px;font-family:inherit;color:var(--muted);transition:all .2s;letter-spacing:1px;display:none;align-items:center;gap:6px;white-space:nowrap" onmouseover="this.style.color='var(--green)';this.style.borderColor='var(--green)';this.style.background='rgba(0,229,160,.08)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)';this.style.background='var(--surface2)'">↑ חזרה לראש</button>
 
-        <!-- STP URL Analysis (Phase 1) -->
-        <div class="url-connect" id="stp-url-zone">
-          <div class="url-connect-title">🌐 נתח אתר אוטומטית — הכנס URL והמערכת תייצר STP מותאם</div>
-          <div class="url-row">
-            <input class="url-input" id="stp-url-input" type="url" placeholder="https://your-website.com" dir="ltr"/>
-            <button class="url-connect-btn" style="background:var(--green);color:#04080f;font-weight:700" onclick="runSTPFromURL()">🔍 נתח ויצר STP</button>
+        <!-- STP Source Panel (Phase 1) -->
+        <div class="stp-src-panel" id="stp-url-zone">
+          <div class="stp-src-title">📥 מקור לניתוח — בחר כיצד לספק מידע על המערכת הנבדקת</div>
+          <div class="stp-src-tabs">
+            <button class="stp-src-tab active" id="stp-tab-doc" onclick="setSTPTab('doc')">📎 מסמך אפיון</button>
+            <button class="stp-src-tab" id="stp-tab-url" onclick="setSTPTab('url')">🌐 URL אתר</button>
+            <button class="stp-src-tab" id="stp-tab-path" onclick="setSTPTab('path')">📁 נתיב מקומי</button>
           </div>
-          <div class="url-status" id="stp-url-status"></div>
-          <div style="font-size:12px;color:var(--dim);margin-top:8px">או העלה מסמך אפיון באמצעות כפתור ATTACH למעלה</div>
+          <!-- Doc sub-panel -->
+          <div class="stp-src-sub show" id="stp-sub-doc">
+            <div class="stp-path-hint">העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">ATTACH</strong> בשורת הצ'ט, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span></div>
+          </div>
+          <!-- URL sub-panel -->
+          <div class="stp-src-sub" id="stp-sub-url">
+            <div class="url-row">
+              <input class="url-input" id="stp-url-input" type="url" placeholder="https://your-website.com" dir="ltr"/>
+              <button class="url-connect-btn" style="background:var(--green);color:#04080f;font-weight:700" onclick="runSTPFromURL()">🔍 נתח ויצר STP</button>
+            </div>
+            <div class="url-status" id="stp-url-status"></div>
+            <div class="stp-path-hint">הכנס URL של אתר או אפליקציה — המערכת תנתח את הממשק ותייצר STP מותאם אוטומטית.</div>
+          </div>
+          <!-- Local Path sub-panel -->
+          <div class="stp-src-sub" id="stp-sub-path">
+            <div class="url-row">
+              <input class="url-input" id="stp-path-input" type="text" placeholder="C:\MyApp\app.exe  או  C:\Projects\myapp" dir="ltr"/>
+              <button class="url-connect-btn" style="background:var(--purple2);font-weight:700" onclick="runSTPFromPath()">🔎 נתח ויצר STP</button>
+            </div>
+            <div class="url-status" id="stp-path-status"></div>
+            <div class="stp-path-hint">הכנס נתיב לקובץ ה-EXE, תיקיית הפרויקט, או קובץ הגדרות של האפליקציה.<br>אם שרת ה-Runner פעיל — המערכת תסרוק את הנתיב ותייצר STP מדויק. אחרת תבצע ניתוח חכם לפי שם/מבנה.</div>
+          </div>
         </div>
 
         <!-- Connection Panel (Phase 3) -->
@@ -793,6 +824,10 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
               <input class="url-input" id="conn-custom-url" type="url" placeholder="https://your-app.com" dir="ltr"/>
               <textarea id="conn-headers" placeholder='{"Authorization":"Bearer xxx","X-API-Key":"yyy"}' dir="ltr" style="flex:2;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:12px;resize:none;height:38px;outline:none"></textarea>
               <button class="url-connect-btn" onclick="saveConnection()">שמור</button>
+            </div>
+          </div>
+          <div class="url-status" id="url-status"></div>
+        </div>
 
         <!-- Empty State -->
         <div class="empty-state" id="empty">
@@ -1360,6 +1395,79 @@ async function runSTPFromURL() {
     updateTabDones();
     st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר מ-' + esc(url) + '</span>';
     showToast('✓ STP נוצר מניתוח האתר!', 'ok');
+  } catch(err) {
+    if (err.name === 'AbortError') {
+      if (S.data[1]) { S.status[1]='done'; showOut(1,S.data[1],false); }
+      else S.status[1]='idle';
+      st.innerHTML = '<span style="color:var(--muted)">⏹ הופסק</span>';
+    } else {
+      S.status[1] = 'error';
+      showOut(1, '❌ שגיאה: '+err.message, false);
+      st.innerHTML = '<span style="color:var(--red)">✗ '+esc(err.message)+'</span>';
+      showToast('✗ '+err.message, 'err');
+    }
+  }
+  S.streaming = false;
+  updateUI();
+}
+
+// ── STP SOURCE TABS ───────────────────────────────────────
+function setSTPTab(tab) {
+  ['doc','url','path'].forEach(function(t){
+    var btn = document.getElementById('stp-tab-'+t);
+    var sub = document.getElementById('stp-sub-'+t);
+    if (btn) btn.classList.toggle('active', t===tab);
+    if (sub) sub.classList.toggle('show', t===tab);
+  });
+}
+
+// ── STP FROM LOCAL PATH ───────────────────────────────────
+async function runSTPFromPath() {
+  var path = document.getElementById('stp-path-input').value.trim();
+  var st = document.getElementById('stp-path-status');
+  if (!path) {
+    st.className = 'url-status show';
+    st.innerHTML = '<span style="color:var(--red)">⚠ הכנס נתיב לקובץ או תיקייה</span>';
+    return;
+  }
+  if (S.streaming) return;
+
+  st.className = 'url-status show';
+  st.innerHTML = '<span style="color:var(--amber)">⟳ מנתח את הנתיב ומייצר STP...</span>';
+  S.streaming = true; S.chat[1] = []; S.status[1] = 'generating';
+  updateUI(); showOut(1, '', true);
+
+  // Try runner server first for real path scan
+  var pathInfo = null;
+  if (S.serverOnline) {
+    pathInfo = await serverFetch('POST', '/api/scan-path', {path: path});
+  }
+
+  var contextBlock = pathInfo
+    ? '\n\nמידע שנסרק מהנתיב:\n' + JSON.stringify(pathInfo, null, 2)
+    : '';
+
+  var sysPrompt = 'אתה אדריכל QA בכיר עם 20 שנות ניסיון.' +
+    ' קיבלת נתיב לאפליקציה מקומית לניתוח: ' + path +
+    contextBlock +
+    '\n\nבהתבסס על שם הקובץ/תיקייה, סיומת הקובץ, ומבנה הנתיב, זהה את סוג האפליקציה (desktop/web/mobile/service/CLI/library).' +
+    ' צור STP מקצועי ומפורט בעברית הכולל:' +
+    ' (1) זיהוי סוג האפליקציה, הפלטפורמה (Windows/Web/.NET/Java/Python/Node וכו\'), ומטרתה' +
+    ' (2) עץ בדיקות מקיף עם לפחות 35 פריטי בדיקה ספציפיים לסוג האפליקציה' +
+    ' (3) כיסוי: פונקציונלי, UI/UX, אינטגרציה, ביצועים, אבטחה, התקנה/הסרה (אם רלוונטי)' +
+    ' (4) עדיפויות P1/P2/P3' +
+    ' (5) Risk Assessment' +
+    ' (6) כלי אוטומציה מומלצים (pywinauto/Playwright/WinAppDriver וכו\' בהתאם לסוג)';
+
+  try {
+    var full = await streamClaude(
+      [{role:'user', content: sysPrompt}],
+      function(partial){ showOut(1, partial, true); }
+    );
+    S.data[1] = full; S.status[1] = 'done';
+    showOut(1, full, false); updateTabDones();
+    st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר עבור: ' + esc(path) + '</span>';
+    showToast('✓ STP נוצר מניתוח הנתיב!', 'ok');
   } catch(err) {
     if (err.name === 'AbortError') {
       if (S.data[1]) { S.status[1]='done'; showOut(1,S.data[1],false); }
