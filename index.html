@@ -667,6 +667,60 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .runmode-cancel:hover{border-color:var(--muted);color:var(--text)}
 .runmode-run{background:linear-gradient(135deg,var(--amber),#e08000);border:none;border-radius:8px;padding:10px 24px;font-family:inherit;font-size:13px;font-weight:700;color:#1a0a00;cursor:pointer;transition:all .2s;letter-spacing:1px}
 .runmode-run:hover{opacity:.85;transform:translateY(-1px)}
+
+/* ── RUN ONBOARDING ── */
+.run-onboard-overlay{position:fixed;inset:0;background:rgba(2,5,12,.93);z-index:230;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(14px)}
+.run-onboard-overlay.hidden{display:none}
+.run-onboard-modal{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border2);border-radius:22px;padding:36px;width:580px;max-width:94vw;position:relative;overflow:hidden;max-height:90vh;overflow-y:auto}
+.run-onboard-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--amber),var(--purple2))}
+.run-ob-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.run-ob-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--amber),#c96000);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 0 24px rgba(245,158,11,.3)}
+.run-ob-title{font-size:18px;font-weight:900;letter-spacing:3px;color:var(--text)}
+.run-ob-sub{font-size:12px;color:var(--muted);letter-spacing:2px;margin-top:3px}
+.run-ob-modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+.run-ob-mode{background:var(--bg);border:2px solid var(--border2);border-radius:14px;padding:18px;position:relative}
+.run-ob-mode.mode-ai{border-color:rgba(139,92,246,.35)}
+.run-ob-mode.mode-real{border-color:rgba(245,158,11,.35)}
+.run-ob-mode-icon{font-size:26px;margin-bottom:10px}
+.run-ob-mode-title{font-size:13px;font-weight:700;letter-spacing:1px;color:var(--text);margin-bottom:8px}
+.run-ob-mode-desc{font-size:12px;color:var(--muted);line-height:1.75}
+.run-ob-badge{position:absolute;top:12px;left:12px;font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:5px}
+.run-ob-badge.always{background:rgba(0,229,160,.15);color:var(--green);border:1px solid rgba(0,229,160,.3)}
+.run-ob-badge.requires{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.run-ob-steps{background:var(--bg);border:1px solid var(--border2);border-radius:12px;padding:16px;margin-bottom:22px}
+.run-ob-steps-title{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.run-ob-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.run-ob-step:last-child{margin-bottom:0}
+.run-ob-step-num{width:22px;height:22px;border-radius:50%;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--amber);flex-shrink:0;margin-top:1px}
+.run-ob-step-text{font-size:12px;color:var(--muted);line-height:1.7}
+.run-ob-step-text code{background:var(--faint);border:1px solid var(--border2);padding:2px 7px;border-radius:5px;font-family:inherit;font-size:11px;color:var(--green)}
+.run-ob-step-text strong{color:var(--text)}
+.run-ob-status{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:13px}
+.run-ob-status.offline{background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);color:var(--muted)}
+.run-ob-status.online{background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);color:var(--green)}
+.run-ob-status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.run-ob-status.offline .run-ob-status-dot{background:var(--red);box-shadow:0 0 6px rgba(244,63,94,.5)}
+.run-ob-status.online .run-ob-status-dot{background:var(--green);box-shadow:0 0 6px rgba(0,229,160,.5)}
+.run-ob-actions{display:flex;gap:10px;justify-content:space-between;align-items:center}
+.run-ob-skip{font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;background:none;border:none;font-family:inherit;transition:color .2s}
+.run-ob-skip:hover{color:var(--muted)}
+.run-ob-got-it{background:linear-gradient(135deg,var(--amber),#c96000);border:none;border-radius:10px;padding:12px 28px;font-family:inherit;font-size:13px;font-weight:700;color:#1a0a00;cursor:pointer;transition:all .2s;letter-spacing:2px}
+.run-ob-got-it:hover{opacity:.88;transform:translateY(-1px)}
+
+/* ── RUN STATUS BAR (always visible in Phase 3) ── */
+.run-status-bar{display:none;align-items:center;justify-content:space-between;gap:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:10px 16px;margin-bottom:14px;flex-wrap:wrap}
+.run-status-bar.show{display:flex}
+.run-status-items{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.run-status-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.run-status-item .rsi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.run-status-item.ok .rsi-dot{background:var(--green);box-shadow:0 0 5px rgba(0,229,160,.5)}
+.run-status-item.ok{color:var(--green)}
+.run-status-item.bad .rsi-dot{background:var(--red)}
+.run-status-item.bad{color:var(--red)}
+.run-status-item.warn .rsi-dot{background:var(--amber)}
+.run-status-item.warn{color:var(--amber)}
+.run-status-help{font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 10px;font-family:inherit;transition:all .2s}
+.run-status-help:hover{border-color:var(--amber);color:var(--amber)}
 </style>
 </head>
 <body>
@@ -877,6 +931,19 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
     <div class="out-area">
       <div class="out-scroll" id="out-scroll" onscroll="toggleScrollTop(this)">
 <button id="scroll-top-btn" onclick="document.getElementById('out-scroll').scrollTop=0" style="display:none;position:fixed;bottom:140px;left:20px;z-index:50;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:12px;font-family:inherit;color:var(--muted);transition:all .2s;letter-spacing:1px;display:none;align-items:center;gap:6px;white-space:nowrap" onmouseover="this.style.color='var(--green)';this.style.borderColor='var(--green)';this.style.background='rgba(0,229,160,.08)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)';this.style.background='var(--surface2)'">↑ חזרה לראש</button>
+
+        <!-- RUN STATUS BAR (Phase 3 only) -->
+        <div class="run-status-bar" id="run-status-bar">
+          <div class="run-status-items">
+            <div class="run-status-item ok" id="rsi-api">
+              <div class="rsi-dot"></div><span>Claude API מחובר</span>
+            </div>
+            <div class="run-status-item" id="rsi-runner">
+              <div class="rsi-dot"></div><span id="rsi-runner-txt">בודק Runner...</span>
+            </div>
+          </div>
+          <button class="run-status-help" onclick="showRunOnboard()">? מה זה Runner</button>
+        </div>
 
         <!-- STP Source Panel (Phase 1) -->
         <div class="stp-src-panel" id="stp-url-zone">
@@ -1293,6 +1360,69 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- RUN ONBOARDING -->
+<div class="run-onboard-overlay hidden" id="run-onboard-overlay">
+  <div class="run-onboard-modal">
+    <div class="run-ob-header">
+      <div class="run-ob-icon">▶</div>
+      <div>
+        <div class="run-ob-title">שלב RUN — הרצת בדיקות</div>
+        <div class="run-ob-sub">לפני שמתחילים — הנה מה שחשוב לדעת</div>
+      </div>
+    </div>
+
+    <div class="run-ob-modes">
+      <div class="run-ob-mode mode-ai">
+        <div class="run-ob-badge always">תמיד זמין</div>
+        <div class="run-ob-mode-icon">🤖</div>
+        <div class="run-ob-mode-title">סימולציה AI</div>
+        <div class="run-ob-mode-desc">Claude מנתח את תסריטי ה-STD ומייצר תוצאות הרצה ריאליסטיות (PASS/FAIL/SKIP) עם ניתוח כשלים מפורט.<br><br>לא דורש שום התקנה.</div>
+      </div>
+      <div class="run-ob-mode mode-real">
+        <div class="run-ob-badge requires">דורש הגדרה</div>
+        <div class="run-ob-mode-icon">⚡</div>
+        <div class="run-ob-mode-title">אוטומציה אמיתית</div>
+        <div class="run-ob-mode-desc">הרצה ממשית על האפליקציה שלך עם <strong>Playwright</strong> (אתרים) או <strong>pywinauto</strong> (אפליקציות Windows).<br><br>דורש הפעלת שרת מקומי.</div>
+      </div>
+    </div>
+
+    <div class="run-ob-status" id="run-ob-status-line">
+      <div class="run-ob-status-dot"></div>
+      <span id="run-ob-status-text">בודק סטטוס Runner...</span>
+    </div>
+
+    <div class="run-ob-steps">
+      <div class="run-ob-steps-title">⚡ כדי להפעיל אוטומציה אמיתית</div>
+      <div class="run-ob-step">
+        <div class="run-ob-step-num">1</div>
+        <div class="run-ob-step-text">התקן את הדרישות (פעם אחת בלבד):<br>
+          <code>pip install pywinauto playwright anthropic python-dotenv</code><br>
+          <code>playwright install chromium</code>
+        </div>
+      </div>
+      <div class="run-ob-step">
+        <div class="run-ob-step-num">2</div>
+        <div class="run-ob-step-text">הפעל את שרת ה-Runner בטרמינל נפרד:<br>
+          <code>python vibe-runner.py</code>
+        </div>
+      </div>
+      <div class="run-ob-step">
+        <div class="run-ob-step-num">3</div>
+        <div class="run-ob-step-text">כשהנקודה בכותרת תהפוך <strong style="color:var(--green)">ירוקה (RUNNER ✓)</strong> — השרת פעיל ומוכן.</div>
+      </div>
+      <div class="run-ob-step">
+        <div class="run-ob-step-num">4</div>
+        <div class="run-ob-step-text">לחץ <strong>GENERATE</strong> בשלב RUN, בחר <strong>אוטומציה אמיתית</strong> ובחר את היעד.</div>
+      </div>
+    </div>
+
+    <div class="run-ob-actions">
+      <button class="run-ob-skip" onclick="dismissRunOnboard(true)">אל תציג שוב</button>
+      <button class="run-ob-got-it" onclick="dismissRunOnboard(false)">הבנתי — המשך ▶</button>
+    </div>
   </div>
 </div>
 
@@ -2507,6 +2637,13 @@ function updateUI() {
   document.getElementById('url-connect').classList.toggle('show', p===3 && !targetAlreadySet);
   document.getElementById('stp-url-zone').classList.toggle('show', p===1);
 
+  // Run status bar (Phase 3 only)
+  var rsb = document.getElementById('run-status-bar');
+  if (rsb) {
+    rsb.classList.toggle('show', p===3);
+    if (p===3) { updateRunStatusBar(); maybeShowRunOnboard(); }
+  }
+
   // Target panel (Phase 3 only)
   var tp = document.getElementById('target-panel');
   if (tp) tp.classList.toggle('show', p===3);
@@ -2769,6 +2906,7 @@ async function checkServerStatus() {
   var lbl = document.getElementById('srv-lbl');
   if (dot) dot.className = 'srv-dot ' + (S.serverOnline ? 'online' : 'offline');
   if (lbl) lbl.textContent = S.serverOnline ? 'RUNNER ✓' : 'LOCAL';
+  updateRunStatusBar();
   return S.serverOnline;
 }
 // Adaptive polling: 10s when online, 30s when offline (reduces console noise)
@@ -2781,6 +2919,39 @@ function scheduleServerPoll() {
   }, S.serverOnline ? 10000 : 30000);
 }
 scheduleServerPoll();
+
+// ── RUN ONBOARDING ────────────────────────────────────────
+var _runOnboardShown = false;
+function updateRunStatusBar() {
+  var bar = document.getElementById('run-status-bar');
+  if (!bar) return;
+  var rsiRunner = document.getElementById('rsi-runner');
+  var rsiTxt = document.getElementById('rsi-runner-txt');
+  if (rsiRunner) rsiRunner.className = 'run-status-item ' + (S.serverOnline ? 'ok' : 'bad');
+  if (rsiTxt) rsiTxt.textContent = S.serverOnline ? 'Runner פעיל ✓' : 'Runner לא פעיל';
+  // Update onboarding modal status line if open
+  var obStatusLine = document.getElementById('run-ob-status-line');
+  var obStatusTxt = document.getElementById('run-ob-status-text');
+  if (obStatusLine) obStatusLine.className = 'run-ob-status ' + (S.serverOnline ? 'online' : 'offline');
+  if (obStatusTxt) obStatusTxt.textContent = S.serverOnline ? '✓ Runner פעיל ומחובר' : '⚠ Runner לא פעיל — AI Simulation בלבד זמין כרגע';
+}
+
+function showRunOnboard() {
+  _runOnboardShown = true;
+  updateRunStatusBar();
+  document.getElementById('run-onboard-overlay').classList.remove('hidden');
+}
+
+function dismissRunOnboard(neverShow) {
+  document.getElementById('run-onboard-overlay').classList.add('hidden');
+  if (neverShow) localStorage.setItem('vibe_run_onboard_done', '1');
+}
+
+function maybeShowRunOnboard() {
+  if (localStorage.getItem('vibe_run_onboard_done') === '1') return;
+  if (_runOnboardShown) return;
+  showRunOnboard();
+}
 
 // ── TARGET SELECTION ──────────────────────────────────────
 function setTargetType(type) {
