@@ -496,34 +496,41 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 # ── Main ──────────────────────────────────────────────────
 if __name__ == '__main__':
+    import sys, io
+    # Force UTF-8 output on Windows (avoids cp1255 encoding errors)
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    else:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+
     server = ThreadedHTTPServer(('localhost', PORT), VibeHandler)
     print(f'''
-╔══════════════════════════════════════════════════╗
-║          VIBE.TESTING Local Runner               ║
-╠══════════════════════════════════════════════════╣
-║  URL:    http://localhost:{PORT}                   ║
-║  Press Ctrl+C to stop                            ║
-╠══════════════════════════════════════════════════╣
-║  Features:                                       ║
-║    ✓ pywinauto — Windows app automation          ║
-║    ✓ Playwright — Browser automation             ║
-║    ✓ Email reports (configure .env)              ║
-║    ✓ Report history (vibe-reports.json)          ║
-╠══════════════════════════════════════════════════╣
-║  Optional setup:                                 ║
-║    pip install anthropic playwright pywinauto    ║
-║    playwright install chromium                   ║
-║    Create .env with SMTP_USER / SMTP_PASS        ║
-╚══════════════════════════════════════════════════╝
++==================================================+
+|          VIBE.TESTING Local Runner               |
++--------------------------------------------------+
+|  URL:    http://localhost:{PORT}                   |
+|  Press Ctrl+C to stop                            |
++--------------------------------------------------+
+|  Features:                                       |
+|    [+] pywinauto  - Windows app automation       |
+|    [+] Playwright - Browser automation           |
+|    [+] Email reports (configure .env)            |
+|    [+] Report history (vibe-reports.json)        |
++--------------------------------------------------+
+|  Optional setup:                                 |
+|    pip install anthropic playwright pywinauto    |
+|    playwright install chromium                   |
+|    Create .env with SMTP_USER / SMTP_PASS        |
++==================================================+
 ''')
 
     # Check optional deps
     for dep in ['pywinauto', 'playwright', 'anthropic']:
         try:
             __import__(dep)
-            print(f'  ✓ {dep}')
+            print(f'  [OK] {dep}')
         except ImportError:
-            print(f'  ✗ {dep} not installed (pip install {dep})')
+            print(f'  [--] {dep} not installed (pip install {dep})')
 
     print()
     try:
