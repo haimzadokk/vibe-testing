@@ -19,12 +19,40 @@
   --ui-font-size:16px;
 }
 body.light-mode{
-  --bg:#f4f7fa;--surface:#ffffff;--surface2:#eef2f7;--border:#d0dce8;--border2:#baccdc;
-  --text:#1a2535;--muted:#4a6480;--dim:#7a9abf;--faint:#e4ecf4;
-  --green:#00875a;--green2:#00a870;--purple:#5b21b6;--purple2:#6d28d9;
-  --amber:#b45309;--red:#be123c;--blue:#1d4ed8;--cyan:#0e7490;
-  --phase:#00875a;--phase-glow:rgba(0,135,90,.12);
+  --bg:#ffffff;--surface:#f8fafc;--surface2:#f1f5f9;--border:#e2e8f0;--border2:#cbd5e1;
+  --text:#0f172a;--muted:#475569;--dim:#94a3b8;--faint:#f1f5f9;
+  --green:#059669;--green2:#10b981;--purple:#7c3aed;--purple2:#8b5cf6;
+  --amber:#d97706;--red:#dc2626;--blue:#2563eb;--cyan:#0891b2;
+  --phase:#059669;--phase-glow:rgba(5,150,105,.12);
 }
+body.light-mode header{background:rgba(255,255,255,.95);border-bottom-color:#e2e8f0}
+body.light-mode .phase-bar{background:rgba(248,250,252,.9)}
+body.light-mode .sidebar{background:#f8fafc;border-left-color:#e2e8f0}
+body.light-mode .out-area{background:#ffffff}
+body.light-mode .refine{background:#f8fafc;border-top-color:#e2e8f0}
+body.light-mode .chat-wrap{background:#ffffff;border-color:#e2e8f0}
+body.light-mode .out-card{background:#ffffff;border-color:#e2e8f0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+body.light-mode .out-card-header{background:#f8fafc;border-bottom-color:#e2e8f0}
+body.light-mode .key-btn,body.light-mode .export-btn,body.light-mode .settings-btn{color:#475569;border-color:#cbd5e1}
+body.light-mode .key-btn:hover{color:#059669;border-color:#059669}
+body.light-mode .gen-btn{background:#1e293b;color:#f8fafc}
+body.light-mode .gen-btn.on{background:linear-gradient(135deg,#059669,#047857);color:#fff}
+body.light-mode .ph-tab.active .ph-tab-lbl{color:var(--tc)}
+body.light-mode .bg-noise{opacity:.005}
+body.light-mode .bg-grid{background-image:linear-gradient(rgba(5,150,105,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(5,150,105,.04) 1px,transparent 1px)}
+body.light-mode .out-content h1{color:#059669}
+body.light-mode .out-content h2{color:#7c3aed}
+body.light-mode .out-content h3{color:#d97706}
+body.light-mode .out-content p,body.light-mode .li-item,body.light-mode .num-item{color:#1e293b}
+body.light-mode .li-item::before{color:#059669}
+body.light-mode .url-connect,body.light-mode .stp-src-panel,body.light-mode .target-panel,body.light-mode .email-panel{background:#f1f5f9;border-color:#cbd5e1}
+body.light-mode .modal{background:#ffffff;border-color:#e2e8f0}
+body.light-mode .modal-input{background:#f8fafc;border-color:#cbd5e1;color:#0f172a}
+body.light-mode .url-input,.light-mode .target-input{background:#ffffff;color:#0f172a;border-color:#cbd5e1}
+body.light-mode .stg-overlay{background:rgba(248,250,252,.98)}
+body.light-mode .disp-section,body.light-mode .info-phase-card,body.light-mode .info-btn-item{background:#f1f5f9;border-color:#e2e8f0}
+body.light-mode .report-row{background:#f8fafc;border-color:#e2e8f0}
+body.light-mode .dash-overlay{background:#f8fafc}
 html,body{height:100%;background:var(--bg);font-family:'JetBrains Mono','Courier New',monospace;color:var(--text);overflow:hidden;font-size:18px}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -168,12 +196,12 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .out-card-actions{display:flex;gap:7px}
 .out-action-btn{background:transparent;border:1px solid var(--border2);border-radius:5px;padding:6px 14px;font-size:15px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px}
 .out-action-btn:hover{border-color:var(--phase);color:var(--phase)}
-.out-content{padding:24px;font-size:var(--ui-font-size,16px);line-height:2.0}
-.out-content h1{color:var(--green2);font-size:22px;font-weight:700;margin:20px 0 10px;font-family:inherit;letter-spacing:1px}
+.out-content{padding:24px;font-size:var(--ui-font-size,16px);line-height:var(--ui-line-height,2.0)}
+.out-content h1{color:var(--green2);font-size:calc(22px * var(--heading-scale,1));font-weight:700;margin:20px 0 10px;font-family:inherit;letter-spacing:1px}
 .out-content h1:first-child{margin-top:0}
-.out-content h2{color:var(--purple2);font-size:21px;font-weight:700;margin:16px 0 8px;font-family:inherit}
-.out-content h3{color:var(--amber);font-size:18px;font-weight:600;margin:12px 0 5px;font-family:inherit}
-.out-content h4{color:#7090b0;font-size:16px;font-weight:600;margin:9px 0 4px;font-family:inherit}
+.out-content h2{color:var(--purple2);font-size:calc(21px * var(--heading-scale,1));font-weight:700;margin:16px 0 8px;font-family:inherit}
+.out-content h3{color:var(--amber);font-size:calc(18px * var(--heading-scale,1));font-weight:600;margin:12px 0 5px;font-family:inherit}
+.out-content h4{color:#7090b0;font-size:calc(16px * var(--heading-scale,1));font-weight:600;margin:9px 0 4px;font-family:inherit}
 .out-content p{color:#d8eaf8;margin:4px 0}
 .li-item{padding-right:20px;color:#cce0f5;margin:3px 0;position:relative}
 .li-item::before{content:'▸ ';color:var(--phase);font-size:11px}
@@ -1223,9 +1251,9 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
         <div class="disp-row">
           <div><div class="disp-label">גודל פונט כותרות</div><div class="disp-sub">H1/H2 בפלט</div></div>
           <div class="disp-toggle-wrap">
-            <button class="disp-toggle" onclick="applyHeadingScale('small')">S</button>
-            <button class="disp-toggle active" id="hscale-m" onclick="applyHeadingScale('medium')">M</button>
-            <button class="disp-toggle" onclick="applyHeadingScale('large')">L</button>
+            <button class="disp-toggle" id="hscale-small" onclick="applyHeadingScale('small')">S</button>
+            <button class="disp-toggle active" id="hscale-medium" onclick="applyHeadingScale('medium')">M</button>
+            <button class="disp-toggle" id="hscale-large" onclick="applyHeadingScale('large')">L</button>
           </div>
         </div>
       </div>
@@ -1246,9 +1274,9 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
         <div class="disp-row">
           <div><div class="disp-label">גובה שורה בפלט</div><div class="disp-sub">מרווח בין שורות בתוצאות</div></div>
           <div class="disp-toggle-wrap">
-            <button class="disp-toggle" onclick="applyLineHeight('compact')">צפוף</button>
+            <button class="disp-toggle" id="lh-compact" onclick="applyLineHeight('compact')">צפוף</button>
             <button class="disp-toggle active" id="lh-normal" onclick="applyLineHeight('normal')">רגיל</button>
-            <button class="disp-toggle" onclick="applyLineHeight('spacious')">מרווח</button>
+            <button class="disp-toggle" id="lh-spacious" onclick="applyLineHeight('spacious')">מרווח</button>
           </div>
         </div>
         <div class="disp-row">
@@ -2743,7 +2771,16 @@ async function checkServerStatus() {
   if (lbl) lbl.textContent = S.serverOnline ? 'RUNNER ✓' : 'LOCAL';
   return S.serverOnline;
 }
-setInterval(checkServerStatus, 10000);
+// Adaptive polling: 10s when online, 30s when offline (reduces console noise)
+var _serverPollTimer = null;
+function scheduleServerPoll() {
+  if (_serverPollTimer) clearTimeout(_serverPollTimer);
+  _serverPollTimer = setTimeout(async function(){
+    await checkServerStatus();
+    scheduleServerPoll();
+  }, S.serverOnline ? 10000 : 30000);
+}
+scheduleServerPoll();
 
 // ── TARGET SELECTION ──────────────────────────────────────
 function setTargetType(type) {
@@ -2846,6 +2883,9 @@ async function runRealAutomation() {
   showOut(3, S.data[3], false);
   updateTabDones();
   showToast('✓ הרצה הושלמה! ' + (result.summary || ''), 'ok');
+  // Cache result locally for Reports dashboard
+  result.source = 'runner';
+  saveReportToCache(result);
   var ep = document.getElementById('email-panel');
   if (ep) ep.classList.add('show');
   S.streaming = false; updateUI();
@@ -2874,6 +2914,20 @@ function formatRunResult(result) {
   return lines.join('\n');
 }
 
+// ── LOCAL REPORT CACHE (localStorage) ─────────────────────
+function saveReportToCache(report) {
+  try {
+    var cache = JSON.parse(localStorage.getItem('vibe_reports')||'[]');
+    report.id = report.id || ('local-'+Date.now());
+    cache.unshift(report);
+    if (cache.length > 50) cache = cache.slice(0,50);
+    localStorage.setItem('vibe_reports', JSON.stringify(cache));
+  } catch(e){}
+}
+function loadCachedReports() {
+  try { return JSON.parse(localStorage.getItem('vibe_reports')||'[]'); } catch(e){ return []; }
+}
+
 // ── REPORTS DASHBOARD ─────────────────────────────────────
 async function loadReports() {
   var list = document.getElementById('reports-list');
@@ -2882,33 +2936,57 @@ async function loadReports() {
   if (!list) return;
   var data = await serverFetch('GET', '/api/reports');
   if (!data) {
+    // Fall back to localStorage cache
+    var cached = loadCachedReports();
     if (banner) banner.classList.add('show');
-    if (count) count.textContent = 'שרת לא זמין';
-    list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>הפעל: python vibe-runner.py</span></div>';
+    if (cached.length > 0) {
+      S.runReports = cached;
+      if (count) count.textContent = cached.length + ' הרצות (מקומי)';
+      renderReportsList();
+    } else {
+      if (count) count.textContent = 'שרת לא זמין';
+      list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span>'
+        + '<span>אין דוחות מקומיים<br>'
+        + '<span style="font-size:11px">הרץ בדיקות בשלב RUN לצבירת היסטוריה<br>'
+        + 'לדוחות מ-Runner האמיתי: <code>python vibe-runner.py</code></span></span></div>';
+    }
     return;
   }
   if (banner) banner.classList.remove('show');
   S.runReports = data.reports || [];
   if (count) count.textContent = S.runReports.length + ' הרצות';
   if (S.runReports.length === 0) {
-    list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>אין דוחות עדיין<br><span style="font-size:11px">הרץ בדיקות אמיתיות בשלב RUN</span></span></div>';
+    list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>אין דוחות עדיין<br><span style="font-size:11px">הרץ בדיקות בשלב RUN</span></span></div>';
     return;
   }
+  renderReportsList();
+}
+
+function renderReportsList() {
+  var list = document.getElementById('reports-list');
+  var count = document.getElementById('reports-count');
+  if (!list) return;
+  if (S.runReports.length === 0) {
+    list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>אין דוחות עדיין</span></div>';
+    return;
+  }
+  if (count) count.textContent = S.runReports.length + ' הרצות';
   list.innerHTML = S.runReports.map(function(r, idx) {
     var barCls = r.fail_count===0 ? 'pass' : r.pass_count===0 ? 'fail' : 'partial';
-    var dt = new Date(r.started_at).toLocaleString('he-IL');
+    var dt = r.started_at ? new Date(r.started_at).toLocaleString('he-IL') : '—';
+    var src = r.source==='local'?' · 💾 מקומי':' · ⚡ Runner';
     return '<div class="report-row" id="rr-'+r.id+'">'
       + '<div class="report-row-hdr" onclick="toggleReportDetail(\''+r.id+'\')">'
       + '<div class="report-row-left">'
       + '<div class="report-status-bar '+barCls+'"></div>'
       + '<div><div class="report-id">#'+String(idx+1).padStart(3,'0')+'</div>'
       + '<div class="report-name">'+esc(r.target_label||'Run')+'</div>'
-      + '<div class="report-meta">'+esc(dt)+' · '+r.duration_sec+'s · '+esc(r.target_type||'')+'</div></div>'
+      + '<div class="report-meta">'+esc(dt)+' · '+(r.duration_sec||0)+'s'+src+'</div></div>'
       + '</div>'
       + '<div class="report-row-right">'
-      + '<div class="report-stat"><span class="report-stat-val pv">'+r.pass_count+'</span><span class="report-stat-lbl">PASS</span></div>'
-      + '<div class="report-stat"><span class="report-stat-val fv">'+r.fail_count+'</span><span class="report-stat-lbl">FAIL</span></div>'
-      + '<div class="report-stat"><span class="report-stat-val sv">'+r.skip_count+'</span><span class="report-stat-lbl">SKIP</span></div>'
+      + '<div class="report-stat"><span class="report-stat-val pv">'+(r.pass_count||0)+'</span><span class="report-stat-lbl">PASS</span></div>'
+      + '<div class="report-stat"><span class="report-stat-val fv">'+(r.fail_count||0)+'</span><span class="report-stat-lbl">FAIL</span></div>'
+      + '<div class="report-stat"><span class="report-stat-val sv">'+(r.skip_count||0)+'</span><span class="report-stat-lbl">SKIP</span></div>'
       + '<div class="report-actions">'
       + '<button class="report-action-btn" onclick="event.stopPropagation();dlReport(\''+r.id+'\')">⬇ PDF</button>'
       + '<button class="report-action-btn" onclick="event.stopPropagation();emailReportById(\''+r.id+'\')">📧 מייל</button>'
@@ -3024,19 +3102,28 @@ async function sendChat() {
   ta.value=''; ta.style.height='auto';
   var p = S.ap;
 
-  // If no output yet — treat as generation request
-  if (!S.data[p]) { runRefine(p, msg); return; }
+  // Ensure output containers exist (even before document is generated)
+  var ph = PHASES[p];
+  if (!S.data[p]) {
+    // show the card in chat-only mode
+    document.getElementById('empty').style.display = 'none';
+    var card = document.getElementById('out-card');
+    card.style.display = 'block';
+    card.style.borderColor = 'color-mix(in srgb,'+ph.c+' 18%,transparent)';
+    document.getElementById('out-dot').style.background = ph.c;
+    document.getElementById('out-lbl').style.color = ph.c;
+    document.getElementById('out-lbl').textContent = ph.l+' · 💬 CHAT MODE';
+  }
+  var oc = document.getElementById('out-content');
+  if (!document.getElementById('out-doc')) {
+    oc.innerHTML = '<div id="out-doc"></div><div id="out-chat"></div>';
+  }
 
   S.streaming = true; updateUI();
   S.chat[p].push({role:'user', content:msg});
 
   // Show user msg + typing indicator immediately
   var chatEl = document.getElementById('out-chat');
-  if (!chatEl) {
-    document.getElementById('out-content').innerHTML += '<div id="out-doc"></div><div id="out-chat"></div>';
-    // re-set out-doc to existing content
-    chatEl = document.getElementById('out-chat');
-  }
   renderChatBelow(p);
   // Add streaming indicator
   chatEl.innerHTML += '<div id="typing-indicator" style="padding:8px 12px;font-size:10px;color:var(--muted)">◈ מקליד<span id="typing-dots">...</span></div>';
@@ -3116,7 +3203,7 @@ function switchSettingsTab(tab) {
 }
 
 // ── DISPLAY SETTINGS ──────────────────────────────────────
-var S_disp = { fontSize:16, theme:'dark', lineHeight:'normal', autoScroll:true };
+var S_disp = { fontSize:16, theme:'dark', lineHeight:'normal', autoScroll:true, headingScale:'medium' };
 (function loadSavedDisplay(){
   try {
     var saved = JSON.parse(localStorage.getItem('vibe_display')||'{}');
@@ -3124,6 +3211,7 @@ var S_disp = { fontSize:16, theme:'dark', lineHeight:'normal', autoScroll:true }
     if (saved.theme) { S_disp.theme = saved.theme; applyTheme(saved.theme, true); }
     if (saved.lineHeight) { S_disp.lineHeight = saved.lineHeight; applyLineHeight(saved.lineHeight, true); }
     if (saved.autoScroll !== undefined) { S_disp.autoScroll = saved.autoScroll; applyAutoScroll(saved.autoScroll, true); }
+    if (saved.headingScale) { S_disp.headingScale = saved.headingScale; applyHeadingScale(saved.headingScale, true); }
   } catch(e){}
 })();
 
@@ -3154,9 +3242,8 @@ function applyTheme(theme, silent) {
 
 function applyLineHeight(mode, silent) {
   S_disp.lineHeight = mode;
-  var lh = {compact:'1.5', normal:'2.0', spacious:'2.6'}[mode] || '2.0';
+  var lh = {compact:'1.5', normal:'2.0', spacious:'2.8'}[mode] || '2.0';
   document.documentElement.style.setProperty('--ui-line-height', lh);
-  document.querySelectorAll('#out-content').forEach(function(el){ el.style.lineHeight = lh; });
   ['compact','normal','spacious'].forEach(function(m){
     var btn = document.getElementById('lh-'+m);
     if (btn) btn.classList.toggle('active', m===mode);
@@ -3173,14 +3260,16 @@ function applyAutoScroll(val, silent) {
   if (!silent) saveDisplay();
 }
 
-function applyHeadingScale(size) {
-  var scales = {small:'0.85', medium:'1', large:'1.2'};
+function applyHeadingScale(size, silent) {
+  S_disp.headingScale = size;
+  var scales = {small:'0.82', medium:'1', large:'1.22'};
   var s = scales[size] || '1';
   document.documentElement.style.setProperty('--heading-scale', s);
   ['small','medium','large'].forEach(function(m){
     var btn = document.getElementById('hscale-'+m);
     if (btn) btn.classList.toggle('active', m===size);
   });
+  if (!silent) saveDisplay();
 }
 
 function resetDisplaySettings() {
@@ -3254,6 +3343,11 @@ async function runGenSim(phaseId) {
     showOut(phaseId, full, false);
     updateTabDones();
     showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
+    // Save AI simulation RUN result to local reports cache
+    if (phaseId === 3) {
+      var simReport = buildSimReport(full);
+      saveReportToCache(simReport);
+    }
   } catch(err) {
     if (err.name === 'AbortError' || !err.message) {
       if (S.data[phaseId]) { S.status[phaseId]='done'; showOut(phaseId,S.data[phaseId],false); showToast('⏹ הופסק',''); }
@@ -3265,6 +3359,36 @@ async function runGenSim(phaseId) {
     }
   }
   S.streaming = false; updateUI();
+}
+
+function buildSimReport(runText) {
+  // Parse PASS/FAIL/SKIP counts from the generated RUN text
+  var passMatch = runText.match(/PASS[\s\S]{0,20}?(\d+)/i);
+  var failMatch = runText.match(/FAIL[\s\S]{0,20}?(\d+)/i);
+  var skipMatch = runText.match(/SKIP[\s\S]{0,20}?(\d+)/i);
+  var pass = passMatch ? parseInt(passMatch[1]) : 0;
+  var fail = failMatch ? parseInt(failMatch[1]) : 0;
+  var skip = skipMatch ? parseInt(skipMatch[1]) : 0;
+  // Fallback: extract TC lines
+  if (!pass && !fail) {
+    var passLines = (runText.match(/✅/g)||[]).length;
+    var failLines = (runText.match(/❌/g)||[]).length;
+    var skipLines = (runText.match(/⚠️|⚠/g)||[]).length;
+    if (passLines || failLines) { pass=passLines; fail=failLines; skip=skipLines; }
+  }
+  var total = pass + fail + skip || 1;
+  return {
+    id: 'sim-'+Date.now(),
+    source: 'local',
+    target_label: S.targetUrl ? S.targetUrl : (S.fileContent ? S.fileName : 'AI סימולציה'),
+    target_type: S.targetType,
+    started_at: new Date().toISOString(),
+    duration_sec: 0,
+    pass_count: pass, fail_count: fail, skip_count: skip,
+    overall_status: fail===0 ? 'PASS' : fail/total > 0.3 ? 'FAIL' : 'PARTIAL',
+    test_cases: [],
+    raw_text: runText
+  };
 }
 
 // ── INIT ─────────────────────────────────────────────────
