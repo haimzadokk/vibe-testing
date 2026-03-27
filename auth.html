@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>VIBE.TESTING — כניסה</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#04080f;--surface:#080e1a;--surface2:#0c1220;
+  --border:#162035;--border2:#1e2d45;
+  --text:#f0f6ff;--muted:#7a9abf;--dim:#4a6480;
+  --green:#00e5a0;--green2:#00ffc8;--purple2:#8b5cf6;
+  --amber:#f59e0b;--red:#f43f5e;--blue:#3b82f6;
+  --radius:12px;
+}
+
+html,body{
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'JetBrains Mono','Courier New',monospace;
+  font-size:16px;
+  -webkit-text-size-adjust:100%;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── BACKGROUND GRID (matches index.html) ─── */
+.bg-grid{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,229,160,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,160,.03) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.bg-glow{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(0,229,160,.06),transparent);
+}
+
+/* ── LAYOUT ─────────────────────────────────── */
+.auth-wrap{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px 16px;
+}
+
+.auth-card{
+  width:100%;
+  max-width:420px;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  padding:36px 32px 32px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* top gradient bar — same style as index.html modals */
+.auth-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--green),var(--blue),var(--purple2));
+}
+
+/* ── LOGO ───────────────────────────────────── */
+.auth-logo{
+  text-align:center;
+  margin-bottom:32px;
+}
+.auth-logo-eyebrow{
+  font-size:10px;font-weight:700;
+  letter-spacing:.25em;color:var(--green);
+  text-transform:uppercase;margin-bottom:4px;
+}
+.auth-logo-name{
+  font-size:24px;font-weight:800;
+  letter-spacing:.06em;color:var(--text);
+}
+.auth-logo-dot{color:var(--green);}
+
+/* ── HEADINGS ───────────────────────────────── */
+.auth-title{
+  font-size:18px;font-weight:700;
+  margin-bottom:4px;color:var(--text);
+}
+.auth-sub{
+  font-size:13px;color:var(--muted);
+  margin-bottom:24px;line-height:1.5;
+}
+
+/* ── FIELDS ─────────────────────────────────── */
+.field{margin-bottom:14px;}
+
+.field label{
+  display:block;
+  font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:6px;
+}
+
+.field input{
+  width:100%;
+  min-height:48px;           /* touch target */
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  color:var(--text);
+  font-size:16px;            /* prevents iOS auto-zoom */
+  font-family:inherit;
+  outline:none;
+  transition:border-color .15s;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.field input:focus{border-color:var(--green);}
+.field input::placeholder{color:var(--dim);}
+
+/* ── BUTTONS ─────────────────────────────────── */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;min-height:48px;
+  border-radius:var(--radius);
+  font-size:14px;font-weight:700;font-family:inherit;
+  letter-spacing:.05em;text-transform:uppercase;
+  cursor:pointer;border:none;
+  transition:opacity .15s,transform .1s;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  outline:none;
+  position:relative;
+}
+.btn:active:not(:disabled){transform:scale(.97);opacity:.85;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--green),#00c48a);
+  color:#04080f;margin-bottom:12px;
+}
+.btn-google{
+  background:var(--surface2);color:var(--text);
+  border:1px solid var(--border2);margin-bottom:20px;
+}
+.btn-secondary{
+  background:transparent;color:var(--muted);
+  border:1px solid var(--border2);
+  font-size:13px;letter-spacing:.03em;
+}
+
+/* spinner */
+.btn .spin{
+  width:16px;height:16px;flex-shrink:0;
+  border:2px solid rgba(4,8,15,.25);
+  border-top-color:#04080f;
+  border-radius:50%;
+  animation:spin .55s linear infinite;
+  display:none;
+}
+.btn-google .spin,.btn-secondary .spin{
+  border-color:rgba(240,246,255,.15);
+  border-top-color:var(--text);
+}
+.btn.loading .spin{display:inline-block;}
+.btn.loading .btn-lbl{visibility:hidden;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── DIVIDER ─────────────────────────────────── */
+.divider{
+  display:flex;align-items:center;gap:10px;
+  margin:4px 0 14px;
+  color:var(--dim);font-size:11px;letter-spacing:.1em;
+}
+.divider::before,.divider::after{
+  content:'';flex:1;height:1px;background:var(--border2);
+}
+
+/* ── MESSAGES ────────────────────────────────── */
+.msg{
+  padding:11px 14px;border-radius:10px;
+  font-size:13px;line-height:1.5;
+  margin-bottom:16px;display:none;
+}
+.msg.show{display:block;}
+.msg.error{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);color:#fca5a5;}
+.msg.success{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.25);color:var(--green);}
+.msg.info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);color:#93c5fd;}
+
+/* ── LINK BUTTONS ────────────────────────────── */
+.auth-links{text-align:center;margin-top:12px;}
+.auth-links p{font-size:13px;color:var(--muted);margin-top:6px;}
+.lnk{
+  background:none;border:none;
+  color:var(--green);font-size:inherit;
+  font-family:inherit;font-weight:600;
+  cursor:pointer;padding:4px 2px;
+  -webkit-tap-highlight-color:transparent;
+  text-decoration:none;
+}
+.lnk:active{opacity:.7;}
+
+/* ── VERIFY VIEW ─────────────────────────────── */
+.verify-icon{font-size:44px;text-align:center;margin-bottom:14px;}
+.resend-note{font-size:12px;color:var(--dim);text-align:center;margin-top:8px;min-height:18px;}
+
+/* ── VIEWS ───────────────────────────────────── */
+.view{display:none;}
+.view.active{display:block;}
+
+/* ── GOOGLE LOGO (inline SVG) ────────────────── */
+.g-logo{flex-shrink:0;}
+
+/* ── MOBILE ──────────────────────────────────── */
+@media(max-width:480px){
+  .auth-card{padding:28px 20px 24px;border-radius:16px;}
+  .auth-logo-name{font-size:20px;}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="auth-wrap">
+<div class="auth-card">
+
+  <div class="auth-logo">
+    <div class="auth-logo-eyebrow">◆ AI QA Platform</div>
+    <div class="auth-logo-name">VIBE<span class="auth-logo-dot">.</span>TESTING</div>
+  </div>
+
+  <!-- ── LOGIN ───────────────────────────────── -->
+  <div id="v-login" class="view active">
+    <div class="auth-title">ברוך הבא</div>
+    <div class="auth-sub">התחבר לחשבון שלך להמשך</div>
+    <div id="login-msg" class="msg"></div>
+
+    <div class="field">
+      <label>אימייל</label>
+      <input id="login-email" type="email" placeholder="you@example.com"
+             autocomplete="email" inputmode="email"/>
+    </div>
+    <div class="field">
+      <label>סיסמה</label>
+      <input id="login-pass" type="password" placeholder="••••••••"
+             autocomplete="current-password"/>
+    </div>
+
+    <button class="btn btn-primary" id="login-btn" onclick="doLogin()">
+      <span class="spin"></span><span class="btn-lbl">כניסה</span>
+    </button>
+
+    <div class="divider">או</div>
+
+    <button class="btn btn-google" id="google-login-btn" onclick="doGoogle()">
+      <span class="spin"></span>
+      <span class="btn-lbl" style="display:flex;align-items:center;gap:8px">
+        <svg class="g-logo" width="18" height="18" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+          <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
+          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
+        </svg>
+        כניסה עם Google
+      </span>
+    </button>
+
+    <div class="auth-links">
+      <p><button class="lnk" onclick="goForgot()">שכחת סיסמה?</button></p>
+      <p>אין לך חשבון? <button class="lnk" onclick="showView('v-signup')">הרשמה</button></p>
+    </div>
+  </div>
+
+  <!-- ── SIGNUP ──────────────────────────────── -->
+  <div id="v-signup" class="view">
+    <div class="auth-title">יצירת חשבון</div>
+    <div class="auth-sub">הצטרף ל-VIBE.TESTING</div>
+    <div id="signup-msg" class="msg"></div>
+
+    <div class="field">
+      <label>אימייל</label>
+      <input id="signup-email" type="email" placeholder="you@example.com"
+             autocomplete="email" inputmode="email"/>
+    </div>
+    <div class="field">
+      <label>סיסמה</label>
+      <input id="signup-pass" type="password" placeholder="לפחות 8 תווים"
+             autocomplete="new-password"/>
+    </div>
+    <div class="field">
+      <label>אימות סיסמה</label>
+      <input id="signup-pass2" type="password" placeholder="חזור על הסיסמה"
+             autocomplete="new-password"/>
+    </div>
+
+    <button class="btn btn-primary" id="signup-btn" onclick="doSignup()">
+      <span class="spin"></span><span class="btn-lbl">יצירת חשבון</span>
+    </button>
+
+    <div class="divider">או</div>
+
+    <button class="btn btn-google" id="google-signup-btn" onclick="doGoogle()">
+      <span class="spin"></span>
+      <span class="btn-lbl" style="display:flex;align-items:center;gap:8px">
+        <svg class="g-logo" width="18" height="18" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+          <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
+          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
+        </svg>
+        הרשמה עם Google
+      </span>
+    </button>
+
+    <div class="auth-links">
+      <p>יש לך חשבון? <button class="lnk" onclick="showView('v-login')">כניסה</button></p>
+    </div>
+  </div>
+
+  <!-- ── VERIFY EMAIL ─────────────────────────── -->
+  <div id="v-verify" class="view">
+    <div class="verify-icon">📧</div>
+    <div class="auth-title" style="text-align:center">בדוק את תיבת הדואר</div>
+    <div class="auth-sub" style="text-align:center">
+      שלחנו קישור אימות אל<br>
+      <strong id="verify-email-display" style="color:var(--text);word-break:break-all"></strong>
+    </div>
+    <div id="verify-msg" class="msg"></div>
+
+    <button class="btn btn-secondary" id="resend-btn" onclick="doResend()">
+      <span class="spin"></span><span class="btn-lbl">שלח שוב</span>
+    </button>
+    <div class="resend-note" id="resend-timer"></div>
+
+    <div class="auth-links" style="margin-top:16px">
+      <p><button class="lnk" onclick="showView('v-login')">חזרה לכניסה</button></p>
+    </div>
+  </div>
+
+  <!-- ── FORGOT PASSWORD ──────────────────────── -->
+  <div id="v-forgot" class="view">
+    <div class="auth-title">שחזור סיסמה</div>
+    <div class="auth-sub">נשלח לך קישור לאיפוס הסיסמה</div>
+    <div id="forgot-msg" class="msg"></div>
+
+    <div class="field">
+      <label>אימייל</label>
+      <input id="forgot-email" type="email" placeholder="you@example.com"
+             autocomplete="email" inputmode="email"/>
+    </div>
+
+    <button class="btn btn-primary" id="forgot-btn" onclick="doForgot()">
+      <span class="spin"></span><span class="btn-lbl">שלח קישור איפוס</span>
+    </button>
+
+    <div class="auth-links">
+      <p><button class="lnk" onclick="showView('v-login')">חזרה לכניסה</button></p>
+    </div>
+  </div>
+
+  <!-- ── RESET PASSWORD ───────────────────────── -->
+  <div id="v-reset" class="view">
+    <div class="auth-title">סיסמה חדשה</div>
+    <div class="auth-sub">בחר סיסמה חדשה לחשבונך</div>
+    <div id="reset-msg" class="msg"></div>
+
+    <div class="field">
+      <label>סיסמה חדשה</label>
+      <input id="reset-pass" type="password" placeholder="לפחות 8 תווים"
+             autocomplete="new-password"/>
+    </div>
+    <div class="field">
+      <label>אימות סיסמה</label>
+      <input id="reset-pass2" type="password" placeholder="חזור על הסיסמה"
+             autocomplete="new-password"/>
+    </div>
+
+    <button class="btn btn-primary" id="reset-btn" onclick="doReset()">
+      <span class="spin"></span><span class="btn-lbl">עדכון סיסמה</span>
+    </button>
+  </div>
+
+</div><!-- /.auth-card -->
+</div><!-- /.auth-wrap -->
+
+<script>
+// ── CONFIG — replace before deploy ──────────────────────────
+var SUPABASE_URL      = 'https://YOUR_PROJECT.supabase.co'
+var SUPABASE_ANON_KEY = 'YOUR_ANON_KEY'
+var APP_URL           = 'https://YOUR_DOMAIN'   // no trailing slash
+
+// ── CLIENT ──────────────────────────────────────────────────
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    storage:            localStorage,
+    autoRefreshToken:   true,
+    persistSession:     true,
+    detectSessionInUrl: true,
+    flowType:           'pkce'      // no tokens in URLs; code exchange only
+  }
+})
+
+// ── STATE ────────────────────────────────────────────────────
+var pendingEmail   = ''
+var resendTimer    = null
+
+// ── INIT: handle URL params + session ───────────────────────
+;(async function init() {
+  var params = new URLSearchParams(window.location.search)
+  var type   = params.get('type')   // 'recovery' | 'signup'
+  var msg    = params.get('msg')    // 'logged_out' | 'session_expired' | 'password_reset'
+
+  // Always clean URL immediately — no tokens left in address bar
+  if (window.location.search) {
+    window.history.replaceState({}, '', window.location.pathname)
+  }
+
+  // Password reset return from email link
+  if (type === 'recovery') {
+    var { data: { session: recSess } } = await sb.auth.getSession()
+    if (recSess) { showView('v-reset'); return; }
+    showMsg('login-msg', 'error', 'קישור האיפוס פג — בקש קישור חדש')
+    showView('v-login'); return
+  }
+
+  // Email verify return
+  if (type === 'signup' || type === 'email_change') {
+    var { data: { session: vSess } } = await sb.auth.getSession()
+    if (vSess?.user?.email_confirmed_at) { redirect(); return; }
+  }
+
+  // Status messages
+  if (msg === 'logged_out')      showMsg('login-msg', 'info',    'יצאת מהמערכת בהצלחה')
+  if (msg === 'session_expired') showMsg('login-msg', 'error',   'הפעלה פגה — יש להתחבר מחדש')
+  if (msg === 'password_reset')  showMsg('login-msg', 'success', 'הסיסמה עודכנה — התחבר עם הסיסמה החדשה')
+
+  // Pre-fill verify view if coming from redirect
+  if (params.get('verify')) {
+    var em = params.get('email') || ''
+    if (em) { pendingEmail = em; document.getElementById('verify-email-display').textContent = em; }
+    showView('v-verify'); return
+  }
+
+  // Already authed + confirmed → go to app
+  var { data: { session: existSess } } = await sb.auth.getSession()
+  if (existSess?.user?.email_confirmed_at) { redirect(); return; }
+
+  // OAuth / email-link callback handled by SDK → fires onAuthStateChange
+  sb.auth.onAuthStateChange(function(event, session) {
+    if (event === 'PASSWORD_RECOVERY') { showView('v-reset'); return; }
+    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+      if (session.user.email_confirmed_at) { redirect(); }
+      else { showVerify(session.user.email); }
+    }
+  })
+})()
+
+function redirect() {
+  window.location.replace('/index.html')
+}
+
+// ── VIEW HELPERS ─────────────────────────────────────────────
+function showView(id) {
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active') })
+  document.getElementById(id).classList.add('active')
+  // Clear all messages when navigating
+  document.querySelectorAll('.msg').forEach(function(m) { m.className = 'msg'; m.textContent = '' })
+}
+
+function showVerify(email) {
+  pendingEmail = email || ''
+  document.getElementById('verify-email-display').textContent = pendingEmail
+  showView('v-verify')
+}
+
+function goForgot() {
+  // Pre-fill from login form if the user already typed their email
+  var em = document.getElementById('login-email').value.trim()
+  if (em) document.getElementById('forgot-email').value = em
+  showView('v-forgot')
+}
+
+function showMsg(id, type, text) {
+  var el = document.getElementById(id)
+  el.textContent = text
+  el.className = 'msg show ' + type
+}
+
+// ── BUTTON LOADING ───────────────────────────────────────────
+function setLoading(btnId, on) {
+  var btn = document.getElementById(btnId)
+  btn.disabled = on
+  btn.classList.toggle('loading', on)
+}
+
+// ── VALIDATION ───────────────────────────────────────────────
+function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) }
+
+// ── LOGIN ────────────────────────────────────────────────────
+async function doLogin() {
+  var email = document.getElementById('login-email').value.trim()
+  var pass  = document.getElementById('login-pass').value
+  if (!validEmail(email)) return showMsg('login-msg', 'error', 'כתובת אימייל לא תקינה')
+  if (!pass)              return showMsg('login-msg', 'error', 'יש להזין סיסמה')
+
+  setLoading('login-btn', true)
+  var { error } = await sb.auth.signInWithPassword({ email: email, password: pass })
+  setLoading('login-btn', false)
+
+  if (!error) return  // onAuthStateChange handles redirect
+
+  var m = error.message || ''
+  if (m.includes('Email not confirmed') || m.includes('email_not_confirmed')) {
+    showVerify(email); return
+  }
+  if (m.includes('Invalid login credentials') || m.includes('invalid_credentials')) {
+    showMsg('login-msg', 'error', 'אימייל או סיסמה שגויים'); return
+  }
+  if (m.includes('Too many requests')) {
+    showMsg('login-msg', 'error', 'יותר מדי ניסיונות — נסה שוב בעוד מספר דקות'); return
+  }
+  showMsg('login-msg', 'error', 'שגיאה בכניסה — נסה שוב')
+}
+
+// ── SIGNUP ───────────────────────────────────────────────────
+async function doSignup() {
+  var email = document.getElementById('signup-email').value.trim()
+  var pass  = document.getElementById('signup-pass').value
+  var pass2 = document.getElementById('signup-pass2').value
+
+  if (!validEmail(email))   return showMsg('signup-msg', 'error', 'כתובת אימייל לא תקינה')
+  if (pass.length < 8)      return showMsg('signup-msg', 'error', 'הסיסמה חייבת להכיל לפחות 8 תווים')
+  if (pass !== pass2)       return showMsg('signup-msg', 'error', 'הסיסמאות אינן תואמות')
+
+  setLoading('signup-btn', true)
+  var { error } = await sb.auth.signUp({
+    email: email,
+    password: pass,
+    options: { emailRedirectTo: APP_URL + '/auth.html' }
+  })
+  setLoading('signup-btn', false)
+
+  if (!error) { showVerify(email); return; }
+
+  var m = error.message || ''
+  if (m.includes('already registered') || m.includes('User already') || m.includes('already been registered')) {
+    showMsg('signup-msg', 'error', 'כתובת אימייל זו כבר רשומה — התחבר או אפס סיסמה')
+    return
+  }
+  showMsg('signup-msg', 'error', 'שגיאה בהרשמה — נסה שוב')
+}
+
+// ── GOOGLE OAUTH ─────────────────────────────────────────────
+async function doGoogle() {
+  var { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: APP_URL + '/auth.html',
+      queryParams: { access_type: 'online', prompt: 'select_account' }
+    }
+  })
+  if (error) showMsg('login-msg', 'error', 'שגיאה בכניסה עם Google — נסה שוב')
+}
+
+// ── RESEND VERIFY ────────────────────────────────────────────
+async function doResend() {
+  if (!pendingEmail || resendTimer) return
+
+  setLoading('resend-btn', true)
+  var { error } = await sb.auth.resend({
+    type: 'signup',
+    email: pendingEmail,
+    options: { emailRedirectTo: APP_URL + '/auth.html' }
+  })
+  setLoading('resend-btn', false)
+
+  if (error) {
+    showMsg('verify-msg', 'error', 'שגיאה בשליחה — נסה שוב בעוד כמה דקות')
+    return
+  }
+  showMsg('verify-msg', 'success', 'קישור נשלח!')
+  startCooldown()
+}
+
+function startCooldown() {
+  var secs   = 60
+  var timerEl = document.getElementById('resend-timer')
+  var btn     = document.getElementById('resend-btn')
+  btn.disabled = true
+  resendTimer = setInterval(function() {
+    secs--
+    timerEl.textContent = 'ניתן לשלוח שוב בעוד ' + secs + ' שניות'
+    if (secs <= 0) {
+      clearInterval(resendTimer); resendTimer = null
+      timerEl.textContent = ''
+      btn.disabled = false
+    }
+  }, 1000)
+}
+
+// ── FORGOT PASSWORD ──────────────────────────────────────────
+async function doForgot() {
+  var email = document.getElementById('forgot-email').value.trim()
+  if (!validEmail(email)) return showMsg('forgot-msg', 'error', 'כתובת אימייל לא תקינה')
+
+  setLoading('forgot-btn', true)
+  // Always call — never reveal whether email exists (prevents enumeration)
+  await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: APP_URL + '/auth.html'
+  })
+  setLoading('forgot-btn', false)
+
+  showMsg('forgot-msg', 'success', 'אם קיים חשבון לכתובת זו, נשלח קישור איפוס')
+}
+
+// ── RESET PASSWORD ───────────────────────────────────────────
+async function doReset() {
+  var pass  = document.getElementById('reset-pass').value
+  var pass2 = document.getElementById('reset-pass2').value
+
+  if (pass.length < 8) return showMsg('reset-msg', 'error', 'הסיסמה חייבת להכיל לפחות 8 תווים')
+  if (pass !== pass2)  return showMsg('reset-msg', 'error', 'הסיסמאות אינן תואמות')
+
+  setLoading('reset-btn', true)
+  var { error } = await sb.auth.updateUser({ password: pass })
+  setLoading('reset-btn', false)
+
+  if (error) { showMsg('reset-msg', 'error', 'שגיאה — הקישור פג, בקש קישור חדש'); return; }
+
+  await sb.auth.signOut()
+  window.location.replace('/auth.html?msg=password_reset')
+}
+
+// ── KEYBOARD: Enter submits active form ──────────────────────
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return
+  var active = document.querySelector('.view.active')
+  if (!active) return
+  switch (active.id) {
+    case 'v-login':  doLogin();  break
+    case 'v-signup': doSignup(); break
+    case 'v-forgot': doForgot(); break
+    case 'v-reset':  doReset();  break
+  }
+})
+</script>
+</body>
+</html>
