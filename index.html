@@ -454,6 +454,95 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .wlc-btn-arrow{font-size:20px;transition:transform .2s}
 .wlc-btn:hover .wlc-btn-arrow{transform:translateX(4px)}
 .wlc-footer{font-size:15px;color:#6a90b0;letter-spacing:1px}
+
+/* ── TARGET PANEL (Phase 3) ── */
+.target-panel{background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;margin-bottom:16px;display:none}
+.target-panel.show{display:block}
+.target-panel-title{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.target-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.target-tab{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-family:inherit;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:1px}
+.target-tab.active{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.08)}
+.target-sub{display:none;animation:fadein .2s ease}
+.target-sub.show{display:block}
+.target-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.target-input{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 13px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all .2s}
+.target-input:focus{border-color:var(--amber)}
+.target-select{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 13px;color:var(--text);font-family:inherit;font-size:13px;outline:none;cursor:pointer;transition:all .2s}
+.target-select:focus{border-color:var(--amber)}
+.target-btn{background:var(--amber);border:none;border-radius:8px;padding:10px 18px;font-family:inherit;font-size:12px;font-weight:700;color:#1a0a00;cursor:pointer;letter-spacing:1px;transition:all .2s;white-space:nowrap}
+.target-btn:hover{opacity:.85}
+.target-btn.sec{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+.target-btn.sec:hover{border-color:var(--amber);color:var(--amber)}
+.target-status-msg{font-size:11px;color:var(--muted);margin-top:6px;min-height:16px}
+.target-status-msg.ok{color:var(--green)}
+.target-status-msg.err{color:var(--red)}
+.target-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:1px}
+.target-badge.local{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--amber)}
+.target-badge.urlb{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);color:var(--blue)}
+.target-badge.spec{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:var(--purple2)}
+
+/* ── EMAIL PANEL ── */
+.email-panel{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:14px;display:none}
+.email-panel.show{display:block;animation:fadein .2s ease}
+.email-panel-title{font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:10px}
+.email-row{display:flex;gap:8px;flex-wrap:wrap}
+.email-input{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all .2s;direction:ltr}
+.email-input:focus{border-color:var(--blue)}
+.email-send-btn{background:var(--blue);border:none;border-radius:8px;padding:9px 18px;font-family:inherit;font-size:12px;font-weight:700;color:white;cursor:pointer;letter-spacing:1px;transition:all .2s;white-space:nowrap}
+.email-send-btn:hover{opacity:.85}
+.email-send-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* ── SERVER STATUS BADGE ── */
+.srv-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);display:inline-block;transition:background .3s}
+.srv-dot.online{background:var(--green);box-shadow:0 0 6px var(--green)}
+.srv-dot.offline{background:var(--red)}
+.srv-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);padding:4px 10px;border:1px solid var(--border);border-radius:12px;letter-spacing:1px;cursor:default;white-space:nowrap}
+
+/* ── REPORTS DASHBOARD (Phase 5) ── */
+.reports-panel{display:none;flex-direction:column;height:100%;overflow:hidden}
+.reports-panel.active{display:flex}
+.reports-toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 0;flex-shrink:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.reports-toolbar-left{display:flex;align-items:center;gap:10px}
+.reports-title{font-size:13px;font-weight:700;letter-spacing:2px;color:var(--text)}
+.reports-count{font-size:11px;color:var(--muted)}
+.reports-refresh-btn{background:transparent;border:1px solid var(--border2);border-radius:6px;padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px}
+.reports-refresh-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.reports-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1}
+.report-row{background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}
+.report-row:hover{border-color:var(--border2)}
+.report-row-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer}
+.report-row-left{display:flex;align-items:center;gap:14px}
+.report-status-bar{width:4px;height:48px;border-radius:2px;flex-shrink:0}
+.report-status-bar.pass{background:var(--green);box-shadow:0 0 8px rgba(0,229,160,.4)}
+.report-status-bar.fail{background:var(--red);box-shadow:0 0 8px rgba(244,63,94,.4)}
+.report-status-bar.partial{background:var(--amber);box-shadow:0 0 8px rgba(245,158,11,.4)}
+.report-id{font-size:11px;color:var(--dim);letter-spacing:2px;font-weight:700}
+.report-name{font-size:13px;font-weight:700;color:var(--text)}
+.report-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.report-row-right{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.report-stat{display:flex;flex-direction:column;align-items:center;gap:2px}
+.report-stat-val{font-size:18px;font-weight:900;line-height:1}
+.report-stat-val.pv{color:var(--green)}
+.report-stat-val.fv{color:var(--red)}
+.report-stat-val.sv{color:var(--amber)}
+.report-stat-lbl{font-size:9px;color:var(--dim);letter-spacing:1px}
+.report-actions{display:flex;gap:6px}
+.report-action-btn{background:transparent;border:1px solid var(--border2);border-radius:5px;padding:5px 10px;font-size:11px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px}
+.report-action-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.report-detail{display:none;border-top:1px solid var(--border);padding:14px 18px}
+.report-detail.open{display:block;animation:fadein .2s ease}
+.report-tc-list{display:flex;flex-direction:column;gap:6px}
+.report-tc-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(4,8,15,.5);border-radius:7px;font-size:12px}
+.report-tc-status{width:16px;height:16px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.report-tc-status.pass{background:rgba(0,229,160,.15);color:var(--green);border:1px solid rgba(0,229,160,.3)}
+.report-tc-status.fail{background:rgba(244,63,94,.15);color:var(--red);border:1px solid rgba(244,63,94,.3)}
+.report-tc-status.skip{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.report-tc-name{flex:1;color:var(--text)}
+.report-tc-dur{color:var(--dim);font-size:11px}
+.report-tc-err{font-size:11px;color:var(--red);margin-top:4px;padding-right:26px;opacity:.8}
+.reports-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:200px;color:var(--muted);font-size:13px;text-align:center}
+.server-offline-banner{display:none;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:12px;text-align:center}
+.server-offline-banner.show{display:block}
 </style>
 </head>
 <body>
@@ -510,6 +599,12 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
           <div class="wlc-phase-icon">◆</div>
           <div class="wlc-phase-name">STR</div>
           <div class="wlc-phase-desc">דוח סיכום</div>
+        </div>
+        <div class="wlc-arrow">→</div>
+        <div class="wlc-phase" style="--pc:#06b6d4">
+          <div class="wlc-phase-icon">◈</div>
+          <div class="wlc-phase-name">דוחות</div>
+          <div class="wlc-phase-desc">היסטוריה</div>
         </div>
       </div>
 
@@ -581,6 +676,7 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
       <div class="stream-ind" id="stream-ind"><div class="pulse-dot" id="pulse-dot"></div><span id="stream-lbl">GENERATING...</span><button id="stop-btn" onclick="stopGeneration()" style="margin-right:10px;background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.4);border-radius:5px;padding:3px 10px;font-size:12px;color:#f43f5e;cursor:pointer;font-family:inherit;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background='rgba(244,63,94,.3)'" onmouseout="this.style.background='rgba(244,63,94,.15)'">■ עצור</button></div>
     </div>
     <div class="hdr-right">
+      <div class="srv-badge" id="srv-badge" title="vibe-runner.py local server"><div class="srv-dot" id="srv-dot"></div><span id="srv-lbl">LOCAL</span></div>
       <span class="hdr-badge" id="b-phase" style="border-color:#2a3a50;color:#3a5070">PHASE 1/4</span>
       <span class="hdr-badge" id="b-status" style="border-color:#2a3a50;color:#3a5070">READY</span>
       <div class="export-wrap" id="export-wrap">
@@ -622,6 +718,12 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
       <div class="ph-done-dot"></div>
       <div class="ph-tab-num">4</div>
       <div class="ph-tab-info"><span class="ph-tab-lbl">STR</span><span class="ph-tab-sub">דוח סיכום</span></div>
+    </button>
+    <div class="ph-sep"></div>
+    <button class="ph-tab" data-phase="5" style="--tc:#06b6d4">
+      <div class="ph-done-dot"></div>
+      <div class="ph-tab-num">5</div>
+      <div class="ph-tab-info"><span class="ph-tab-lbl">דוחות</span><span class="ph-tab-sub">היסטוריה</span></div>
     </button>
     <div class="ph-spacer"></div>
     <div class="upload-zone" style="flex-direction:column;align-items:flex-end;gap:4px">
@@ -691,10 +793,6 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
               <input class="url-input" id="conn-custom-url" type="url" placeholder="https://your-app.com" dir="ltr"/>
               <textarea id="conn-headers" placeholder='{"Authorization":"Bearer xxx","X-API-Key":"yyy"}' dir="ltr" style="flex:2;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:12px;resize:none;height:38px;outline:none"></textarea>
               <button class="url-connect-btn" onclick="saveConnection()">שמור</button>
-            </div>
-          </div>
-          <div class="url-status" id="url-status"></div>
-        </div>
 
         <!-- Empty State -->
         <div class="empty-state" id="empty">
@@ -727,6 +825,16 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
           <div style="padding:0 20px 16px;display:flex;justify-content:flex-end">
             <span class="cursor-blink" id="cursor" style="display:none"></span>
           </div>
+        </div>
+
+        <!-- EMAIL PANEL (appears after real automation run) -->
+        <div class="email-panel" id="email-panel">
+          <div class="email-panel-title">📧 שלח דוח הרצה במייל</div>
+          <div class="email-row">
+            <input class="email-input" id="email-input" type="email" placeholder="your@email.com" dir="ltr"/>
+            <button class="email-send-btn" id="email-send-btn" onclick="sendEmailReport()">שלח דוח</button>
+          </div>
+          <div class="target-status-msg" id="email-status"></div>
         </div>
 
       </div>
@@ -828,20 +936,27 @@ var currentAbort = null;
 var S_conn = { type:'url', url:'', token:'', user:'', pass:'', headers:{} };
 var S = {
   ap: 1,
-  data: {1:null, 2:null, 3:null, 4:null},
-  status: {1:'idle', 2:'idle', 3:'idle', 4:'idle'},
+  data: {1:null, 2:null, 3:null, 4:null, 5:null},
+  status: {1:'idle', 2:'idle', 3:'idle', 4:'idle', 5:'idle'},
   streaming: false,
   files: [],
   fileContent: '', fileName: '', fileType: '',
-  hist: {1:[], 2:[], 3:[], 4:[]},
+  hist: {1:[], 2:[], 3:[], 4:[], 5:[]},
   targetUrl: '',
+  targetType: 'spec',   // 'spec' | 'url' | 'local'
+  targetWindow: '',
+  targetWindowTitle: '',
+  serverOnline: false,
+  runResult: null,
+  runReports: [],
 };
 
 var PHASES = {
-  1:{l:'STP', t:'Test Planning',  s:'עץ בדיקות',    i:'◈', c:'#00e5a0', d:'ייצור עץ בדיקות מפורט לפי מסמך האפיון, כולל קטגוריות, עדיפויות, סיכונים ומדדי הצלחה.'},
-  2:{l:'STD', t:'Test Design',    s:'תסריטי בדיקה', i:'◉', c:'#8b5cf6', d:'ייצור תסריטי בדיקה מפורטים עם צעדים, נתוני בדיקה, תוצאות צפויות וקריטריוני הצלחה.'},
-  3:{l:'RUN', t:'Test Execution', s:'הרצת בדיקות',  i:'▶', c:'#f59e0b', d:'סימולציה מלאה של הרצת הבדיקות על המערכת ודוח תוצאות מפורט עם ניתוח כשלים.'},
-  4:{l:'STR', t:'Test Report',    s:'דוח סיכום',    i:'◆', c:'#f43f5e', d:'דוח STR מפורט עם Quality Scorecard, Risk Register, Go/No-Go ותכנית להמשך.'},
+  1:{l:'STP', t:'Test Planning',       s:'עץ בדיקות',    i:'◈', c:'#00e5a0', d:'ייצור עץ בדיקות מפורט לפי מסמך האפיון, כולל קטגוריות, עדיפויות, סיכונים ומדדי הצלחה.'},
+  2:{l:'STD', t:'Test Design',         s:'תסריטי בדיקה', i:'◉', c:'#8b5cf6', d:'ייצור תסריטי בדיקה מפורטים עם צעדים, נתוני בדיקה, תוצאות צפויות וקריטריוני הצלחה.'},
+  3:{l:'RUN', t:'Test Execution',      s:'הרצת בדיקות',  i:'▶', c:'#f59e0b', d:'הרצת בדיקות אמיתיות (Playwright/pywinauto) או סימולציה AI. בחר יעד למעלה ולחץ GENERATE.'},
+  4:{l:'STR', t:'Test Report',         s:'דוח סיכום',    i:'◆', c:'#f43f5e', d:'דוח STR מפורט עם Quality Scorecard, Risk Register, Go/No-Go ותכנית להמשך.'},
+  5:{l:'דוחות', t:'Reports Dashboard', s:'היסטוריה',     i:'◈', c:'#06b6d4', d:'היסטוריה של הרצות בדיקות אמיתיות — Jenkins-like dashboard עם פירוט pass/fail/skip.'},
 };
 
 // ── CHIPS ───────────────────────────────────────────────
@@ -1593,10 +1708,7 @@ function getContext(p) {
   if (p>=4 && S.data[3]) c += '\n\n=== RUN (הרצת בדיקות) ===\n'+S.data[3].slice(0,20000);
   return c;
 }
-function canRun(p) {
-  if (p === 1) return true;
-  return !!S.data[p-1];
-}
+function canRun(p) { return p!==5 && (p===1 || !!S.data[p-1]); }
 
 function buildPrompt(phase, context, ft, targetUrl) {
   var fh = ft ? ' [קובץ '+ft+']' : '';
@@ -1612,8 +1724,8 @@ function buildPrompt(phase, context, ft, targetUrl) {
 
 // ── CHAT DISPLAY ─────────────────────────────────────────
 // Chat conversation per phase (separate from generation history)
-S.chat = {1:[], 2:[], 3:[], 4:[]};
-S.chatMode = {1:false, 2:false, 3:false, 4:false}; // true = in chat mode
+S.chat = {1:[], 2:[], 3:[], 4:[], 5:[]};
+S.chatMode = {1:false, 2:false, 3:false, 4:false, 5:false}; // true = in chat mode
 
 function buildSystemContext(phaseId) {
   // Full context passed as system to every chat message
@@ -1638,6 +1750,11 @@ function buildSystemContext(phaseId) {
 // ── RUN GENERATION (GENERATE button only) ────────────────
 async function runGen(phaseId) {
   if (S.streaming) return;
+  // Phase 3 with real target → use local automation server
+  if (phaseId === 3 && S.targetType && S.targetType !== 'spec') {
+    await runRealAutomation();
+    return;
+  }
   S.streaming = true;
   S.status[phaseId] = 'generating';
   S.chatMode[phaseId] = false;
@@ -1830,7 +1947,7 @@ function updateUI() {
 
   // Header badges
   var bp = document.getElementById('b-phase');
-  bp.textContent = 'PHASE '+p+'/4';
+  bp.textContent = p===5 ? '◆ REPORTS' : 'PHASE '+p+'/4';
   bp.style.color = bp.style.borderColor = ph.c;
 
   var st = S.status[p];
@@ -1859,17 +1976,21 @@ function updateUI() {
   [1,2,3,4].forEach(function(i){
     var s = S.status[i];
     var pb = document.getElementById('p'+i);
-    pb.textContent = s==='done'?'DONE':s==='generating'?'RUN':'—';
-    pb.className = 'prog-badge'+(s==='done'?' done':s==='generating'?' run':'');
+    if (pb) { pb.textContent = s==='done'?'DONE':s==='generating'?'RUN':'—'; pb.className = 'prog-badge'+(s==='done'?' done':s==='generating'?' run':''); }
     var pn = document.getElementById('pn'+i);
-    pn.className = 'prog-num'+(s==='done'?' done':s==='generating'?' run':'');
+    if (pn) pn.className = 'prog-num'+(s==='done'?' done':s==='generating'?' run':'');
   });
 
   // Gen button
   var gb = document.getElementById('gen-btn');
-  gb.disabled = !ok;
-  gb.className = 'gen-btn'+(ok?' on':'')+(S.streaming?' running':'');
-  gb.textContent = S.streaming?'⟳ RUNNING...':S.status[p]==='done'?'↺ REGENERATE':'▶ GENERATE';
+  if (p === 5) {
+    gb.disabled = true; gb.className = 'gen-btn';
+    gb.textContent = '◆ REPORTS';
+  } else {
+    gb.disabled = !ok;
+    gb.className = 'gen-btn'+(ok?' on':'')+(S.streaming?' running':'');
+    gb.textContent = S.streaming?'⟳ RUNNING...':S.status[p]==='done'?'↺ REGENERATE':'▶ GENERATE';
+  }
   // Sync mobile bar
   var mb = document.getElementById('mob-gen-btn');
   var ml = document.getElementById('mob-phase-lbl');
@@ -1887,7 +2008,26 @@ function updateUI() {
   // URL connect (Phase 3 only)
   document.getElementById('url-connect').classList.toggle('show', p===3);
   document.getElementById('stp-url-zone').classList.toggle('show', p===1);
-  document.getElementById('stp-url-zone').classList.toggle('show', p===1);
+
+  // Target panel (Phase 3 only)
+  var tp = document.getElementById('target-panel');
+  if (tp) tp.classList.toggle('show', p===3);
+
+  // Email panel (Phase 3 done with real target)
+  var ep = document.getElementById('email-panel');
+  if (ep) ep.classList.toggle('show', p===3 && S.status[3]==='done' && S.targetType!=='spec');
+
+  // Reports panel (Phase 5)
+  var rp = document.getElementById('reports-panel');
+  if (rp) rp.classList.toggle('active', p===5);
+  if (p===5) {
+    document.getElementById('empty').style.display = 'none';
+    document.getElementById('out-card').style.display = 'none';
+    loadReports();
+    renderChips();
+    renderHist();
+    return;
+  }
 
   // Empty state
   if (!S.data[p] && !S.streaming) {
@@ -2106,6 +2246,278 @@ function getConnectionContext() {
   return ctx;
 }
 
+// ── LOCAL RUNNER SERVER ───────────────────────────────────
+var RUNNER_URL = 'http://localhost:7474';
+
+async function serverFetch(method, path, body) {
+  try {
+    var opts = {method:method, headers:{'Content-Type':'application/json'}};
+    if (body) opts.body = JSON.stringify(body);
+    var ctrl = new AbortController();
+    var tms = method==='POST' ? 120000 : 4000;
+    var timer = setTimeout(function(){ ctrl.abort(); }, tms);
+    opts.signal = ctrl.signal;
+    var r = await fetch(RUNNER_URL + path, opts);
+    clearTimeout(timer);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+async function checkServerStatus() {
+  var data = await serverFetch('GET', '/api/windows');
+  S.serverOnline = !!data;
+  var dot = document.getElementById('srv-dot');
+  var lbl = document.getElementById('srv-lbl');
+  if (dot) dot.className = 'srv-dot ' + (S.serverOnline ? 'online' : 'offline');
+  if (lbl) lbl.textContent = S.serverOnline ? 'RUNNER ✓' : 'LOCAL';
+  return S.serverOnline;
+}
+setInterval(checkServerStatus, 10000);
+
+// ── TARGET SELECTION ──────────────────────────────────────
+function setTargetType(type) {
+  S.targetType = type;
+  document.querySelectorAll('.target-tab').forEach(function(t){
+    t.classList.toggle('active', t.dataset.tt === type);
+  });
+  ['spec','url','local'].forEach(function(t){
+    var el = document.getElementById('tsub-' + t);
+    if (el) el.classList.toggle('show', t === type);
+  });
+  if (type === 'local') refreshWindowsList();
+  updateTargetBadge();
+}
+
+async function refreshWindowsList() {
+  var sel = document.getElementById('target-windows-select');
+  var status = document.getElementById('target-local-status');
+  if (!sel) return;
+  sel.innerHTML = '<option>-- טוען... --</option>';
+  var data = await serverFetch('GET', '/api/windows');
+  if (!data || !data.windows) {
+    sel.innerHTML = '<option value="">-- שרת לא זמין --</option>';
+    if (status) { status.className='target-status-msg err'; status.textContent='✗ vibe-runner.py לא פועל — הפעל: python vibe-runner.py'; }
+    return;
+  }
+  if (data.windows.length === 0) {
+    sel.innerHTML = '<option value="">-- אין חלונות פתוחים --</option>';
+  } else {
+    sel.innerHTML = data.windows.map(function(w){
+      return '<option value="'+esc(w.handle)+'">'+esc(w.title)+'</option>';
+    }).join('');
+  }
+  if (status) { status.className='target-status-msg'; status.textContent=''; }
+}
+
+function applyLocalTarget() {
+  var sel = document.getElementById('target-windows-select');
+  if (!sel || !sel.value) return;
+  var title = sel.options[sel.selectedIndex].text;
+  S.targetWindow = sel.value;
+  S.targetWindowTitle = title;
+  S.targetType = 'local';
+  var status = document.getElementById('target-local-status');
+  if (status) { status.className='target-status-msg ok'; status.textContent='✓ יעד נבחר: '+title; }
+  updateTargetBadge();
+  showToast('✓ יעד: ' + title, 'ok');
+}
+
+function applyUrlTarget() {
+  var inp = document.getElementById('target-url-input');
+  if (!inp) return;
+  var url = inp.value.trim();
+  if (!url) return;
+  S.targetUrl = url;
+  S.targetType = 'url';
+  var status = document.getElementById('target-url-status');
+  if (status) { status.className='target-status-msg ok'; status.textContent='✓ URL נשמר — יופעל Playwright'; }
+  updateTargetBadge();
+  showToast('✓ URL: ' + url, 'ok');
+}
+
+function updateTargetBadge() {
+  var badge = document.getElementById('target-active-badge');
+  if (!badge) return;
+  var type = S.targetType || 'spec';
+  var label = type==='spec' ? '◈ Spec Only (AI Simulation)'
+            : type==='url'  ? '🌐 ' + (S.targetUrl || 'URL')
+            : '🖥 ' + (S.targetWindowTitle || S.targetWindow || '');
+  var cls = type==='spec' ? 'spec' : type==='url' ? 'urlb' : 'local';
+  badge.style.display = 'block';
+  badge.innerHTML = '<span class="target-badge '+cls+'">'+esc(label)+'</span>';
+}
+
+// ── REAL AUTOMATION RUN ───────────────────────────────────
+async function runRealAutomation() {
+  if (S.streaming) return;
+  S.streaming = true;
+  S.status[3] = 'generating';
+  updateUI();
+  showOut(3, '⟳ שולח בדיקות לביצוע אמיתי...', true);
+  var payload = {
+    std_content: S.data[2] || '',
+    stp_content: S.data[1] || '',
+    target_type: S.targetType,
+    target_url: S.targetUrl,
+    target_window: S.targetWindow,
+  };
+  var result = await serverFetch('POST', '/api/run', payload);
+  if (!result || result.error) {
+    S.status[3] = 'error';
+    showOut(3, '❌ שגיאה בהרצה: ' + ((result && result.error) || 'שרת לא זמין — הפעל: python vibe-runner.py'), false);
+    showToast('✗ שגיאה בהרצה', 'err');
+    S.streaming = false; updateUI();
+    return;
+  }
+  S.data[3] = result.raw_text || formatRunResult(result);
+  S.runResult = result;
+  S.status[3] = 'done';
+  showOut(3, S.data[3], false);
+  updateTabDones();
+  showToast('✓ הרצה הושלמה! ' + (result.summary || ''), 'ok');
+  var ep = document.getElementById('email-panel');
+  if (ep) ep.classList.add('show');
+  S.streaming = false; updateUI();
+}
+
+function formatRunResult(result) {
+  var tc = result.test_cases || [];
+  var lines = ['# תוצאות הרצה אמיתית\n'];
+  lines.push('## סיכום כללי\n');
+  lines.push('| פרמטר | ערך |');
+  lines.push('|-------|-----|');
+  lines.push('| סטטוס | ' + (result.overall_status||'') + ' |');
+  lines.push('| עבר ✅ | ' + (result.pass_count||0) + ' |');
+  lines.push('| נכשל ❌ | ' + (result.fail_count||0) + ' |');
+  lines.push('| דולג ⚠️ | ' + (result.skip_count||0) + ' |');
+  lines.push('| משך | ' + (result.duration_sec||0) + 's |');
+  lines.push('| יעד | ' + esc(result.target_label||'') + ' |\n');
+  lines.push('## תוצאות תסריטים\n');
+  tc.forEach(function(t) {
+    var icon = t.status==='pass'?'✅':t.status==='fail'?'❌':'⚠️';
+    lines.push('### ' + icon + ' ' + esc(t.name||t.id||'Test'));
+    lines.push('- **סטטוס:** ' + (t.status||'').toUpperCase());
+    lines.push('- **משך:** ' + (t.duration_ms||0) + 'ms');
+    if (t.error) lines.push('- **שגיאה:** `' + t.error + '`');
+  });
+  return lines.join('\n');
+}
+
+// ── REPORTS DASHBOARD ─────────────────────────────────────
+async function loadReports() {
+  var list = document.getElementById('reports-list');
+  var count = document.getElementById('reports-count');
+  var banner = document.getElementById('server-offline-banner');
+  if (!list) return;
+  var data = await serverFetch('GET', '/api/reports');
+  if (!data) {
+    if (banner) banner.classList.add('show');
+    if (count) count.textContent = 'שרת לא זמין';
+    list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>הפעל: python vibe-runner.py</span></div>';
+    return;
+  }
+  if (banner) banner.classList.remove('show');
+  S.runReports = data.reports || [];
+  if (count) count.textContent = S.runReports.length + ' הרצות';
+  if (S.runReports.length === 0) {
+    list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>אין דוחות עדיין<br><span style="font-size:11px">הרץ בדיקות אמיתיות בשלב RUN</span></span></div>';
+    return;
+  }
+  list.innerHTML = S.runReports.map(function(r, idx) {
+    var barCls = r.fail_count===0 ? 'pass' : r.pass_count===0 ? 'fail' : 'partial';
+    var dt = new Date(r.started_at).toLocaleString('he-IL');
+    return '<div class="report-row" id="rr-'+r.id+'">'
+      + '<div class="report-row-hdr" onclick="toggleReportDetail(\''+r.id+'\')">'
+      + '<div class="report-row-left">'
+      + '<div class="report-status-bar '+barCls+'"></div>'
+      + '<div><div class="report-id">#'+String(idx+1).padStart(3,'0')+'</div>'
+      + '<div class="report-name">'+esc(r.target_label||'Run')+'</div>'
+      + '<div class="report-meta">'+esc(dt)+' · '+r.duration_sec+'s · '+esc(r.target_type||'')+'</div></div>'
+      + '</div>'
+      + '<div class="report-row-right">'
+      + '<div class="report-stat"><span class="report-stat-val pv">'+r.pass_count+'</span><span class="report-stat-lbl">PASS</span></div>'
+      + '<div class="report-stat"><span class="report-stat-val fv">'+r.fail_count+'</span><span class="report-stat-lbl">FAIL</span></div>'
+      + '<div class="report-stat"><span class="report-stat-val sv">'+r.skip_count+'</span><span class="report-stat-lbl">SKIP</span></div>'
+      + '<div class="report-actions">'
+      + '<button class="report-action-btn" onclick="event.stopPropagation();dlReport(\''+r.id+'\')">⬇ PDF</button>'
+      + '<button class="report-action-btn" onclick="event.stopPropagation();emailReportById(\''+r.id+'\')">📧 מייל</button>'
+      + '</div></div></div>'
+      + '<div class="report-detail" id="rd-'+r.id+'"></div>'
+      + '</div>';
+  }).join('');
+}
+
+async function toggleReportDetail(id) {
+  var detail = document.getElementById('rd-' + id);
+  if (!detail) return;
+  if (detail.classList.contains('open')) { detail.classList.remove('open'); detail.innerHTML=''; return; }
+  var data = await serverFetch('GET', '/api/reports/' + id);
+  if (!data || data.error) { showToast('✗ לא ניתן לטעון דוח', 'err'); return; }
+  var html = '<div class="report-tc-list">';
+  (data.test_cases || []).forEach(function(tc) {
+    var s = tc.status || 'skip';
+    html += '<div class="report-tc-row">'
+      + '<div class="report-tc-status '+s+'">'+(s==='pass'?'✓':s==='fail'?'✗':'⚠')+'</div>'
+      + '<div class="report-tc-name">'+esc(tc.name||tc.id||'Test')+'</div>'
+      + '<div class="report-tc-dur">'+(tc.duration_ms||0)+'ms</div>'
+      + '</div>';
+    if (tc.error) html += '<div class="report-tc-err">'+esc(tc.error)+'</div>';
+  });
+  html += '</div>';
+  detail.innerHTML = html;
+  detail.classList.add('open');
+}
+
+function dlReport(id) {
+  var report = (S.runReports||[]).find(function(r){ return r.id===id; });
+  if (!report) return;
+  var content = '# VIBE.TESTING Run Report\n\nTarget: '+(report.target_label||'')+'\nDate: '+new Date(report.started_at).toLocaleString('he-IL')+'\n\nPass: '+report.pass_count+' | Fail: '+report.fail_count+' | Skip: '+report.skip_count+'\n\n'+(report.raw_text||'');
+  printToPdf('Run Report — ' + (report.target_label||''), content);
+}
+
+// ── EMAIL REPORT ──────────────────────────────────────────
+async function sendEmailReport() {
+  var emailEl = document.getElementById('email-input');
+  var status = document.getElementById('email-status');
+  var btn = document.getElementById('email-send-btn');
+  if (!emailEl) return;
+  var email = emailEl.value.trim();
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    if (status) { status.className='target-status-msg err'; status.textContent='✗ כתובת מייל לא תקינה'; }
+    return;
+  }
+  btn.disabled = true;
+  if (status) { status.className='target-status-msg'; status.textContent='⟳ שולח...'; }
+  var payload = {
+    to: email,
+    subject: 'VIBE.TESTING Run Report — ' + new Date().toLocaleString('he-IL'),
+    run_data: S.runResult || null,
+    run_text: S.data[3] || '',
+    stp_text: S.data[1] || '',
+    std_text: S.data[2] || '',
+    str_text: S.data[4] || '',
+  };
+  var result = await serverFetch('POST', '/api/email', payload);
+  btn.disabled = false;
+  if (result && !result.error) {
+    if (status) { status.className='target-status-msg ok'; status.textContent='✓ דוח נשלח ל-'+email; }
+    showToast('✓ מייל נשלח!', 'ok');
+  } else {
+    var msg = (result && result.error) || 'שגיאת שרת — ודא שהגדרת SMTP_USER ו-SMTP_PASS';
+    if (status) { status.className='target-status-msg err'; status.textContent='✗ '+msg; }
+    showToast('✗ שגיאה בשליחת מייל', 'err');
+  }
+}
+
+async function emailReportById(id) {
+  var email = prompt('כתובת מייל לשליחת הדוח:');
+  if (!email) return;
+  var result = await serverFetch('POST', '/api/email', {to: email, report_id: id});
+  if (result && !result.error) showToast('✓ מייל נשלח!', 'ok');
+  else showToast('✗ '+(result&&result.error||'שגיאה'), 'err');
+}
+
 // ── EXPORT DROPDOWN ──────────────────────────────────────
 document.getElementById('export-btn').addEventListener('click', function(e){
   e.stopPropagation();
@@ -2207,6 +2619,7 @@ document.getElementById('chat-ta').addEventListener('input', function(){
 // ── INIT ─────────────────────────────────────────────────
 initModal();
 updateUI();
+checkServerStatus();
 </script>
 </body>
 </html>
