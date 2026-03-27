@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>VIBE.TESTING — כניסה</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
@@ -46,9 +46,13 @@ html,body{
   position:relative;z-index:1;
   min-height:100vh;
   display:flex;
-  align-items:center;
+  align-items:flex-start;   /* short screens: top-align so card is always scrollable */
   justify-content:center;
-  padding:24px 16px;
+  padding:40px 16px 32px;
+}
+/* tall screens: vertically center the card */
+@media(min-height:700px){
+  .auth-wrap{ align-items:center; }
 }
 
 .auth-card{
@@ -260,7 +264,7 @@ html,body{
 
     <button class="btn btn-google" id="google-login-btn" onclick="doGoogle()">
       <span class="spin"></span>
-      <span class="btn-lbl" style="display:flex;align-items:center;gap:8px">
+      <span class="btn-lbl" style="display:flex;align-items:center;gap:8px;direction:ltr">
         <svg class="g-logo" width="18" height="18" viewBox="0 0 18 18">
           <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/>
           <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
@@ -307,7 +311,7 @@ html,body{
 
     <button class="btn btn-google" id="google-signup-btn" onclick="doGoogle()">
       <span class="spin"></span>
-      <span class="btn-lbl" style="display:flex;align-items:center;gap:8px">
+      <span class="btn-lbl" style="display:flex;align-items:center;gap:8px;direction:ltr">
         <svg class="g-logo" width="18" height="18" viewBox="0 0 18 18">
           <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/>
           <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
@@ -413,53 +417,51 @@ var resendTimer    = null
 // ── INIT: handle URL params + session ───────────────────────
 ;(async function init() {
   var params = new URLSearchParams(window.location.search)
-  var type   = params.get('type')   // 'recovery' | 'signup'
-  var msg    = params.get('msg')    // 'logged_out' | 'session_expired' | 'password_reset'
+  var type   = params.get('type')   // from Supabase email links: 'recovery' | 'signup'
+  var msg    = params.get('msg')    // our status params: 'logged_out' | 'session_expired' | 'password_reset' | 'verify'
 
-  // Always clean URL immediately — no tokens left in address bar
+  // Clean URL — SDK already read token_hash during createClient init
   if (window.location.search) {
     window.history.replaceState({}, '', window.location.pathname)
   }
 
-  // Password reset return from email link
-  if (type === 'recovery') {
-    var { data: { session: recSess } } = await sb.auth.getSession()
-    if (recSess) { showView('v-reset'); return; }
-    showMsg('login-msg', 'error', 'קישור האיפוס פג — בקש קישור חדש')
-    showView('v-login'); return
-  }
+  // ── Register onAuthStateChange FIRST — before any early returns ─
+  // This is the single authoritative handler for all session state changes:
+  // OAuth returns, email confirmations, recovery links, existing sessions on load
+  sb.auth.onAuthStateChange(function(event, session) {
+    if (event === 'PASSWORD_RECOVERY') {
+      // Recovery link clicked — SDK exchanged token_hash, now show reset form
+      showView('v-reset')
+      return
+    }
+    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+      // Signed in or already had a session on page load
+      if (session.user.email_confirmed_at) { redirect(); }
+      else { showVerify(session.user.email); }
+      return
+    }
+  })
 
-  // Email verify return
-  if (type === 'signup' || type === 'email_change') {
-    var { data: { session: vSess } } = await sb.auth.getSession()
-    if (vSess?.user?.email_confirmed_at) { redirect(); return; }
-  }
-
-  // Status messages
+  // ── Status messages from redirect params ─────────────────────
   if (msg === 'logged_out')      showMsg('login-msg', 'info',    'יצאת מהמערכת בהצלחה')
   if (msg === 'session_expired') showMsg('login-msg', 'error',   'הפעלה פגה — יש להתחבר מחדש')
   if (msg === 'password_reset')  showMsg('login-msg', 'success', 'הסיסמה עודכנה — התחבר עם הסיסמה החדשה')
 
-  // Pre-fill verify view if coming from redirect
-  if (params.get('verify')) {
+  // ── Verify redirect from index.html auth guard ───────────────
+  // Guard sends: auth.html?msg=verify&email=...
+  if (msg === 'verify') {
     var em = params.get('email') || ''
-    if (em) { pendingEmail = em; document.getElementById('verify-email-display').textContent = em; }
-    showView('v-verify'); return
+    if (em) {
+      pendingEmail = em
+      document.getElementById('verify-email-display').textContent = em
+    }
+    showView('v-verify')
+    return
   }
 
-  // Already authed + confirmed → go to app
-  var { data: { session: existSess } } = await sb.auth.getSession()
-  if (existSess?.user?.email_confirmed_at) { redirect(); return; }
-
-  // OAuth / email-link callback handled by SDK → fires onAuthStateChange
-  sb.auth.onAuthStateChange(function(event, session) {
-    if (event === 'PASSWORD_RECOVERY') { showView('v-reset'); return; }
-    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
-      if (session.user.email_confirmed_at) { redirect(); }
-      else { showVerify(session.user.email); }
-    }
-  })
-})()
+  // Default: v-login is already active in HTML.
+  // INITIAL_SESSION event above handles redirect if user has a valid existing session.
+})();
 
 function redirect() {
   window.location.replace('/index.html')
@@ -558,6 +560,10 @@ async function doSignup() {
 
 // ── GOOGLE OAUTH ─────────────────────────────────────────────
 async function doGoogle() {
+  // Show error in the view the user is currently on, not always login-msg
+  var activeView = document.querySelector('.view.active')
+  var msgId = (activeView && activeView.id === 'v-signup') ? 'signup-msg' : 'login-msg'
+
   var { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -565,7 +571,7 @@ async function doGoogle() {
       queryParams: { access_type: 'online', prompt: 'select_account' }
     }
   })
-  if (error) showMsg('login-msg', 'error', 'שגיאה בכניסה עם Google — נסה שוב')
+  if (error) showMsg(msgId, 'error', 'שגיאה בכניסה עם Google — נסה שוב')
 }
 
 // ── RESEND VERIFY ────────────────────────────────────────────
