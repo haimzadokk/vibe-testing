@@ -16,6 +16,14 @@
   --amber:#f59e0b;--red:#f43f5e;--blue:#3b82f6;--cyan:#06b6d4;
   --phase:#00e5a0;--phase-glow:rgba(0,229,160,.15);
   --radius:12px;--radius-sm:7px;
+  --ui-font-size:16px;
+}
+body.light-mode{
+  --bg:#f4f7fa;--surface:#ffffff;--surface2:#eef2f7;--border:#d0dce8;--border2:#baccdc;
+  --text:#1a2535;--muted:#4a6480;--dim:#7a9abf;--faint:#e4ecf4;
+  --green:#00875a;--green2:#00a870;--purple:#5b21b6;--purple2:#6d28d9;
+  --amber:#b45309;--red:#be123c;--blue:#1d4ed8;--cyan:#0e7490;
+  --phase:#00875a;--phase-glow:rgba(0,135,90,.12);
 }
 html,body{height:100%;background:var(--bg);font-family:'JetBrains Mono','Courier New',monospace;color:var(--text);overflow:hidden;font-size:18px}
 ::-webkit-scrollbar{width:4px;height:4px}
@@ -160,7 +168,7 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .out-card-actions{display:flex;gap:7px}
 .out-action-btn{background:transparent;border:1px solid var(--border2);border-radius:5px;padding:6px 14px;font-size:15px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px}
 .out-action-btn:hover{border-color:var(--phase);color:var(--phase)}
-.out-content{padding:24px;font-size:18px;line-height:2.0}
+.out-content{padding:24px;font-size:var(--ui-font-size,16px);line-height:2.0}
 .out-content h1{color:var(--green2);font-size:22px;font-weight:700;margin:20px 0 10px;font-family:inherit;letter-spacing:1px}
 .out-content h1:first-child{margin-top:0}
 .out-content h2{color:var(--purple2);font-size:21px;font-weight:700;margin:16px 0 8px;font-family:inherit}
@@ -553,6 +561,84 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .reports-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:200px;color:var(--muted);font-size:13px;text-align:center}
 .server-offline-banner{display:none;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:12px;text-align:center}
 .server-offline-banner.show{display:block}
+
+/* ── SETTINGS BUTTON ── */
+.settings-btn{background:transparent;border:1px solid var(--border2);border-radius:6px;padding:7px 14px;font-size:15px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px;display:flex;align-items:center;gap:5px}
+.settings-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.settings-wrap{position:relative}
+.settings-drop{position:absolute;top:calc(100% + 6px);left:0;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;min-width:200px;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,.5);z-index:100;display:none;animation:fadein .15s ease}
+.settings-drop.open{display:block}
+.settings-drop-item{padding:11px 16px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.settings-drop-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+
+/* ── SETTINGS OVERLAY ── */
+.stg-overlay{position:fixed;inset:0;background:rgba(2,5,12,.97);z-index:210;display:flex;flex-direction:column;overflow:hidden;backdrop-filter:blur(16px)}
+.stg-overlay.hidden{display:none}
+.stg-header{padding:18px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0}
+.stg-header-left{display:flex;align-items:center;gap:20px}
+.stg-title{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--text)}
+.stg-tabs{display:flex;gap:4px}
+.stg-tab{background:transparent;border:1px solid var(--border2);border-radius:7px;padding:7px 16px;font-size:12px;font-family:inherit;color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:1px}
+.stg-tab.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
+.stg-close{background:transparent;border:1px solid var(--border2);border-radius:6px;padding:7px 16px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px}
+.stg-close:hover{border-color:var(--red);color:var(--red)}
+.stg-body{flex:1;overflow-y:auto;padding:32px;max-width:900px;width:100%;margin:0 auto}
+.stg-page{display:none}
+.stg-page.show{display:block}
+
+/* INFO page */
+.info-hero{text-align:center;padding:24px 0 36px;border-bottom:1px solid var(--border);margin-bottom:36px}
+.info-hero-title{font-size:28px;font-weight:900;letter-spacing:6px;color:var(--text)}
+.info-hero-title span{color:var(--green)}
+.info-hero-sub{font-size:13px;color:var(--muted);letter-spacing:3px;margin-top:8px}
+.info-hero-desc{font-size:14px;color:var(--muted);line-height:1.9;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto}
+.info-phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:36px}
+.info-phase-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:20px;border-top:3px solid var(--pc)}
+.info-phase-title{font-size:13px;font-weight:700;letter-spacing:3px;color:var(--pc);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.info-phase-desc{font-size:13px;color:var(--muted);line-height:1.85}
+.info-phase-desc li{margin-bottom:6px}
+.info-section{margin-bottom:32px}
+.info-section-title{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.info-btn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.info-btn-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start}
+.info-btn-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.info-btn-name{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--text);margin-bottom:4px}
+.info-btn-desc{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* DISPLAY SETTINGS page */
+.disp-section{margin-bottom:28px;padding:20px;background:var(--surface2);border:1px solid var(--border);border-radius:12px}
+.disp-section-title{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px}
+.disp-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.disp-row:last-child{margin-bottom:0}
+.disp-label{font-size:13px;color:var(--text)}
+.disp-sub{font-size:11px;color:var(--dim);margin-top:2px}
+.disp-slider{-webkit-appearance:none;appearance:none;width:180px;height:4px;background:var(--border2);border-radius:2px;outline:none;cursor:pointer}
+.disp-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cyan);cursor:pointer;box-shadow:0 0 8px rgba(6,182,212,.4)}
+.disp-val{font-size:12px;color:var(--cyan);min-width:36px;text-align:right}
+.disp-toggle-wrap{display:flex;gap:6px}
+.disp-toggle{background:transparent;border:1px solid var(--border2);border-radius:7px;padding:7px 14px;font-size:12px;font-family:inherit;color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:1px}
+.disp-toggle.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
+.disp-select{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:12px;color:var(--text);outline:none;cursor:pointer}
+
+/* ── RUN MODE PICKER ── */
+.runmode-overlay{position:fixed;inset:0;background:rgba(2,5,12,.92);z-index:220;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px)}
+.runmode-overlay.hidden{display:none}
+.runmode-modal{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border2);border-radius:20px;padding:36px;width:520px;max-width:92vw;position:relative;overflow:hidden}
+.runmode-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.runmode-title{font-size:16px;font-weight:700;letter-spacing:4px;color:var(--text);margin-bottom:6px}
+.runmode-sub{font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:24px}
+.runmode-options{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.runmode-opt{background:var(--bg);border:2px solid var(--border2);border-radius:14px;padding:16px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:16px}
+.runmode-opt:hover{border-color:var(--amber);background:rgba(245,158,11,.04)}
+.runmode-opt.selected{border-color:var(--amber);background:rgba(245,158,11,.08)}
+.runmode-opt-icon{font-size:28px;flex-shrink:0}
+.runmode-opt-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:1px}
+.runmode-opt-desc{font-size:11px;color:var(--muted);line-height:1.6}
+.runmode-actions{display:flex;gap:10px;justify-content:flex-end}
+.runmode-cancel{background:transparent;border:1px solid var(--border2);border-radius:8px;padding:10px 20px;font-family:inherit;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s}
+.runmode-cancel:hover{border-color:var(--muted);color:var(--text)}
+.runmode-run{background:linear-gradient(135deg,var(--amber),#e08000);border:none;border-radius:8px;padding:10px 24px;font-family:inherit;font-size:13px;font-weight:700;color:#1a0a00;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.runmode-run:hover{opacity:.85;transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -701,6 +787,13 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
         </div>
       </div>
       <button class="key-btn" id="change-key-btn" style="display:none">🔑 KEY</button>
+      <div class="settings-wrap" id="settings-wrap">
+        <button class="settings-btn" id="settings-btn" onclick="toggleSettingsDrop()">⚙ SETTINGS</button>
+        <div class="settings-drop" id="settings-drop">
+          <div class="settings-drop-item" onclick="openSettings('info');closeSettingsDrop()">ℹ️ INFO — מדריך המערכת</div>
+          <div class="settings-drop-item" onclick="openSettings('display');closeSettingsDrop()">🖥 הגדרות תצוגה</div>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -872,6 +965,23 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
           <div class="target-status-msg" id="email-status"></div>
         </div>
 
+        <!-- REPORTS PANEL (Phase 5 — automation history) -->
+        <div class="reports-panel" id="reports-panel">
+          <div class="reports-toolbar">
+            <div class="reports-toolbar-left">
+              <div class="reports-title">◈ REPORTS DASHBOARD</div>
+              <div class="reports-count" id="reports-count">—</div>
+            </div>
+            <button class="reports-refresh-btn" onclick="loadReports()">↺ רענן</button>
+          </div>
+          <div class="server-offline-banner" id="server-offline-banner">
+            ⚠ שרת ה-Runner אינו פעיל — הפעל: <code>python vibe-runner.py</code> — דוחות נשמרים רק בהרצה אמיתית
+          </div>
+          <div class="reports-list" id="reports-list">
+            <div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>הרץ בדיקות אמיתיות בשלב RUN כדי לראות דוחות</span></div>
+          </div>
+        </div>
+
       </div>
 
       <!-- REFINE BAR -->
@@ -954,6 +1064,235 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
   </div>
   <div class="dash-body" id="dash-body">
     <div style="text-align:center;color:var(--muted);padding:60px">אין נתונים — הרץ לפחות שלב אחד תחילה</div>
+  </div>
+</div>
+
+<!-- SETTINGS OVERLAY -->
+<div class="stg-overlay hidden" id="stg-overlay">
+  <div class="stg-header">
+    <div class="stg-header-left">
+      <div class="stg-title">⚙ SETTINGS</div>
+      <div class="stg-tabs">
+        <button class="stg-tab active" id="stab-info" onclick="switchSettingsTab('info')">ℹ️ INFO</button>
+        <button class="stg-tab" id="stab-display" onclick="switchSettingsTab('display')">🖥 תצוגה</button>
+      </div>
+    </div>
+    <button class="stg-close" onclick="closeSettings()">✕ סגור</button>
+  </div>
+  <div class="stg-body">
+
+    <!-- INFO PAGE -->
+    <div class="stg-page show" id="spage-info">
+      <div class="info-hero">
+        <div class="info-hero-title">VIBE<span>.</span>TESTING</div>
+        <div class="info-hero-sub">AI-POWERED QA PIPELINE · v3</div>
+        <div class="info-hero-desc">מערכת אוטומטית לניהול מחזור חיי בדיקות מלא — מאפיון ועד דוח סיכום, מונעת על-ידי Claude AI. מתאימה לצוותי QA, מנהלי מוצר ומפתחים.</div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🔄 שלבי הצינור (Pipeline Phases)</div>
+        <div class="info-phases">
+          <div class="info-phase-card" style="--pc:#00e5a0">
+            <div class="info-phase-title">◈ שלב 1 — STP · עץ בדיקות</div>
+            <div class="info-phase-desc">
+              <strong>Test Planning</strong> — בניית תוכנית הבדיקות המלאה:<br>
+              • ניתוח מסמך האפיון שהועלה<br>
+              • <strong>מקורות קלט:</strong> מסמך (PDF/DOCX/TXT), URL אתר, נתיב אפליקציה מקומית<br>
+              • עץ בדיקות 60+ פריטים לפי ISTQB<br>
+              • מטריצת סיכונים, Traceability Matrix, הערכת מאמץ<br>
+              • Entry/Exit criteria ו-KPIs
+            </div>
+          </div>
+          <div class="info-phase-card" style="--pc:#8b5cf6">
+            <div class="info-phase-title">◉ שלב 2 — STD · תסריטי בדיקה</div>
+            <div class="info-phase-desc">
+              <strong>Test Script Design</strong> — כתיבת 30+ תסריטים מפורטים:<br>
+              • כל תסריט כולל: צעדים, נתוני בדיקה, תוצאה צפויה, קריטריוני PASS/FAIL<br>
+              • חלוקה: functional, negative, integration, security, performance<br>
+              • מבוסס על STP שנוצר בשלב 1
+            </div>
+          </div>
+          <div class="info-phase-card" style="--pc:#f59e0b">
+            <div class="info-phase-title">▶ שלב 3 — RUN · הרצת בדיקות</div>
+            <div class="info-phase-desc">
+              <strong>Test Execution</strong> — הרצת הבדיקות:<br>
+              • <strong>מצב AI:</strong> סימולציה חכמה עם תוצאות ריאליסטיות<br>
+              • <strong>מצב אמיתי:</strong> אוטומציה ממשית עם Playwright (web) או pywinauto (desktop)<br>
+              • דוח הרצה עם PASS/FAIL/SKIP, שגיאות מפורטות, Root Cause Analysis<br>
+              • שליחת דוח במייל
+            </div>
+          </div>
+          <div class="info-phase-card" style="--pc:#f43f5e">
+            <div class="info-phase-title">◆ שלב 4 — STR · סיכום הרצה</div>
+            <div class="info-phase-desc">
+              <strong>Test Summary Report</strong> — דוח מנהלים:<br>
+              • תקציר לרמת C-Level (250 מילה)<br>
+              • Quality Scorecard ו-KPIs<br>
+              • Risk Register, פנקס באגים קריטיים<br>
+              • המלצה סופית: Go / No-Go לשחרור<br>
+              • Lessons Learned ו-Automation Roadmap
+            </div>
+          </div>
+          <div class="info-phase-card" style="--pc:#06b6d4">
+            <div class="info-phase-title">◈ שלב 5 — דוחות היסטוריה</div>
+            <div class="info-phase-desc">
+              <strong>Reports Dashboard</strong> — ארכיון הרצות (כמו Jenkins):<br>
+              • רשימת כל הרצות האוטומציה שבוצעו<br>
+              • PASS/FAIL/SKIP לכל הרצה<br>
+              • פתיחת פרטי כל תסריט שנפל<br>
+              • ייצוא דוח ל-PDF · שליחה במייל<br>
+              • <em>דורש הפעלת vibe-runner.py</em>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🔘 מדריך כפתורים</div>
+        <div class="info-btn-grid">
+          <div class="info-btn-item">
+            <div class="info-btn-icon">▶</div>
+            <div><div class="info-btn-name">GENERATE</div><div class="info-btn-desc">מייצר את תוצרי השלב הנוכחי עם Claude AI. מתאפשר רק לאחר שהשלב הקודם הושלם.</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">↺</div>
+            <div><div class="info-btn-name">REGENERATE</div><div class="info-btn-desc">מייצר מחדש את תוצרי השלב הנוכחי. מחליף את הפלט הקיים.</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">📎</div>
+            <div><div class="info-btn-name">ATTACH</div><div class="info-btn-desc">מעלה קובץ אפיון (PDF, DOCX, TXT, MD, JSON...). ניתן גם לגרור קובץ לחלון.</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">⬇</div>
+            <div><div class="info-btn-name">EXPORT</div><div class="info-btn-desc">מייצא תוצרים: PDF, Excel, Markdown, Plain Text, או כל השלבים יחד.</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">⎘</div>
+            <div><div class="info-btn-name">COPY</div><div class="info-btn-desc">מעתיק את תוכן השלב הנוכחי ללוח (Clipboard).</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">💬</div>
+            <div><div class="info-btn-name">CHAT</div><div class="info-btn-desc">שאל שאלות על התוצאות, בקש הבהרות, הוסף דרישות. לא מייצר מחדש אלא משלים בצ'אט.</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">⚡</div>
+            <div><div class="info-btn-name">CHIPS</div><div class="info-btn-desc">Chips צבעוניים לשיפור מהיר: הוספת תסריטים, שיפור עדיפויות, מיקוד בנושא ספציפי.</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">📊</div>
+            <div><div class="info-btn-name">דשבורד מנהלים</div><div class="info-btn-desc">מוצג אחרי שלב STR — סיכום גרפי עם KPIs, Go/No-Go, ומצב כל השלבים.</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">🔑</div>
+            <div><div class="info-btn-name">KEY</div><div class="info-btn-desc">עדכון Anthropic API Key. מוצג לאחר ההגדרה הראשונית.</div></div>
+          </div>
+          <div class="info-btn-item">
+            <div class="info-btn-icon">🟢</div>
+            <div><div class="info-btn-name">LOCAL / RUNNER</div><div class="info-btn-desc">מצב שרת ה-Runner המקומי. ירוק = vibe-runner.py פועל ומאפשר אוטומציה אמיתית.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🚀 איך מתחילים</div>
+        <div style="font-size:13px;color:var(--muted);line-height:2;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px">
+          <strong style="color:var(--text)">מצב AI (ללא התקנה):</strong><br>
+          1. לחץ ▶ START בחלון הפתיחה והכנס את ה-API Key שלך<br>
+          2. העלה מסמך אפיון (ATTACH) או הכנס URL בשלב STP<br>
+          3. לחץ GENERATE בכל שלב לפי הסדר (STP → STD → RUN → STR)<br><br>
+          <strong style="color:var(--text)">מצב אוטומציה אמיתית (דורש Python):</strong><br>
+          1. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">pip install playwright pywinauto anthropic python-dotenv</code><br>
+          2. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">python vibe-runner.py</code><br>
+          3. הדות הירוק "RUNNER ✓" יופיע בכותרת<br>
+          4. בשלב RUN בחר "אוטומציה אמיתית" ובחר את האפליקציה/URL
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPLAY PAGE -->
+    <div class="stg-page" id="spage-display">
+      <div class="disp-section">
+        <div class="disp-section-title">📝 גודל פונט</div>
+        <div class="disp-row">
+          <div><div class="disp-label">גודל טקסט תוצאות</div><div class="disp-sub">גודל הפונט באזור הפלט והצ'אט</div></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <input type="range" class="disp-slider" id="font-size-slider" min="12" max="24" step="1" value="16" oninput="applyFontSize(this.value)"/>
+            <span class="disp-val" id="font-size-val">16px</span>
+          </div>
+        </div>
+        <div class="disp-row">
+          <div><div class="disp-label">גודל פונט כותרות</div><div class="disp-sub">H1/H2 בפלט</div></div>
+          <div class="disp-toggle-wrap">
+            <button class="disp-toggle" onclick="applyHeadingScale('small')">S</button>
+            <button class="disp-toggle active" id="hscale-m" onclick="applyHeadingScale('medium')">M</button>
+            <button class="disp-toggle" onclick="applyHeadingScale('large')">L</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="disp-section">
+        <div class="disp-section-title">🌓 מצב תצוגה</div>
+        <div class="disp-row">
+          <div><div class="disp-label">ערכת צבעים</div><div class="disp-sub">בהיר / כהה</div></div>
+          <div class="disp-toggle-wrap">
+            <button class="disp-toggle" id="theme-light" onclick="applyTheme('light')">☀ בהיר</button>
+            <button class="disp-toggle active" id="theme-dark" onclick="applyTheme('dark')">🌙 כהה</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="disp-section">
+        <div class="disp-section-title">📐 פריסה ומרווחים</div>
+        <div class="disp-row">
+          <div><div class="disp-label">גובה שורה בפלט</div><div class="disp-sub">מרווח בין שורות בתוצאות</div></div>
+          <div class="disp-toggle-wrap">
+            <button class="disp-toggle" onclick="applyLineHeight('compact')">צפוף</button>
+            <button class="disp-toggle active" id="lh-normal" onclick="applyLineHeight('normal')">רגיל</button>
+            <button class="disp-toggle" onclick="applyLineHeight('spacious')">מרווח</button>
+          </div>
+        </div>
+        <div class="disp-row">
+          <div><div class="disp-label">גלילה אוטומטית בזמן יצירה</div><div class="disp-sub">גלול למטה בכל קטע חדש</div></div>
+          <div class="disp-toggle-wrap">
+            <button class="disp-toggle active" id="autoscroll-on" onclick="applyAutoScroll(true)">פעיל</button>
+            <button class="disp-toggle" id="autoscroll-off" onclick="applyAutoScroll(false)">כבוי</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;text-align:left">
+        <button onclick="resetDisplaySettings()" style="background:transparent;border:1px solid var(--border2);border-radius:8px;padding:8px 18px;font-size:12px;color:var(--dim);cursor:pointer;font-family:inherit;letter-spacing:1px;transition:all .2s" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--dim)';this.style.borderColor='var(--border2)'">↺ איפוס הגדרות ברירת מחדל</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- RUN MODE PICKER -->
+<div class="runmode-overlay hidden" id="runmode-overlay">
+  <div class="runmode-modal">
+    <div class="runmode-title">▶ בחר מצב הרצה</div>
+    <div class="runmode-sub">שלב RUN · TEST EXECUTION</div>
+    <div class="runmode-options">
+      <div class="runmode-opt selected" id="rmo-sim" onclick="selectRunMode('sim')">
+        <div class="runmode-opt-icon">🤖</div>
+        <div>
+          <div class="runmode-opt-title">סימולציה AI</div>
+          <div class="runmode-opt-desc">Claude מייצר תוצאות הרצה ריאליסטיות (PASS/FAIL/SKIP) מבוססות על תסריטי הSTD.<br>לא נדרש שרת מקומי. תמיד זמין.</div>
+        </div>
+      </div>
+      <div class="runmode-opt" id="rmo-real" onclick="selectRunMode('real')">
+        <div class="runmode-opt-icon">⚡</div>
+        <div>
+          <div class="runmode-opt-title">אוטומציה אמיתית</div>
+          <div class="runmode-opt-desc" id="rmo-real-desc">Playwright (web) או pywinauto (desktop) — הרצה ממשית על האפליקציה.<br>דורש: python vibe-runner.py פעיל.</div>
+        </div>
+      </div>
+    </div>
+    <div class="runmode-actions">
+      <button class="runmode-cancel" onclick="closeRunModePicker()">ביטול</button>
+      <button class="runmode-run" onclick="confirmRunMode()">▶ הרץ</button>
+    </div>
   </div>
 </div>
 
@@ -1391,9 +1730,10 @@ async function runSTPFromURL() {
     );
     S.data[1] = full;
     S.status[1] = 'done';
+    S.targetUrl = url; S.targetType = 'url'; S_conn.url = url;
     showOut(1, full, false);
     updateTabDones();
-    st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר מ-' + esc(url) + '</span>';
+    st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר מ-' + esc(url) + ' — יעד נשמר לשלב RUN</span>';
     showToast('✓ STP נוצר מניתוח האתר!', 'ok');
   } catch(err) {
     if (err.name === 'AbortError') {
@@ -1465,8 +1805,9 @@ async function runSTPFromPath() {
       function(partial){ showOut(1, partial, true); }
     );
     S.data[1] = full; S.status[1] = 'done';
+    S.targetType = 'local'; S.targetWindow = path; S.targetWindowTitle = path.split(/[\\/]/).pop();
     showOut(1, full, false); updateTabDones();
-    st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר עבור: ' + esc(path) + '</span>';
+    st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר עבור: ' + esc(path) + ' — יעד נשמר לשלב RUN</span>';
     showToast('✓ STP נוצר מניתוח הנתיב!', 'ok');
   } catch(err) {
     if (err.name === 'AbortError') {
@@ -1811,9 +2152,9 @@ async function streamClaude(messages, onChunk) {
 // ── SYSTEM PROMPTS ───────────────────────────────────────
 function getContext(p) {
   var c = '';
-  if (p>=2 && S.data[1]) c += '\n\n=== STP (עץ בדיקות) ===\n'+S.data[1].slice(0,12000);
-  if (p>=3 && S.data[2]) c += '\n\n=== STD (תסריטי בדיקה) ===\n'+S.data[2].slice(0,20000);
-  if (p>=4 && S.data[3]) c += '\n\n=== RUN (הרצת בדיקות) ===\n'+S.data[3].slice(0,20000);
+  if (p>=2 && S.data[1]) c += '\n\n=== STP (עץ בדיקות) ===\n'+S.data[1].slice(0,8000);
+  if (p>=3 && S.data[2]) c += '\n\n=== STD (תסריטי בדיקה) ===\n'+S.data[2].slice(0,12000);
+  if (p>=4 && S.data[3]) c += '\n\n=== RUN (הרצת בדיקות) ===\n'+S.data[3].slice(0,12000);
   return c;
 }
 function canRun(p) { return p!==5 && (p===1 || !!S.data[p-1]); }
@@ -1858,9 +2199,9 @@ function buildSystemContext(phaseId) {
 // ── RUN GENERATION (GENERATE button only) ────────────────
 async function runGen(phaseId) {
   if (S.streaming) return;
-  // Phase 3 with real target → use local automation server
-  if (phaseId === 3 && S.targetType && S.targetType !== 'spec') {
-    await runRealAutomation();
+  // Phase 3 → always show run mode picker first
+  if (phaseId === 3) {
+    showRunModePicker();
     return;
   }
   S.streaming = true;
@@ -1884,7 +2225,7 @@ async function runGen(phaseId) {
   try {
     var full = await streamClaude(
       [{role:'user', content: sys+'\n\n'+uc}],
-      function(partial){ showOut(phaseId, partial, true); }
+      function(partial){ S.data[phaseId]=partial; showOut(phaseId, partial, true); }
     );
     S.data[phaseId] = full;
     S.status[phaseId] = 'done';
@@ -1985,6 +2326,8 @@ function il(s){
 }
 
 // ── DOM UPDATES ──────────────────────────────────────────
+var _showOutLast = 0;
+var _showOutTimer = null;
 function showOut(phaseId, text, streaming) {
   var ph = PHASES[phaseId];
   document.getElementById('empty').style.display = 'none';
@@ -1997,6 +2340,24 @@ function showOut(phaseId, text, streaming) {
   var lbl = document.getElementById('out-lbl');
   lbl.style.color = ph.c;
   lbl.textContent = ph.l+' OUTPUT · '+(streaming ? '⟳ STREAMING' : '✓ COMPLETE');
+
+  // ── throttle DOM updates during streaming (max 60ms between updates)
+  if (streaming) {
+    var now = Date.now();
+    if (now - _showOutLast < 60) {
+      if (_showOutTimer) clearTimeout(_showOutTimer);
+      _showOutTimer = setTimeout(function(){ showOut(phaseId, S.data[phaseId]||text, true); }, 80);
+      if (!text) {
+        var oc2 = document.getElementById('out-content');
+        if (!document.getElementById('out-doc')) oc2.innerHTML = '<div id="out-doc"></div><div id="out-chat"></div>';
+        document.getElementById('out-doc').innerHTML = '<div style="color:var(--muted);font-size:0.85em;padding:8px 0;animation:pulse 1s infinite">◈ מייצר תוכן...</div>';
+      }
+      return;
+    }
+    _showOutLast = now;
+  } else {
+    if (_showOutTimer) { clearTimeout(_showOutTimer); _showOutTimer = null; }
+  }
 
   // ── ensure doc/chat containers exist
   var oc = document.getElementById('out-content');
@@ -2012,7 +2373,7 @@ function showOut(phaseId, text, streaming) {
   var cur = document.getElementById('cursor');
   cur.style.display = streaming ? 'inline-block' : 'none';
   cur.style.background = ph.c;
-  if (streaming){
+  if (streaming && S_disp.autoScroll){
     var sc=document.getElementById('out-scroll'); sc.scrollTop=sc.scrollHeight;
     if (!text) docEl.innerHTML = '<div style="color:var(--muted);font-size:0.85em;padding:8px 0;animation:pulse 1s infinite">◈ מייצר תוכן...</div>';
   }
@@ -2113,8 +2474,9 @@ function updateUI() {
   document.getElementById('send-btn').disabled = S.streaming;
   document.getElementById('chat-wrap').style.borderColor = 'color-mix(in srgb,'+ph.c+' 22%,transparent)';
 
-  // URL connect (Phase 3 only)
-  document.getElementById('url-connect').classList.toggle('show', p===3);
+  // URL connect (Phase 3 only — hidden if target already configured from Phase 1)
+  var targetAlreadySet = S.targetType !== 'spec' && (S.targetUrl || S.targetType === 'local');
+  document.getElementById('url-connect').classList.toggle('show', p===3 && !targetAlreadySet);
   document.getElementById('stp-url-zone').classList.toggle('show', p===1);
 
   // Target panel (Phase 3 only)
@@ -2723,6 +3085,187 @@ document.getElementById('chat-ta').addEventListener('input', function(){
   this.style.height='auto';
   this.style.height=Math.min(this.scrollHeight,200)+'px';
 });
+
+// ── SETTINGS ──────────────────────────────────────────────
+function toggleSettingsDrop() {
+  var d = document.getElementById('settings-drop');
+  d.classList.toggle('open');
+}
+function closeSettingsDrop() {
+  document.getElementById('settings-drop').classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  var wrap = document.getElementById('settings-wrap');
+  if (wrap && !wrap.contains(e.target)) closeSettingsDrop();
+});
+
+function openSettings(tab) {
+  document.getElementById('stg-overlay').classList.remove('hidden');
+  switchSettingsTab(tab || 'info');
+}
+function closeSettings() {
+  document.getElementById('stg-overlay').classList.add('hidden');
+}
+function switchSettingsTab(tab) {
+  ['info','display'].forEach(function(t){
+    var btn = document.getElementById('stab-'+t);
+    var page = document.getElementById('spage-'+t);
+    if (btn) btn.classList.toggle('active', t===tab);
+    if (page) page.classList.toggle('show', t===tab);
+  });
+}
+
+// ── DISPLAY SETTINGS ──────────────────────────────────────
+var S_disp = { fontSize:16, theme:'dark', lineHeight:'normal', autoScroll:true };
+(function loadSavedDisplay(){
+  try {
+    var saved = JSON.parse(localStorage.getItem('vibe_display')||'{}');
+    if (saved.fontSize) { S_disp.fontSize = saved.fontSize; applyFontSize(saved.fontSize, true); }
+    if (saved.theme) { S_disp.theme = saved.theme; applyTheme(saved.theme, true); }
+    if (saved.lineHeight) { S_disp.lineHeight = saved.lineHeight; applyLineHeight(saved.lineHeight, true); }
+    if (saved.autoScroll !== undefined) { S_disp.autoScroll = saved.autoScroll; applyAutoScroll(saved.autoScroll, true); }
+  } catch(e){}
+})();
+
+function saveDisplay() {
+  try { localStorage.setItem('vibe_display', JSON.stringify(S_disp)); } catch(e){}
+}
+
+function applyFontSize(val, silent) {
+  val = parseInt(val, 10);
+  S_disp.fontSize = val;
+  document.documentElement.style.setProperty('--ui-font-size', val+'px');
+  var slider = document.getElementById('font-size-slider');
+  var lbl = document.getElementById('font-size-val');
+  if (slider) slider.value = val;
+  if (lbl) lbl.textContent = val+'px';
+  if (!silent) saveDisplay();
+}
+
+function applyTheme(theme, silent) {
+  S_disp.theme = theme;
+  document.body.classList.toggle('light-mode', theme==='light');
+  ['light','dark'].forEach(function(t){
+    var btn = document.getElementById('theme-'+t);
+    if (btn) btn.classList.toggle('active', t===theme);
+  });
+  if (!silent) saveDisplay();
+}
+
+function applyLineHeight(mode, silent) {
+  S_disp.lineHeight = mode;
+  var lh = {compact:'1.5', normal:'2.0', spacious:'2.6'}[mode] || '2.0';
+  document.documentElement.style.setProperty('--ui-line-height', lh);
+  document.querySelectorAll('#out-content').forEach(function(el){ el.style.lineHeight = lh; });
+  ['compact','normal','spacious'].forEach(function(m){
+    var btn = document.getElementById('lh-'+m);
+    if (btn) btn.classList.toggle('active', m===mode);
+  });
+  if (!silent) saveDisplay();
+}
+
+function applyAutoScroll(val, silent) {
+  S_disp.autoScroll = !!val;
+  var on = document.getElementById('autoscroll-on');
+  var off = document.getElementById('autoscroll-off');
+  if (on) on.classList.toggle('active', !!val);
+  if (off) off.classList.toggle('active', !val);
+  if (!silent) saveDisplay();
+}
+
+function applyHeadingScale(size) {
+  var scales = {small:'0.85', medium:'1', large:'1.2'};
+  var s = scales[size] || '1';
+  document.documentElement.style.setProperty('--heading-scale', s);
+  ['small','medium','large'].forEach(function(m){
+    var btn = document.getElementById('hscale-'+m);
+    if (btn) btn.classList.toggle('active', m===size);
+  });
+}
+
+function resetDisplaySettings() {
+  applyFontSize(16);
+  applyTheme('dark');
+  applyLineHeight('normal');
+  applyAutoScroll(true);
+  applyHeadingScale('medium');
+  saveDisplay();
+  showToast('✓ הגדרות תצוגה אופסו', 'ok');
+}
+
+// ── RUN MODE PICKER ───────────────────────────────────────
+var _pendingRunMode = 'sim';
+function showRunModePicker() {
+  var realOpt = document.getElementById('rmo-real');
+  var realDesc = document.getElementById('rmo-real-desc');
+  if (!S.serverOnline) {
+    if (realOpt) realOpt.style.opacity = '0.45';
+    if (realDesc) realDesc.innerHTML = 'Playwright / pywinauto — <strong style="color:var(--red)">שרת לא זמין</strong><br>הפעל: <code>python vibe-runner.py</code>';
+  } else {
+    if (realOpt) realOpt.style.opacity = '';
+    if (realDesc) realDesc.innerHTML = 'Playwright (web) או pywinauto (desktop) — הרצה ממשית על האפליקציה.<br>שרת פעיל ✓';
+  }
+  selectRunMode('sim');
+  document.getElementById('runmode-overlay').classList.remove('hidden');
+}
+
+function selectRunMode(mode) {
+  _pendingRunMode = mode;
+  document.getElementById('rmo-sim').classList.toggle('selected', mode==='sim');
+  document.getElementById('rmo-real').classList.toggle('selected', mode==='real');
+}
+
+function closeRunModePicker() {
+  document.getElementById('runmode-overlay').classList.add('hidden');
+}
+
+async function confirmRunMode() {
+  closeRunModePicker();
+  if (_pendingRunMode === 'real') {
+    if (!S.serverOnline) {
+      showToast('✗ שרת Runner לא זמין — הפעל: python vibe-runner.py', 'err');
+      return;
+    }
+    await runRealAutomation();
+  } else {
+    await runGenSim(3);
+  }
+}
+
+async function runGenSim(phaseId) {
+  if (S.streaming) return;
+  S.streaming = true;
+  S.status[phaseId] = 'generating';
+  S.chatMode[phaseId] = false;
+  S.chat[phaseId] = [];
+  updateUI();
+  var ctx = getContext(phaseId);
+  var sys = buildPrompt(phaseId, ctx, S.fileType, S.targetUrl);
+  var ins = 'נא לייצר שלב '+phaseId+' בצורה מקיפה, מפורטת ומקצועית לחלוטין.';
+  var uc = ctx + '\n\n---\nהנחיה: '+ins;
+  showOut(phaseId, '', true);
+  try {
+    var full = await streamClaude(
+      [{role:'user', content: sys+'\n\n'+uc}],
+      function(partial){ S.data[phaseId]=partial; showOut(phaseId, partial, true); }
+    );
+    S.data[phaseId] = full;
+    S.status[phaseId] = 'done';
+    showOut(phaseId, full, false);
+    updateTabDones();
+    showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
+  } catch(err) {
+    if (err.name === 'AbortError' || !err.message) {
+      if (S.data[phaseId]) { S.status[phaseId]='done'; showOut(phaseId,S.data[phaseId],false); showToast('⏹ הופסק',''); }
+      else { S.status[phaseId]='idle'; document.getElementById('empty').style.display='flex'; document.getElementById('out-card').style.display='none'; }
+    } else {
+      S.status[phaseId] = 'error';
+      showOut(phaseId, '❌ שגיאה: '+err.message, false);
+      showToast('✗ '+err.message, 'err');
+    }
+  }
+  S.streaming = false; updateUI();
+}
 
 // ── INIT ─────────────────────────────────────────────────
 initModal();
