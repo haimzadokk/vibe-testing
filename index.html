@@ -1570,6 +1570,7 @@ function logout() {
 
 var API_KEY = 'worker'; // Key מנוהל ב-Cloudflare Worker
 var WORKER_URL = 'https://vibe-testing-proxy.haimzadokk.workers.dev/';
+var VIBE_WORKER_URL = 'https://vibe-testing-pq79.onrender.com'; // Supabase-backed persistence worker
 var currentAbort = null;
 var S_conn = { type:'url', url:'', token:'', user:'', pass:'', headers:{} };
 var S = {
@@ -1587,6 +1588,7 @@ var S = {
   serverOnline: false,
   runResult: null,
   runReports: [],
+  runId: null,   // active Supabase run id — set at pipeline start, reused across phases
 };
 
 var PHASES = {
@@ -1970,6 +1972,7 @@ async function runSTPFromURL() {
   st.className = 'url-status show';
   st.innerHTML = '<span style="color:var(--amber)">⟳ מנתח את האתר ומייצר STP...</span>';
 
+  S.runId = null; _vibeRunPromise = null; _vibeRunStart();
   S.streaming = true;
   S.chat[1] = [];
   S.status[1] = 'generating';
@@ -1999,6 +2002,7 @@ async function runSTPFromURL() {
     updateTabDones();
     st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר מ-' + esc(url) + ' — יעד נשמר לשלב RUN</span>';
     showToast('✓ STP נוצר מניתוח האתר!', 'ok');
+    _vibeRunSaveOutput('stp', full);
   } catch(err) {
     if (err.name === 'AbortError') {
       if (S.data[1]) { S.status[1]='done'; showOut(1,S.data[1],false); }
@@ -2038,6 +2042,7 @@ async function runSTPFromPath() {
 
   st.className = 'url-status show';
   st.innerHTML = '<span style="color:var(--amber)">⟳ מנתח את הנתיב ומייצר STP...</span>';
+  S.runId = null; _vibeRunPromise = null; _vibeRunStart();
   S.streaming = true; S.chat[1] = []; S.status[1] = 'generating';
   updateUI(); showOut(1, '', true);
 
@@ -2073,6 +2078,7 @@ async function runSTPFromPath() {
     showOut(1, full, false); updateTabDones();
     st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר עבור: ' + esc(path) + ' — יעד נשמר לשלב RUN</span>';
     showToast('✓ STP נוצר מניתוח הנתיב!', 'ok');
+    _vibeRunSaveOutput('stp', full);
   } catch(err) {
     if (err.name === 'AbortError') {
       if (S.data[1]) { S.status[1]='done'; showOut(1,S.data[1],false); }
@@ -2356,14 +2362,17 @@ document.getElementById('clear-all-btn').addEventListener('click', function(e){
 // ── STREAMING API ────────────────────────────────────────
 async function streamClaude(messages, onChunk) {
   currentAbort = new AbortController();
-  var timeoutId = setTimeout(function(){ 
+  var timeoutId = setTimeout(function(){
     if (currentAbort) { currentAbort.abort(); }
   }, 300000); // 5 דקות timeout
+  var reqHeaders = {'Content-Type': 'application/json'};
+  if (window._sb) {
+    var _sess = (await window._sb.auth.getSession()).data.session;
+    if (_sess) reqHeaders['Authorization'] = 'Bearer ' + _sess.access_token;
+  }
   var resp = await fetch(WORKER_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: reqHeaders,
     signal: currentAbort.signal,
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
@@ -2375,7 +2384,7 @@ async function streamClaude(messages, onChunk) {
   if (!resp.ok) {
     var e = await resp.json().catch(function(){ return {}; });
     var msg = (e.error && e.error.message) || ('HTTP ' + resp.status);
-    if (resp.status === 401) msg = 'API Key לא תקין. לחץ על 🔑 KEY לעדכון.';
+    if (resp.status === 401) msg = 'פג תוקף הסשן — אנא התחבר מחדש.';
     if (resp.status === 429) msg = 'חרגת ממכסת הקריאות. המתן מספר שניות ונסה שוב.';
     if (resp.status === 500) msg = 'שגיאת שרת Anthropic. נסה שוב.';
     throw new Error(msg);
@@ -2468,6 +2477,9 @@ async function runGen(phaseId) {
     showRunModePicker();
     return;
   }
+  // Phase 1 = new pipeline — reset active run so a fresh one is created
+  if (phaseId === 1) { S.runId = null; _vibeRunPromise = null; }
+  _vibeRunStart();
   S.streaming = true;
   S.status[phaseId] = 'generating';
   S.chatMode[phaseId] = false;
@@ -2496,7 +2508,11 @@ async function runGen(phaseId) {
     showOut(phaseId, full, false);
     updateTabDones();
     showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
-    if (phaseId === 4) showDashboardBtn();
+    if (phaseId === 4) {
+      showDashboardBtn();
+      _vibeRunFinish('completed', null);  // STR = terminal phase; mark run complete
+    }
+    _vibeRunSaveOutput(_PHASE_OUTPUT_TYPE[phaseId], full);
   } catch(err) {
     if (err.name === 'AbortError' || !err.message) {
       // Stopped by user — keep partial output if any
@@ -2514,6 +2530,8 @@ async function runGen(phaseId) {
       showOut(phaseId, '❌ שגיאה: '+err.message, false);
       showToast('✗ '+err.message, 'err');
     }
+    // Phase 4 (STR) is terminal — mark the run failed on any abort or error
+    if (phaseId === 4) _vibeRunFinish('failed', null);
   }
   S.streaming = false; updateUI();
 }
@@ -2521,6 +2539,7 @@ async function runGen(phaseId) {
 // ── CHIP REFINE (regenerate with instruction) ─────────────
 async function runRefine(phaseId, instruction) {
   if (S.streaming) return;
+  _vibeRunStart();  // no-op if S.runId already set; creates one if phase 1 was skipped
   S.streaming = true;
   S.status[phaseId] = 'generating';
   S.chatMode[phaseId] = false;
@@ -2547,6 +2566,7 @@ async function runRefine(phaseId, instruction) {
     showOut(phaseId, full, false);
     updateTabDones();
     showToast('✓ שופר בהצלחה!', 'ok');
+    _vibeRunSaveOutput(_PHASE_OUTPUT_TYPE[phaseId], full);
   } catch(err) {
     if (err.name === 'AbortError' || !err.message) {
       if (S.data[phaseId]) {
@@ -3005,6 +3025,75 @@ async function serverFetch(method, path, body) {
   } catch(e) { return null; }
 }
 
+// ── VIBE WORKER PERSISTENCE ───────────────────────────────
+// All calls are fire-and-forget (non-blocking).
+// A failure never interrupts the pipeline — persistence is best-effort.
+
+async function workerFetch(method, path, body) {
+  try {
+    if (!window._sb) return null;
+    var session = (await window._sb.auth.getSession()).data.session;
+    if (!session) return null;
+    var opts = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token
+      }
+    };
+    if (body) opts.body = JSON.stringify(body);
+    var r = await fetch(VIBE_WORKER_URL + path, opts);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch(e) { console.warn('[vibe] workerFetch failed:', path, e.message); return null; }
+}
+
+// Output type per pipeline phase
+var _PHASE_OUTPUT_TYPE = {1:'stp', 2:'std', 3:'raw_text', 4:'str'};
+var _vibeRunPromise = null;  // pending POST /api/runs promise — prevents duplicates
+
+function _vibeRunStart() {
+  // Fire run creation — does NOT block the pipeline.
+  // S.runId is set when the response arrives (typically <200ms on warm instance).
+  // _vibeRunPromise prevents a second POST if this is called again before the first resolves.
+  if (S.runId) return;
+  if (_vibeRunPromise) return;
+  var label = S.targetUrl || S.fileName || 'pipeline';
+  _vibeRunPromise = workerFetch('POST', '/api/runs', {
+    target_type: S.targetType || 'spec',
+    target_label: label.slice(0, 500)
+  }).then(function(run) {
+    if (run && run.id) S.runId = run.id;
+    _vibeRunPromise = null;
+  });
+}
+
+async function _vibeRunSaveOutput(outputType, content) {
+  if (!content) return;
+  // If run creation is still in flight (cold start), wait for it before saving.
+  // On warm instances the promise is already resolved — await is instant.
+  if (!S.runId && _vibeRunPromise) await _vibeRunPromise;
+  if (!S.runId) return;  // creation failed or worker unreachable — skip silently
+  workerFetch('POST', '/api/runs/' + S.runId + '/outputs', {
+    output_type: outputType,
+    content: content.slice(0, 500000)
+  });
+}
+
+function _vibeRunFinish(status, result) {
+  if (!S.runId) return;
+  var patch = { status: status };
+  if (result) {
+    if (result.overall_status) patch.overall_status = result.overall_status.toLowerCase(); // worker expects: pass|fail|partial
+    if (result.pass_count  != null) patch.pass_count   = result.pass_count;
+    if (result.fail_count  != null) patch.fail_count   = result.fail_count;
+    if (result.skip_count  != null) patch.skip_count   = result.skip_count;
+    if (result.duration_sec != null) patch.duration_sec = result.duration_sec;
+    if (result.summary)    patch.summary    = String(result.summary).slice(0, 1000);
+  }
+  workerFetch('PATCH', '/api/runs/' + S.runId, patch);
+}
+
 async function checkServerStatus() {
   var data = await serverFetch('GET', '/api/windows');
   S.serverOnline = !!data;
@@ -3135,6 +3224,7 @@ function updateTargetBadge() {
 // ── REAL AUTOMATION RUN ───────────────────────────────────
 async function runRealAutomation() {
   if (S.streaming) return;
+  _vibeRunStart();
   S.streaming = true;
   S.status[3] = 'generating';
   updateUI();
@@ -3151,6 +3241,7 @@ async function runRealAutomation() {
     S.status[3] = 'error';
     showOut(3, '❌ שגיאה בהרצה: ' + ((result && result.error) || 'שרת לא זמין — הפעל: python vibe-runner.py'), false);
     showToast('✗ שגיאה בהרצה', 'err');
+    _vibeRunFinish('failed', null);
     S.streaming = false; updateUI();
     return;
   }
@@ -3163,6 +3254,8 @@ async function runRealAutomation() {
   // Cache result locally for Reports dashboard
   result.source = 'runner';
   saveReportToCache(result);
+  _vibeRunSaveOutput('raw_text', S.data[3]);
+  _vibeRunFinish('completed', result);
   var ep = document.getElementById('email-panel');
   if (ep) ep.classList.add('show');
   S.streaming = false; updateUI();
@@ -3211,6 +3304,40 @@ async function loadReports() {
   var count = document.getElementById('reports-count');
   var banner = document.getElementById('server-offline-banner');
   if (!list) return;
+
+  // Try Supabase-backed worker first — admin sees all users' runs
+  var isAdmin = window.VIBE_USER && window.VIBE_USER.role === 'admin';
+  var runsPath = isAdmin ? '/api/admin/runs?limit=100' : '/api/runs?limit=50';
+  var workerRuns = await workerFetch('GET', runsPath);
+  if (workerRuns && workerRuns.runs) {
+    if (banner) banner.classList.remove('show');
+    S.runReports = workerRuns.runs.map(function(r) {
+      return {
+        id: r.id, source: 'supabase',
+        target_label: r.target_label || 'Run',
+        target_type:  r.target_type,
+        started_at:   r.created_at,
+        duration_sec: r.duration_sec || 0,
+        pass_count:   r.pass_count  || 0,
+        fail_count:   r.fail_count  || 0,
+        skip_count:   r.skip_count  || 0,
+        overall_status: r.overall_status || '',
+        status:       r.status || 'pending',
+        user_email:   r.user_email  || '',
+        summary:      r.summary || '',
+        test_cases:   [],
+      };
+    });
+    if (count) count.textContent = S.runReports.length + ' הרצות';
+    if (S.runReports.length === 0) {
+      list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>אין דוחות עדיין<br><span style="font-size:11px">הרץ בדיקות בשלב RUN</span></span></div>';
+    } else {
+      renderReportsList();
+    }
+    return;
+  }
+
+  // Fall back to local runner + localStorage
   var data = await serverFetch('GET', '/api/reports');
   if (!data) {
     // Fall back to localStorage cache
@@ -3248,17 +3375,25 @@ function renderReportsList() {
     return;
   }
   if (count) count.textContent = S.runReports.length + ' הרצות';
+  var showEmail = window.VIBE_USER && window.VIBE_USER.role === 'admin';
   list.innerHTML = S.runReports.map(function(r, idx) {
-    var barCls = r.fail_count===0 ? 'pass' : r.pass_count===0 ? 'fail' : 'partial';
+    // pending = grey (no result yet); completed/failed = use counts
+    var barCls = (r.status === 'pending')
+      ? 'partial'   // grey-ish neutral — reuses existing 'partial' style
+      : r.fail_count===0 ? 'pass' : r.pass_count===0 ? 'fail' : 'partial';
     var dt = r.started_at ? new Date(r.started_at).toLocaleString('he-IL') : '—';
-    var src = r.source==='local'?' · 💾 מקומי':' · ⚡ Runner';
+    var src = r.source==='supabase' ? ' · ☁ Supabase'
+            : r.source==='local'    ? ' · 💾 מקומי'
+            : ' · ⚡ Runner';
+    var statusLabel = r.status === 'pending' ? ' · ⏳ pending' : '';
+    var emailLabel  = showEmail && r.user_email ? ' · ' + esc(r.user_email) : '';
     return '<div class="report-row" id="rr-'+r.id+'">'
       + '<div class="report-row-hdr" onclick="toggleReportDetail(\''+r.id+'\')">'
       + '<div class="report-row-left">'
       + '<div class="report-status-bar '+barCls+'"></div>'
       + '<div><div class="report-id">#'+String(idx+1).padStart(3,'0')+'</div>'
       + '<div class="report-name">'+esc(r.target_label||'Run')+'</div>'
-      + '<div class="report-meta">'+esc(dt)+' · '+(r.duration_sec||0)+'s'+src+'</div></div>'
+      + '<div class="report-meta">'+esc(dt)+' · '+(r.duration_sec||0)+'s'+src+statusLabel+emailLabel+'</div></div>'
       + '</div>'
       + '<div class="report-row-right">'
       + '<div class="report-stat"><span class="report-stat-val pv">'+(r.pass_count||0)+'</span><span class="report-stat-lbl">PASS</span></div>'
@@ -3277,18 +3412,49 @@ async function toggleReportDetail(id) {
   var detail = document.getElementById('rd-' + id);
   if (!detail) return;
   if (detail.classList.contains('open')) { detail.classList.remove('open'); detail.innerHTML=''; return; }
-  var data = await serverFetch('GET', '/api/reports/' + id);
-  if (!data || data.error) { showToast('✗ לא ניתן לטעון דוח', 'err'); return; }
+
+  var report = (S.runReports || []).find(function(r) { return r.id === id; });
+  var isSupabase = report && report.source === 'supabase';
+
   var html = '<div class="report-tc-list">';
-  (data.test_cases || []).forEach(function(tc) {
-    var s = tc.status || 'skip';
-    html += '<div class="report-tc-row">'
-      + '<div class="report-tc-status '+s+'">'+(s==='pass'?'✓':s==='fail'?'✗':'⚠')+'</div>'
-      + '<div class="report-tc-name">'+esc(tc.name||tc.id||'Test')+'</div>'
-      + '<div class="report-tc-dur">'+(tc.duration_ms||0)+'ms</div>'
-      + '</div>';
-    if (tc.error) html += '<div class="report-tc-err">'+esc(tc.error)+'</div>';
-  });
+
+  if (isSupabase) {
+    // Supabase run — fetch phase outputs from the worker
+    var data = await workerFetch('GET', '/api/runs/' + id);
+    if (!data) { showToast('✗ לא ניתן לטעון דוח', 'err'); return; }
+    var outputs = data.outputs || [];
+    if (outputs.length === 0) {
+      html += '<div class="report-tc-row" style="color:var(--muted);font-size:12px">אין פלטים שמורים לריצה זו</div>';
+    } else {
+      // Show one entry per phase output type (latest of each type)
+      var seen = {};
+      outputs.slice().reverse().forEach(function(o) {
+        if (seen[o.output_type]) return;
+        seen[o.output_type] = true;
+        var label = {stp:'STP', std:'STD', raw_text:'RUN', str:'STR', script:'Script'}[o.output_type] || o.output_type;
+        var preview = (o.content || '').slice(0, 120).replace(/\n/g, ' ');
+        html += '<div class="report-tc-row">'
+          + '<div class="report-tc-status pass">✓</div>'
+          + '<div class="report-tc-name" style="font-weight:700">' + esc(label) + '</div>'
+          + '<div class="report-tc-dur" style="color:var(--muted);font-size:11px">' + esc(preview) + (o.content.length > 120 ? '…' : '') + '</div>'
+          + '</div>';
+      });
+    }
+  } else {
+    // Local runner run — existing behavior
+    var data = await serverFetch('GET', '/api/reports/' + id);
+    if (!data || data.error) { showToast('✗ לא ניתן לטעון דוח', 'err'); return; }
+    (data.test_cases || []).forEach(function(tc) {
+      var s = tc.status || 'skip';
+      html += '<div class="report-tc-row">'
+        + '<div class="report-tc-status '+s+'">'+(s==='pass'?'✓':s==='fail'?'✗':'⚠')+'</div>'
+        + '<div class="report-tc-name">'+esc(tc.name||tc.id||'Test')+'</div>'
+        + '<div class="report-tc-dur">'+(tc.duration_ms||0)+'ms</div>'
+        + '</div>';
+      if (tc.error) html += '<div class="report-tc-err">'+esc(tc.error)+'</div>';
+    });
+  }
+
   html += '</div>';
   detail.innerHTML = html;
   detail.classList.add('open');
@@ -3600,6 +3766,7 @@ async function confirmRunMode() {
 
 async function runGenSim(phaseId) {
   if (S.streaming) return;
+  _vibeRunStart();
   S.streaming = true;
   S.status[phaseId] = 'generating';
   S.chatMode[phaseId] = false;
@@ -3620,10 +3787,12 @@ async function runGenSim(phaseId) {
     showOut(phaseId, full, false);
     updateTabDones();
     showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
-    // Save AI simulation RUN result to local reports cache
+    _vibeRunSaveOutput(_PHASE_OUTPUT_TYPE[phaseId], full);
+    // Save AI simulation RUN result to local reports cache + finish run
     if (phaseId === 3) {
       var simReport = buildSimReport(full);
       saveReportToCache(simReport);
+      _vibeRunFinish('completed', simReport);
     }
   } catch(err) {
     if (err.name === 'AbortError' || !err.message) {
@@ -3634,6 +3803,8 @@ async function runGenSim(phaseId) {
       showOut(phaseId, '❌ שגיאה: '+err.message, false);
       showToast('✗ '+err.message, 'err');
     }
+    // Phase 3 (RUN/sim) is terminal — mark the run failed on any abort or error
+    if (phaseId === 3) _vibeRunFinish('failed', null);
   }
   S.streaming = false; updateUI();
 }
