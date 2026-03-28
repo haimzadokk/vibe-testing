@@ -1459,6 +1459,92 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 
 <script>
 // ══════════════════════════════════════════════════════════
+//  AUTH GUARD — runs before any app code
+//  Fill in SUPABASE_URL + SUPABASE_ANON_KEY before deploy
+// ══════════════════════════════════════════════════════════
+var SUPABASE_URL      = 'https://wiqghanzcwmzyqzfzkiv.supabase.co'
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpcWdoYW56Y3dtenlxemZ6a2l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODIwNjcsImV4cCI6MjA5MDI1ODA2N30.uXDx_80yBh8DmcLvH77tW1o8GqgTC7eXJIZUtsvpqTw'
+var _vibeExplicitLogout = false
+
+// Fast-path: if no Supabase session key exists at all, redirect immediately
+// without waiting for the SDK. Not authoritative — SDK check below is the gate.
+;(function vibeAuthFastPath() {
+  var found = Object.keys(localStorage).some(function(k) {
+    return k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1
+  })
+  if (!found) window.location.replace('auth.html')
+})()
+
+// Authoritative guard: load SDK → getSession() → start app only on success.
+// initModal / updateUI / checkServerStatus are called here, not inline below.
+;(async function vibeAuthGuard() {
+  await new Promise(function(res, rej) {
+    var s = document.createElement('script')
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js'
+    s.onload = res; s.onerror = rej
+    document.head.appendChild(s)
+  })
+
+  var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { storage: localStorage, autoRefreshToken: true, persistSession: true,
+            detectSessionInUrl: false, flowType: 'pkce' }
+  })
+  window._sb = sb
+
+  var result = await sb.auth.getSession()
+  var session = result.data && result.data.session
+
+  if (!session || !session.user || !session.user.email_confirmed_at) {
+    window.location.replace('auth.html')
+    return
+  }
+
+  // Role: decode access_token directly — custom_access_token_hook injects
+  // claims into the JWT payload. This is the authoritative source, not
+  // session.user.app_metadata which reflects Supabase's own internal metadata.
+  // Decode JWT payload using base64url (not plain base64):
+  // replace URL-safe chars, restore stripped padding, then decode.
+  // On any failure, role falls back to 'user' and app continues safely.
+  var claims = {}
+  try {
+    var b64 = session.access_token.split('.')[1]
+      .replace(/-/g, '+').replace(/_/g, '/')
+    b64 += '=='.slice(0, (4 - b64.length % 4) % 4)  // restore padding
+    claims = JSON.parse(atob(b64))
+  } catch(e) {
+    console.warn('[vibe] JWT decode failed — role defaulting to user', e)
+  }
+  window.VIBE_USER = {
+    id:    session.user.id,
+    email: session.user.email,
+    role:  (claims && typeof claims.app_role === 'string') ? claims.app_role : 'user'
+  }
+
+  // Session listener: SIGNED_OUT fires for both explicit logout and failed
+  // token refresh. Distinguish by the _vibeExplicitLogout flag.
+  sb.auth.onAuthStateChange(function(event) {
+    if (event === 'SIGNED_OUT') {
+      var msg = _vibeExplicitLogout ? 'logged_out' : 'session_expired'
+      window.location.replace('auth.html?msg=' + msg)
+    }
+  })
+
+  // Auth confirmed — initialize app.
+  initModal()
+  updateUI()
+  checkServerStatus()
+})()
+
+function logout() {
+  _vibeExplicitLogout = true
+  if (window._sb) { window._sb.auth.signOut(); return }
+  // SDK not yet ready — remove only Supabase auth keys and redirect.
+  Object.keys(localStorage)
+    .filter(function(k) { return k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1 })
+    .forEach(function(k) { localStorage.removeItem(k) })
+  window.location.replace('auth.html?msg=logged_out')
+}
+// ══════════════════════════════════════════════════════════
 //  VIBE.TESTING v3 — Core Logic
 // ══════════════════════════════════════════════════════════
 
@@ -3563,9 +3649,8 @@ function buildSimReport(runText) {
 }
 
 // ── INIT ─────────────────────────────────────────────────
-initModal();
-updateUI();
-checkServerStatus();
+// initModal(), updateUI(), checkServerStatus() are called by
+// vibeAuthGuard() above, only after session is confirmed.
 </script>
 </body>
 </html>

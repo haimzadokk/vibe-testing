@@ -18,8 +18,13 @@
   --radius:12px;
 }
 
-html,body{
+html{
+  height:100%;
+  overflow-y:auto;   /* ensure page-level scroll is never suppressed */
+}
+body{
   min-height:100%;
+  overflow-y:auto;   /* explicit scroll on body — required for iOS Safari edge cases */
   background:var(--bg);
   color:var(--text);
   font-family:'JetBrains Mono','Courier New',monospace;
@@ -220,6 +225,25 @@ html,body{
 /* ── GOOGLE LOGO (inline SVG) ────────────────── */
 .g-logo{flex-shrink:0;}
 
+/* ── INIT LOADING STATE ──────────────────────── */
+/* Shown while session check is in-flight — prevents login flash for authed users */
+#auth-loading{
+  display:none;
+  text-align:center;
+  padding:32px 0 20px;
+}
+.init-spin{
+  width:24px;height:24px;
+  border:2px solid var(--border2);
+  border-top-color:var(--green);
+  border-radius:50%;
+  animation:spin .6s linear infinite;
+  margin:0 auto 12px;
+}
+#auth-loading-lbl{font-size:12px;color:var(--dim);letter-spacing:.08em;}
+.auth-card.init-loading #auth-loading{display:block;}
+.auth-card.init-loading .view{display:none!important;}
+
 /* ── MOBILE ──────────────────────────────────── */
 @media(max-width:480px){
   .auth-card{padding:28px 20px 24px;border-radius:16px;}
@@ -232,7 +256,13 @@ html,body{
 <div class="bg-glow"></div>
 
 <div class="auth-wrap">
-<div class="auth-card">
+<div class="auth-card init-loading" id="auth-card">
+
+  <!-- shown while session check runs; hidden once a view is shown -->
+  <div id="auth-loading">
+    <div class="init-spin"></div>
+    <div id="auth-loading-lbl">טוען...</div>
+  </div>
 
   <div class="auth-logo">
     <div class="auth-logo-eyebrow">◆ AI QA Platform</div>
@@ -395,9 +425,9 @@ html,body{
 
 <script>
 // ── CONFIG — replace before deploy ──────────────────────────
-var SUPABASE_URL      = 'https://YOUR_PROJECT.supabase.co'
-var SUPABASE_ANON_KEY = 'YOUR_ANON_KEY'
-var APP_URL           = 'https://YOUR_DOMAIN'   // no trailing slash
+var SUPABASE_URL      = 'https://wiqghanzcwmzyqzfzkiv.supabase.co'
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpcWdoYW56Y3dtenlxemZ6a2l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODIwNjcsImV4cCI6MjA5MDI1ODA2N30.uXDx_80yBh8DmcLvH77tW1o8GqgTC7eXJIZUtsvpqTw'
+var APP_URL           = 'https://haimzadokk.github.io/vibe-testing'  // no trailing slash
 
 // ── CLIENT ──────────────────────────────────────────────────
 var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -411,68 +441,96 @@ var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 })
 
 // ── STATE ────────────────────────────────────────────────────
-var pendingEmail   = ''
-var resendTimer    = null
+var pendingEmail  = ''
+var resendTimer   = null
+var _deferredMsg  = null   // [id, type, text] — replayed by showView after loading state clears
 
 // ── INIT: handle URL params + session ───────────────────────
 ;(async function init() {
   var params = new URLSearchParams(window.location.search)
-  var type   = params.get('type')   // from Supabase email links: 'recovery' | 'signup'
-  var msg    = params.get('msg')    // our status params: 'logged_out' | 'session_expired' | 'password_reset' | 'verify'
+  // NOTE: do NOT clean URL here — Supabase SDK may still be exchanging token_hash.
+  // URL is cleaned inside onAuthStateChange after the SDK confirms the exchange.
 
-  // Clean URL — SDK already read token_hash during createClient init
-  if (window.location.search) {
-    window.history.replaceState({}, '', window.location.pathname)
-  }
+  var type = params.get('type')   // Supabase email link params: 'recovery' | 'signup'
+  var msg  = params.get('msg')    // our app params: 'logged_out' | 'session_expired' | 'password_reset' | 'verify'
 
-  // ── Register onAuthStateChange FIRST — before any early returns ─
-  // This is the single authoritative handler for all session state changes:
-  // OAuth returns, email confirmations, recovery links, existing sessions on load
+  // ── Register onAuthStateChange FIRST — before any early returns ──
+  // Single source of truth for all auth state: OAuth, email confirm, recovery, existing sessions.
   sb.auth.onAuthStateChange(function(event, session) {
+    // URL is safe to clean now — SDK has finished processing token_hash
+    cleanUrl()
+
     if (event === 'PASSWORD_RECOVERY') {
-      // Recovery link clicked — SDK exchanged token_hash, now show reset form
       showView('v-reset')
       return
     }
-    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
-      // Signed in or already had a session on page load
+    if (event === 'INITIAL_SESSION') {
+      if (session && session.user.email_confirmed_at) { redirect(); return; }
+      if (session && !session.user.email_confirmed_at) { showVerify(session.user.email); return; }
+      // null session on initial load — show login (removes loading state)
+      showView('v-login')
+      return
+    }
+    if (event === 'SIGNED_IN' && session) {
       if (session.user.email_confirmed_at) { redirect(); }
       else { showVerify(session.user.email); }
       return
     }
   })
 
-  // ── Status messages from redirect params ─────────────────────
-  if (msg === 'logged_out')      showMsg('login-msg', 'info',    'יצאת מהמערכת בהצלחה')
-  if (msg === 'session_expired') showMsg('login-msg', 'error',   'הפעלה פגה — יש להתחבר מחדש')
-  if (msg === 'password_reset')  showMsg('login-msg', 'success', 'הסיסמה עודכנה — התחבר עם הסיסמה החדשה')
+  // ── Status messages — stored as deferred, replayed when showView fires ──
+  // (showView clears messages before re-applying, so we can't set them before the view is shown)
+  if (msg === 'logged_out')      _deferredMsg = ['login-msg', 'info',    'יצאת מהמערכת בהצלחה']
+  if (msg === 'session_expired') _deferredMsg = ['login-msg', 'error',   'הפעלה פגה — יש להתחבר מחדש']
+  if (msg === 'password_reset')  _deferredMsg = ['login-msg', 'success', 'הסיסמה עודכנה — התחבר עם הסיסמה החדשה']
 
-  // ── Verify redirect from index.html auth guard ───────────────
-  // Guard sends: auth.html?msg=verify&email=...
+  // ── Verify redirect from index.html auth guard ──────────────────
+  // Guard redirects to: auth.html?msg=verify&email=...
   if (msg === 'verify') {
     var em = params.get('email') || ''
     if (em) {
       pendingEmail = em
       document.getElementById('verify-email-display').textContent = em
     }
+    cleanUrl()          // safe to clean now — no Supabase token params in this redirect
     showView('v-verify')
     return
   }
 
-  // Default: v-login is already active in HTML.
-  // INITIAL_SESSION event above handles redirect if user has a valid existing session.
+  // Default: INITIAL_SESSION event above will fire shortly and either
+  // redirect (authed user) or call showView('v-login') (no session).
 })();
 
+// ── URL CLEANUP ───────────────────────────────────────────────
+// Called only after onAuthStateChange confirms SDK has finished processing.
+// Also clears hash fragments left by any implicit-flow remnants.
+function cleanUrl() {
+  if (window.location.search || window.location.hash) {
+    window.history.replaceState({}, '', window.location.pathname)
+  }
+}
+
+// ── REDIRECT ──────────────────────────────────────────────────
+// Uses a relative path so this works at any subpath deployment
+// (root, /vibe-testing/, or any other base).
+// auth.html and index.html always live in the same directory.
 function redirect() {
-  window.location.replace('/index.html')
+  window.location.replace('index.html')
 }
 
 // ── VIEW HELPERS ─────────────────────────────────────────────
 function showView(id) {
+  // Capture and clear deferred message before showMsg is called below
+  var dm = _deferredMsg; _deferredMsg = null
+  // Remove loading state
+  document.getElementById('auth-card').classList.remove('init-loading')
+  // Switch views
   document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active') })
   document.getElementById(id).classList.add('active')
-  // Clear all messages when navigating
+  // Clear all existing messages
   document.querySelectorAll('.msg').forEach(function(m) { m.className = 'msg'; m.textContent = '' })
+  // Replay any deferred message (e.g. 'logged_out' set before loading state cleared)
+  if (dm) showMsg(dm[0], dm[1], dm[2])
 }
 
 function showVerify(email) {
@@ -506,6 +564,7 @@ function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) }
 
 // ── LOGIN ────────────────────────────────────────────────────
 async function doLogin() {
+  if (document.getElementById('login-btn').disabled) return  // already in-flight
   var email = document.getElementById('login-email').value.trim()
   var pass  = document.getElementById('login-pass').value
   if (!validEmail(email)) return showMsg('login-msg', 'error', 'כתובת אימייל לא תקינה')
@@ -532,6 +591,7 @@ async function doLogin() {
 
 // ── SIGNUP ───────────────────────────────────────────────────
 async function doSignup() {
+  if (document.getElementById('signup-btn').disabled) return  // already in-flight
   var email = document.getElementById('signup-email').value.trim()
   var pass  = document.getElementById('signup-pass').value
   var pass2 = document.getElementById('signup-pass2').value
@@ -560,10 +620,14 @@ async function doSignup() {
 
 // ── GOOGLE OAUTH ─────────────────────────────────────────────
 async function doGoogle() {
-  // Show error in the view the user is currently on, not always login-msg
   var activeView = document.querySelector('.view.active')
-  var msgId = (activeView && activeView.id === 'v-signup') ? 'signup-msg' : 'login-msg'
+  var isSignup   = activeView && activeView.id === 'v-signup'
+  var msgId      = isSignup ? 'signup-msg'      : 'login-msg'
+  var btnId      = isSignup ? 'google-signup-btn' : 'google-login-btn'
 
+  if (document.getElementById(btnId).disabled) return  // already in-flight
+
+  setLoading(btnId, true)
   var { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -571,6 +635,8 @@ async function doGoogle() {
       queryParams: { access_type: 'online', prompt: 'select_account' }
     }
   })
+  // Only reached on error — success causes full page redirect to Google
+  setLoading(btnId, false)
   if (error) showMsg(msgId, 'error', 'שגיאה בכניסה עם Google — נסה שוב')
 }
 
@@ -612,6 +678,7 @@ function startCooldown() {
 
 // ── FORGOT PASSWORD ──────────────────────────────────────────
 async function doForgot() {
+  if (document.getElementById('forgot-btn').disabled) return  // already in-flight
   var email = document.getElementById('forgot-email').value.trim()
   if (!validEmail(email)) return showMsg('forgot-msg', 'error', 'כתובת אימייל לא תקינה')
 
@@ -627,6 +694,7 @@ async function doForgot() {
 
 // ── RESET PASSWORD ───────────────────────────────────────────
 async function doReset() {
+  if (document.getElementById('reset-btn').disabled) return  // already in-flight
   var pass  = document.getElementById('reset-pass').value
   var pass2 = document.getElementById('reset-pass2').value
 
@@ -640,12 +708,17 @@ async function doReset() {
   if (error) { showMsg('reset-msg', 'error', 'שגיאה — הקישור פג, בקש קישור חדש'); return; }
 
   await sb.auth.signOut()
-  window.location.replace('/auth.html?msg=password_reset')
+  window.location.replace('auth.html?msg=password_reset')
 }
 
 // ── KEYBOARD: Enter submits active form ──────────────────────
+// Each action function checks btn.disabled internally — no extra guard needed here.
+// This means rapid Enter presses while a request is in-flight are silently dropped.
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Enter') return
+  // Don't trigger if focus is inside a textarea or a button (let native click handle it)
+  var tag = document.activeElement && document.activeElement.tagName
+  if (tag === 'TEXTAREA' || tag === 'BUTTON') return
   var active = document.querySelector('.view.active')
   if (!active) return
   switch (active.id) {
