@@ -537,6 +537,11 @@ function showVerify(email) {
   pendingEmail = email || ''
   document.getElementById('verify-email-display').textContent = pendingEmail
   showView('v-verify')
+  // If the user already confirmed in another tab, redirect immediately.
+  sb.auth.getSession().then(function(result) {
+    var s = result.data && result.data.session
+    if (s && s.user && s.user.email_confirmed_at) { redirect() }
+  })
 }
 
 function goForgot() {
@@ -642,7 +647,11 @@ async function doGoogle() {
 
 // ── RESEND VERIFY ────────────────────────────────────────────
 async function doResend() {
-  if (!pendingEmail || resendTimer) return
+  if (resendTimer) return
+  if (!pendingEmail) {
+    showMsg('verify-msg', 'error', 'טען את הדף מחדש ונסה שוב')
+    return
+  }
 
   setLoading('resend-btn', true)
   var { error } = await sb.auth.resend({
@@ -653,10 +662,15 @@ async function doResend() {
   setLoading('resend-btn', false)
 
   if (error) {
-    showMsg('verify-msg', 'error', 'שגיאה בשליחה — נסה שוב בעוד כמה דקות')
+    var m = error.message || ''
+    if (m.toLowerCase().includes('already confirmed') || m.toLowerCase().includes('email_exists')) {
+      showMsg('verify-msg', 'info', 'המייל כבר מאושר — חזור להתחברות')
+    } else {
+      showMsg('verify-msg', 'error', 'שגיאה בשליחה — נסה שוב בעוד כמה דקות')
+    }
     return
   }
-  showMsg('verify-msg', 'success', 'קישור נשלח!')
+  showMsg('verify-msg', 'success', 'קישור נשלח! בדוק גם ספאם')
   startCooldown()
 }
 
