@@ -869,6 +869,12 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
         </div>
       </div>
       <button class="key-btn" id="change-key-btn" style="display:none">🔑 KEY</button>
+      <div id="user-menu-wrap" style="position:relative;display:inline-block">
+        <button id="user-menu-btn" onclick="toggleUserMenu()" style="background:rgba(255,255,255,.07);border:1px solid var(--border2);border-radius:7px;padding:5px 12px;font-size:12px;color:var(--dim);cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">👤 <span id="user-email-lbl">משתמש</span></button>
+        <div id="user-menu-drop" style="display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:160px;background:var(--card);border:1px solid var(--border2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:1000;padding:6px 0">
+          <div onclick="logout()" style="padding:9px 16px;font-size:13px;color:#f43f5e;cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(244,63,94,.1)'" onmouseout="this.style.background=''">⎋ התנתק</div>
+        </div>
+      </div>
       <div class="settings-wrap" id="settings-wrap">
         <button class="settings-btn" id="settings-btn" onclick="toggleSettingsDrop()">⚙ SETTINGS</button>
         <div class="settings-drop" id="settings-drop">
@@ -1530,10 +1536,24 @@ var _vibeExplicitLogout = false
   })
 
   // Auth confirmed — initialize app.
+  var _emailLbl = document.getElementById('user-email-lbl')
+  if (_emailLbl && window.VIBE_USER) _emailLbl.textContent = window.VIBE_USER.email.split('@')[0]
   initModal()
   updateUI()
   checkServerStatus()
 })()
+
+function toggleUserMenu() {
+  var d = document.getElementById('user-menu-drop')
+  d.style.display = d.style.display === 'block' ? 'none' : 'block'
+}
+document.addEventListener('click', function(e) {
+  var wrap = document.getElementById('user-menu-wrap')
+  if (wrap && !wrap.contains(e.target)) {
+    var d = document.getElementById('user-menu-drop')
+    if (d) d.style.display = 'none'
+  }
+})
 
 function logout() {
   _vibeExplicitLogout = true
