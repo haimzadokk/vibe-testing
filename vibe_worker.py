@@ -23,6 +23,7 @@ Required env vars (see .env.example):
 
 import os
 import uuid
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -30,7 +31,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from supabase import Client, create_client
 
-from vibe_auth import current_user
+from vibe_auth import current_user, require_admin
 
 # ── Config — fail fast if required vars are missing ───────
 def _require_env(key: str) -> str:
@@ -90,6 +91,12 @@ class UpdateRunRequest(BaseModel):
 class SaveOutputRequest(BaseModel):
     output_type: str = Field(..., pattern=r'^(stp|std|str|raw_text|script)$')
     content:     str = Field(..., max_length=500_000)   # ~500 KB per output
+
+
+class UpsertPhaseStatusRequest(BaseModel):
+    phase:         str           = Field(..., pattern=r'^(stp|std|run|str)$')
+    status:        str           = Field(..., pattern=r'^(pending|running|completed|failed)$')
+    error_message: Optional[str] = Field(default=None, max_length=500)
 
 
 # ── Internal helpers ──────────────────────────────────────
@@ -278,6 +285,44 @@ def update_run(run_id: str, body: UpdateRunRequest, user: dict = Depends(current
     return result.data[0]
 
 
+@app.get('/api/admin/runs')
+def admin_list_runs(
+    limit:  int = 100,
+    offset: int = 0,
+    _admin: dict = Depends(require_admin),
+):
+    """
+    Admin-only: list all users' runs ordered by created_at desc.
+    Returns run metadata + user email from profiles.
+    Never returns run_outputs content (too large; fetch /api/runs/{id} as that user).
+    """
+    limit  = min(max(limit,  1), 200)
+    offset = max(offset, 0)
+
+    result = (
+        _sb.table('runs')
+        .select(
+            'id, status, target_type, target_label, '
+            'pass_count, fail_count, skip_count, overall_status, '
+            'duration_sec, summary, created_at, updated_at, user_id, '
+            'profiles!runs_user_id_fkey(email)'
+        )
+        .order('created_at', desc=True)
+        .range(offset, offset + limit - 1)
+        .execute()
+    )
+    runs = result.data or []
+    # Flatten profile email onto each run row
+    for run in runs:
+        profile = run.pop('profiles', None)
+        run['user_email'] = (profile or {}).get('email', '')
+    return {
+        'runs':   runs,
+        'limit':  limit,
+        'offset': offset,
+    }
+
+
 @app.post('/api/runs/{run_id}/outputs', status_code=201)
 def save_output(run_id: str, body: SaveOutputRequest, user: dict = Depends(current_user)):
     """
@@ -305,3 +350,43 @@ def save_output(run_id: str, body: SaveOutputRequest, user: dict = Depends(curre
         metadata={'output_type': body.output_type, 'run_id': run_id},
     )
     return {'id': output['id'], 'output_type': output['output_type']}
+
+
+@app.post('/api/runs/{run_id}/phase-status', status_code=200)
+def upsert_phase_status(run_id: str, body: UpsertPhaseStatusRequest, user: dict = Depends(current_user)):
+    """
+    Upsert lifecycle status for a single pipeline phase (STP/STD/RUN/STR).
+    Ownership is verified before any write.
+    started_at is stamped on the 'running' transition.
+    completed_at is stamped on 'completed' or 'failed'.
+    error_message is only stored for 'failed'; omitted otherwise.
+    A failure here must never surface to the frontend — callers swallow errors.
+    """
+    _validate_uuid(run_id)
+    _assert_run_owned(run_id, user['id'])
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    row: dict = {
+        'run_id':     run_id,
+        'user_id':    user['id'],
+        'phase':      body.phase,
+        'status':     body.status,
+        'updated_at': now,
+    }
+    if body.status == 'running':
+        row['started_at'] = now
+    if body.status in ('completed', 'failed'):
+        row['completed_at'] = now
+    if body.status == 'failed' and body.error_message:
+        row['error_message'] = body.error_message
+
+    result = (
+        _sb.table('run_phase_status')
+        .upsert(row, on_conflict='run_id,phase')
+        .execute()
+    )
+    if not result.data:
+        raise HTTPException(status_code=500, detail='phase_status_upsert_failed')
+
+    return {'ok': True, 'phase': body.phase, 'status': body.status}

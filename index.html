@@ -1973,6 +1973,7 @@ async function runSTPFromURL() {
   st.innerHTML = '<span style="color:var(--amber)">⟳ מנתח את האתר ומייצר STP...</span>';
 
   S.runId = null; _vibeRunPromise = null; _vibeRunStart();
+  _vibePhaseStatus(1, 'running');
   S.streaming = true;
   S.chat[1] = [];
   S.status[1] = 'generating';
@@ -2003,6 +2004,7 @@ async function runSTPFromURL() {
     st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר מ-' + esc(url) + ' — יעד נשמר לשלב RUN</span>';
     showToast('✓ STP נוצר מניתוח האתר!', 'ok');
     _vibeRunSaveOutput('stp', full);
+    _vibePhaseStatus(1, 'completed');
   } catch(err) {
     if (err.name === 'AbortError') {
       if (S.data[1]) { S.status[1]='done'; showOut(1,S.data[1],false); }
@@ -2013,6 +2015,7 @@ async function runSTPFromURL() {
       showOut(1, '❌ שגיאה: '+err.message, false);
       st.innerHTML = '<span style="color:var(--red)">✗ '+esc(err.message)+'</span>';
       showToast('✗ '+err.message, 'err');
+      _vibePhaseStatus(1, 'failed', err.message);
     }
   }
   S.streaming = false;
@@ -2043,6 +2046,7 @@ async function runSTPFromPath() {
   st.className = 'url-status show';
   st.innerHTML = '<span style="color:var(--amber)">⟳ מנתח את הנתיב ומייצר STP...</span>';
   S.runId = null; _vibeRunPromise = null; _vibeRunStart();
+  _vibePhaseStatus(1, 'running');
   S.streaming = true; S.chat[1] = []; S.status[1] = 'generating';
   updateUI(); showOut(1, '', true);
 
@@ -2079,6 +2083,7 @@ async function runSTPFromPath() {
     st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר עבור: ' + esc(path) + ' — יעד נשמר לשלב RUN</span>';
     showToast('✓ STP נוצר מניתוח הנתיב!', 'ok');
     _vibeRunSaveOutput('stp', full);
+    _vibePhaseStatus(1, 'completed');
   } catch(err) {
     if (err.name === 'AbortError') {
       if (S.data[1]) { S.status[1]='done'; showOut(1,S.data[1],false); }
@@ -2089,6 +2094,7 @@ async function runSTPFromPath() {
       showOut(1, '❌ שגיאה: '+err.message, false);
       st.innerHTML = '<span style="color:var(--red)">✗ '+esc(err.message)+'</span>';
       showToast('✗ '+err.message, 'err');
+      _vibePhaseStatus(1, 'failed', err.message);
     }
   }
   S.streaming = false;
@@ -2480,6 +2486,7 @@ async function runGen(phaseId) {
   // Phase 1 = new pipeline — reset active run so a fresh one is created
   if (phaseId === 1) { S.runId = null; _vibeRunPromise = null; }
   _vibeRunStart();
+  _vibePhaseStatus(phaseId, 'running');
   S.streaming = true;
   S.status[phaseId] = 'generating';
   S.chatMode[phaseId] = false;
@@ -2513,6 +2520,7 @@ async function runGen(phaseId) {
       _vibeRunFinish('completed', null);  // STR = terminal phase; mark run complete
     }
     _vibeRunSaveOutput(_PHASE_OUTPUT_TYPE[phaseId], full);
+    _vibePhaseStatus(phaseId, 'completed');
   } catch(err) {
     if (err.name === 'AbortError' || !err.message) {
       // Stopped by user — keep partial output if any
@@ -2529,6 +2537,7 @@ async function runGen(phaseId) {
       S.status[phaseId] = 'error';
       showOut(phaseId, '❌ שגיאה: '+err.message, false);
       showToast('✗ '+err.message, 'err');
+      _vibePhaseStatus(phaseId, 'failed', err.message);
     }
     // Phase 4 (STR) is terminal — mark the run failed on any abort or error
     if (phaseId === 4) _vibeRunFinish('failed', null);
@@ -2540,6 +2549,7 @@ async function runGen(phaseId) {
 async function runRefine(phaseId, instruction) {
   if (S.streaming) return;
   _vibeRunStart();  // no-op if S.runId already set; creates one if phase 1 was skipped
+  _vibePhaseStatus(phaseId, 'running');
   S.streaming = true;
   S.status[phaseId] = 'generating';
   S.chatMode[phaseId] = false;
@@ -2567,6 +2577,7 @@ async function runRefine(phaseId, instruction) {
     updateTabDones();
     showToast('✓ שופר בהצלחה!', 'ok');
     _vibeRunSaveOutput(_PHASE_OUTPUT_TYPE[phaseId], full);
+    _vibePhaseStatus(phaseId, 'completed');
   } catch(err) {
     if (err.name === 'AbortError' || !err.message) {
       if (S.data[phaseId]) {
@@ -2580,6 +2591,7 @@ async function runRefine(phaseId, instruction) {
       S.status[phaseId] = 'error';
       showOut(phaseId, '❌ שגיאה: '+err.message, false);
       showToast('✗ '+err.message, 'err');
+      _vibePhaseStatus(phaseId, 'failed', err.message);
     }
   }
   S.streaming = false; updateUI();
@@ -3094,6 +3106,24 @@ function _vibeRunFinish(status, result) {
   workerFetch('PATCH', '/api/runs/' + S.runId, patch);
 }
 
+// ── PER-PHASE STATUS TRACKING ─────────────────────────────
+// Fire-and-forget: a failure here must never break generation.
+// Waits for run creation if still in flight (cold start).
+var _PHASE_CODES = {1:'stp', 2:'std', 3:'run', 4:'str'};
+function _vibePhaseStatus(phaseId, status, errorMsg) {
+  var phase = _PHASE_CODES[phaseId];
+  if (!phase) return;
+  (async function() {
+    try {
+      if (!S.runId && _vibeRunPromise) await _vibeRunPromise;
+      if (!S.runId) return;
+      var body = {phase: phase, status: status};
+      if (errorMsg) body.error_message = String(errorMsg).slice(0, 500);
+      workerFetch('POST', '/api/runs/' + S.runId + '/phase-status', body);
+    } catch(e) { /* swallow — phase status must never break generation */ }
+  })();
+}
+
 async function checkServerStatus() {
   var data = await serverFetch('GET', '/api/windows');
   S.serverOnline = !!data;
@@ -3225,6 +3255,7 @@ function updateTargetBadge() {
 async function runRealAutomation() {
   if (S.streaming) return;
   _vibeRunStart();
+  _vibePhaseStatus(3, 'running');
   S.streaming = true;
   S.status[3] = 'generating';
   updateUI();
@@ -3242,6 +3273,7 @@ async function runRealAutomation() {
     showOut(3, '❌ שגיאה בהרצה: ' + ((result && result.error) || 'שרת לא זמין — הפעל: python vibe-runner.py'), false);
     showToast('✗ שגיאה בהרצה', 'err');
     _vibeRunFinish('failed', null);
+    _vibePhaseStatus(3, 'failed', (result && result.error) || 'runner unavailable');
     S.streaming = false; updateUI();
     return;
   }
@@ -3256,6 +3288,7 @@ async function runRealAutomation() {
   saveReportToCache(result);
   _vibeRunSaveOutput('raw_text', S.data[3]);
   _vibeRunFinish('completed', result);
+  _vibePhaseStatus(3, 'completed');
   var ep = document.getElementById('email-panel');
   if (ep) ep.classList.add('show');
   S.streaming = false; updateUI();
@@ -3767,6 +3800,7 @@ async function confirmRunMode() {
 async function runGenSim(phaseId) {
   if (S.streaming) return;
   _vibeRunStart();
+  _vibePhaseStatus(phaseId, 'running');
   S.streaming = true;
   S.status[phaseId] = 'generating';
   S.chatMode[phaseId] = false;
@@ -3788,6 +3822,7 @@ async function runGenSim(phaseId) {
     updateTabDones();
     showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
     _vibeRunSaveOutput(_PHASE_OUTPUT_TYPE[phaseId], full);
+    _vibePhaseStatus(phaseId, 'completed');
     // Save AI simulation RUN result to local reports cache + finish run
     if (phaseId === 3) {
       var simReport = buildSimReport(full);
@@ -3802,6 +3837,7 @@ async function runGenSim(phaseId) {
       S.status[phaseId] = 'error';
       showOut(phaseId, '❌ שגיאה: '+err.message, false);
       showToast('✗ '+err.message, 'err');
+      _vibePhaseStatus(phaseId, 'failed', err.message);
     }
     // Phase 3 (RUN/sim) is terminal — mark the run failed on any abort or error
     if (phaseId === 3) _vibeRunFinish('failed', null);
