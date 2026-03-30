@@ -783,6 +783,13 @@ body.light-mode .vt-sidebar{background:rgba(248,250,252,.97);border-inline-start
 body.light-mode .vts-item:hover{background:rgba(0,0,0,.03)}
 body.light-mode .vts-item.active{background:rgba(5,150,105,.06)}
 body.light-mode .vts-footer{border-top-color:#e2e8f0}
+
+/* Phase 2: lang/theme controls */
+.vts-controls{display:flex;gap:5px;margin-top:10px}
+.vts-ctl-btn{flex:1;padding:6px 4px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--muted);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:border-color .15s,color .15s;text-align:center}
+.vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
+body.light-mode .vts-ctl-btn{background:#f1f5f9;border-color:#cbd5e1;color:#475569}
+body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 </style>
 </head>
 <body>
@@ -953,6 +960,10 @@ body.light-mode .vts-footer{border-top-color:#e2e8f0}
       <div class="vts-user">
         <div class="vts-avatar" id="vts-avatar-lbl">U</div>
         <span class="vts-email" id="vts-email-lbl">משתמש</span>
+      </div>
+      <div class="vts-controls">
+        <button class="vts-ctl-btn" id="vts-lang-btn" onclick="vtToggleLang()" title="שפה / Language"><span id="vts-lang-lbl">EN</span></button>
+        <button class="vts-ctl-btn" id="vts-theme-btn" onclick="applyTheme(S_disp.theme==='dark'?'light':'dark')" title="ערכת נושא / Theme"><span id="vts-theme-icon">☀</span></button>
       </div>
     </div>
 
@@ -4048,10 +4059,13 @@ function buildSimReport(runText) {
 // initModal(), updateUI(), checkServerStatus() are called by
 // vibeAuthGuard() above, only after session is confirmed.
 
-// ── VT SHELL SYNC ────────────────────────────────────────
-// Keeps new sidebar in sync with existing phase/state logic.
-// Does NOT touch any business logic — only reads state & updates sidebar DOM.
+// ── VT SHELL SYNC (Phase 1 + Phase 2) ───────────────────
+// Phase 1: keeps sidebar in sync with phase/state/user
+// Phase 2: language (he/en) + theme (dark/light) toggle
+// Does NOT touch business logic — only reads state & updates sidebar DOM.
 ;(function(){
+
+  // ── Phase 1: sync helpers ──────────────────────────────
   function vtSyncPhase(id){
     document.querySelectorAll('.vts-item[data-vt-phase]').forEach(function(btn){
       btn.classList.toggle('active', +btn.dataset.vtPhase === id);
@@ -4073,17 +4087,69 @@ function buildSimReport(runText) {
       if(av) av.textContent = (email.charAt(0)||'U').toUpperCase();
     }
   }
-  // Patch setPhase to sync sidebar active item
+
+  // ── Phase 2: language ──────────────────────────────────
+  var VTS_SUB = {
+    he: ['עץ בדיקות','תסריטים','הרצה','דוח סיכום','היסטוריה'],
+    en: ['Test Tree','Scripts','Execution','Report','History']
+  };
+  var VTS_LBL5 = { he: 'דוחות', en: 'Reports' };
+
+  // Exported so onclick in HTML can call it
+  window.vtToggleLang = function(){
+    applyLang(S_disp.lang === 'he' ? 'en' : 'he');
+  };
+
+  function applyLang(lang, silent) {
+    S_disp.lang = lang;
+    document.documentElement.dir  = lang === 'he' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang === 'he' ? 'he'  : 'en';
+    // Update sidebar sublabels
+    document.querySelectorAll('.vts-item[data-vt-phase]').forEach(function(btn){
+      var i = +btn.dataset.vtPhase;
+      var subEl = btn.querySelector('.vts-sub');
+      var lblEl = btn.querySelector('.vts-lbl');
+      if(subEl) subEl.textContent = VTS_SUB[lang][i-1] || '';
+      if(lblEl && i === 5) lblEl.textContent = VTS_LBL5[lang];
+    });
+    // Update toggle button label
+    var lbl = document.getElementById('vts-lang-lbl');
+    if(lbl) lbl.textContent = lang === 'he' ? 'EN' : 'עב';
+    vtSyncThemeIcon();
+    if(!silent) saveDisplay();
+  }
+
+  // ── Phase 2: theme icon ────────────────────────────────
+  function vtSyncThemeIcon(){
+    var icon = document.getElementById('vts-theme-icon');
+    if(icon) icon.textContent = S_disp.theme === 'dark' ? '☀' : '☾';
+  }
+
+  // ── Patch existing functions ───────────────────────────
+  // setPhase — sync sidebar active item
   var _sp = setPhase;
   setPhase = function(id){ _sp(id); vtSyncPhase(id); };
-  // Patch updateUI to sync done dots and user
+  // updateUI — sync done dots and user
   var _uui = updateUI;
   updateUI = function(){ _uui(); vtSyncDone(); vtSyncUser(); };
-  // Observe async user email changes (set after auth)
+  // applyTheme — sync theme icon after theme change
+  var _at = applyTheme;
+  applyTheme = function(theme, silent){ _at(theme, silent); vtSyncThemeIcon(); };
+
+  // ── Observe async user email changes ──────────────────
   var userLbl = document.getElementById('user-email-lbl');
   if(userLbl) new MutationObserver(vtSyncUser).observe(userLbl,{childList:true,characterData:true,subtree:true});
-  // Initial sync
+
+  // ── Init ──────────────────────────────────────────────
   vtSyncPhase(S.ap);
+  // Load saved lang (reads from same vibe_display key — S_disp.lang set below)
+  var _savedDisp = {};
+  try { _savedDisp = JSON.parse(localStorage.getItem('vibe_display')||'{}'); } catch(e){}
+  var _initLang = _savedDisp.lang || 'he';
+  S_disp.lang = _initLang;
+  applyLang(_initLang, true);   // silent=true, already persisted
+  vtSyncThemeIcon();             // sync icon after theme was loaded by existing code
+
 })();
 </script>
 </body>
