@@ -165,7 +165,7 @@ def health():
     Used by UptimeRobot (keeps Render free tier awake) and
     optionally by Supabase Edge health checks.
     """
-    return {'status': 'ok'}
+    return {'status': 'ok', 'auth': 'es256'}
 
 
 @app.post('/api/runs', status_code=201)
