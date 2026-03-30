@@ -743,7 +743,7 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 
 /* ── VT SHELL (Phase 1 layout) ── */
 .vt-shell{position:fixed;inset:0;z-index:1;display:flex;overflow:hidden}
-.vt-sidebar{width:220px;flex-shrink:0;background:rgba(3,6,12,.97);backdrop-filter:blur(24px);border-inline-start:1px solid var(--border);display:flex;flex-direction:column;z-index:20;overflow:hidden}
+.vt-sidebar{width:220px;flex-shrink:0;background:rgba(3,6,12,.97);backdrop-filter:blur(24px);border-inline-end:1px solid var(--border);display:flex;flex-direction:column;z-index:20;overflow:hidden}
 .vt-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .vt-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .vt-content #app{height:100%;position:relative;z-index:auto}
@@ -760,7 +760,7 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 /* Sidebar: nav */
 .vts-nav{flex:1;padding:10px 0;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
 .vts-nav-label{font-size:9px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;padding:0 16px 8px}
-.vts-item{display:flex;align-items:center;gap:8px;padding:8px 16px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:13px;text-align:right;transition:background .12s,color .12s;position:relative;width:100%}
+.vts-item{display:flex;align-items:center;gap:8px;padding:8px 16px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:13px;text-align:start;transition:background .12s,color .12s;position:relative;width:100%}
 .vts-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
 .vts-item.active{background:rgba(0,229,160,.06);color:var(--text)}
 .vts-item.active::after{content:'';position:absolute;inset-inline-end:0;top:4px;bottom:4px;width:2px;background:var(--green);border-radius:1px}
@@ -779,7 +779,7 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .vts-email{font-size:10px;color:var(--dim);letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 
 /* light mode */
-body.light-mode .vt-sidebar{background:rgba(248,250,252,.97);border-inline-start-color:#e2e8f0}
+body.light-mode .vt-sidebar{background:rgba(248,250,252,.97);border-inline-end-color:#e2e8f0}
 body.light-mode .vts-item:hover{background:rgba(0,0,0,.03)}
 body.light-mode .vts-item.active{background:rgba(5,150,105,.06)}
 body.light-mode .vts-footer{border-top-color:#e2e8f0}
@@ -790,6 +790,11 @@ body.light-mode .vts-footer{border-top-color:#e2e8f0}
 .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 body.light-mode .vts-ctl-btn{background:#f1f5f9;border-color:#cbd5e1;color:#475569}
 body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* Shell responsive: hide sidebar on narrow viewports — header phase-bar handles nav on mobile */
+@media(max-width:640px){
+  .vt-sidebar{display:none}
+}
 </style>
 </head>
 <body>
@@ -1612,9 +1617,35 @@ var SUPABASE_URL      = 'https://wiqghanzcwmzyqzfzkiv.supabase.co'
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpcWdoYW56Y3dtenlxemZ6a2l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODIwNjcsImV4cCI6MjA5MDI1ODA2N30.uXDx_80yBh8DmcLvH77tW1o8GqgTC7eXJIZUtsvpqTw'
 var _vibeExplicitLogout = false
 
+// ── TEST-ONLY MOCK SESSION BOOTSTRAP ──────────────────────────────────────
+// Activates ONLY when ?mock_session=1 is present AND hostname is explicitly
+// allowlisted below. Never runs for normal users. Easy to remove: delete this block.
+;(function vibeTestMockBootstrap() {
+  if (new URLSearchParams(location.search).get('mock_session') !== '1') return;
+
+  // Explicit allowlist — add hostnames where mock is permitted.
+  // Production domains are intentionally listed so Playwright can run against
+  // staging/preview; the ?mock_session=1 gate is the only activation mechanism.
+  var MOCK_ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'haimzadokk.github.io'];
+  if (MOCK_ALLOWED_HOSTS.indexOf(location.hostname) === -1) return;
+
+  // If a real Supabase session already exists, prefer it — skip mock.
+  var hasRealSession = Object.keys(localStorage).some(function(k) {
+    return k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1;
+  });
+  if (hasRealSession) return;
+
+  // ⚠️ MOCK ACTIVE
+  console.warn('[VIBE.TESTING] ⚠️  MOCK SESSION ACTIVE — FOR PLAYWRIGHT TESTING ONLY. DO NOT USE IN PRODUCTION.');
+  window._VIBE_MOCK_ACTIVE = true;
+  window.VIBE_USER = { id: 'test-playwright-user', email: 'playwright@test.local', role: 'admin' };
+})();
+// ── END MOCK SESSION BOOTSTRAP ────────────────────────────────────────────
+
 // Fast-path: if no Supabase session key exists at all, redirect immediately
 // without waiting for the SDK. Not authoritative — SDK check below is the gate.
 ;(function vibeAuthFastPath() {
+  if (window._VIBE_MOCK_ACTIVE) return;  // TEST-ONLY: mock bypasses fast-path
   var found = Object.keys(localStorage).some(function(k) {
     return k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1
   })
@@ -1624,6 +1655,15 @@ var _vibeExplicitLogout = false
 // Authoritative guard: load SDK → getSession() → start app only on success.
 // initModal / updateUI / checkServerStatus are called here, not inline below.
 ;(async function vibeAuthGuard() {
+  // ── TEST-ONLY: mock short-circuit ─────────────────────────────────────
+  if (window._VIBE_MOCK_ACTIVE) {
+    var _ml = document.getElementById('user-email-lbl');
+    if (_ml) _ml.textContent = window.VIBE_USER.email.split('@')[0];
+    initModal(); updateUI(); checkServerStatus();
+    return;
+  }
+  // ─────────────────────────────────────────────────────────────────────
+
   await new Promise(function(res, rej) {
     var s = document.createElement('script')
     s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js'
