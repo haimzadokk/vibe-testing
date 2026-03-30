@@ -740,6 +740,49 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .run-status-item.warn{color:var(--amber)}
 .run-status-help{font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 10px;font-family:inherit;transition:all .2s}
 .run-status-help:hover{border-color:var(--amber);color:var(--amber)}
+
+/* ── VT SHELL (Phase 1 layout) ── */
+.vt-shell{position:fixed;inset:0;z-index:1;display:flex;overflow:hidden}
+.vt-sidebar{width:220px;flex-shrink:0;background:rgba(3,6,12,.97);backdrop-filter:blur(24px);border-inline-start:1px solid var(--border);display:flex;flex-direction:column;z-index:20;overflow:hidden}
+.vt-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.vt-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.vt-content #app{height:100%;position:relative;z-index:auto}
+.vt-panel{width:0;flex-shrink:0;overflow:hidden;transition:width .25s ease;background:var(--surface);border-inline-end:1px solid var(--border)}
+.vt-panel.open{width:320px}
+
+/* Sidebar: logo */
+.vts-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.vts-logo-icon{width:36px;height:36px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,var(--green),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#04080f;font-family:'JetBrains Mono';letter-spacing:-.5px}
+.vts-logo-name{font-size:12px;font-weight:800;letter-spacing:3px;color:var(--text);line-height:1}
+.vts-logo-name span{color:var(--green)}
+.vts-logo-ver{font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:3px}
+
+/* Sidebar: nav */
+.vts-nav{flex:1;padding:10px 0;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.vts-nav-label{font-size:9px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;padding:0 16px 8px}
+.vts-item{display:flex;align-items:center;gap:8px;padding:8px 16px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:13px;text-align:right;transition:background .12s,color .12s;position:relative;width:100%}
+.vts-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.vts-item.active{background:rgba(0,229,160,.06);color:var(--text)}
+.vts-item.active::after{content:'';position:absolute;inset-inline-end:0;top:4px;bottom:4px;width:2px;background:var(--green);border-radius:1px}
+.vts-num{font-size:9px;font-weight:700;color:var(--dim);font-family:'JetBrains Mono';min-width:18px;flex-shrink:0}
+.vts-item.active .vts-num{color:var(--green)}
+.vts-lbl{font-size:12px;font-weight:700;letter-spacing:2px;flex-shrink:0}
+.vts-sub{font-size:10px;color:var(--dim);flex:1;letter-spacing:.5px}
+.vts-done{width:5px;height:5px;border-radius:50%;background:transparent;flex-shrink:0;transition:background .2s,box-shadow .2s}
+.vts-done.show{background:var(--green);box-shadow:0 0 5px var(--green)}
+.vts-sep{height:1px;background:var(--border);margin:6px 16px}
+
+/* Sidebar: footer */
+.vts-footer{border-top:1px solid var(--border);padding:12px 16px;flex-shrink:0}
+.vts-user{display:flex;align-items:center;gap:8px}
+.vts-avatar{width:26px;height:26px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,var(--border2),var(--border));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted)}
+.vts-email{font-size:10px;color:var(--dim);letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+
+/* light mode */
+body.light-mode .vt-sidebar{background:rgba(248,250,252,.97);border-inline-start-color:#e2e8f0}
+body.light-mode .vts-item:hover{background:rgba(0,0,0,.03)}
+body.light-mode .vts-item.active{background:rgba(5,150,105,.06)}
+body.light-mode .vts-footer{border-top-color:#e2e8f0}
 </style>
 </head>
 <body>
@@ -856,6 +899,68 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
   </div>
 
 </div>
+
+<!-- ── VT SHELL ── -->
+<div class="vt-shell">
+
+  <!-- NEW NAV SIDEBAR -->
+  <aside class="vt-sidebar" id="vt-sidebar">
+
+    <div class="vts-logo">
+      <div class="vts-logo-icon">VT</div>
+      <div>
+        <div class="vts-logo-name">VIBE<span>.</span>TESTING</div>
+        <div class="vts-logo-ver">AI QA · v3.0</div>
+      </div>
+    </div>
+
+    <nav class="vts-nav">
+      <div class="vts-nav-label">PIPELINE</div>
+      <button class="vts-item active" data-vt-phase="1" onclick="setPhase(1)">
+        <span class="vts-num">01</span>
+        <span class="vts-lbl">STP</span>
+        <span class="vts-sub">עץ בדיקות</span>
+        <span class="vts-done" id="vtd-1"></span>
+      </button>
+      <button class="vts-item" data-vt-phase="2" onclick="setPhase(2)">
+        <span class="vts-num">02</span>
+        <span class="vts-lbl">STD</span>
+        <span class="vts-sub">תסריטים</span>
+        <span class="vts-done" id="vtd-2"></span>
+      </button>
+      <button class="vts-item" data-vt-phase="3" onclick="setPhase(3)">
+        <span class="vts-num">03</span>
+        <span class="vts-lbl">RUN</span>
+        <span class="vts-sub">הרצה</span>
+        <span class="vts-done" id="vtd-3"></span>
+      </button>
+      <button class="vts-item" data-vt-phase="4" onclick="setPhase(4)">
+        <span class="vts-num">04</span>
+        <span class="vts-lbl">STR</span>
+        <span class="vts-sub">דוח סיכום</span>
+        <span class="vts-done" id="vtd-4"></span>
+      </button>
+      <div class="vts-sep"></div>
+      <button class="vts-item" data-vt-phase="5" onclick="setPhase(5)">
+        <span class="vts-num">05</span>
+        <span class="vts-lbl">דוחות</span>
+        <span class="vts-sub">היסטוריה</span>
+        <span class="vts-done" id="vtd-5"></span>
+      </button>
+    </nav>
+
+    <div class="vts-footer">
+      <div class="vts-user">
+        <div class="vts-avatar" id="vts-avatar-lbl">U</div>
+        <span class="vts-email" id="vts-email-lbl">משתמש</span>
+      </div>
+    </div>
+
+  </aside><!-- /.vt-sidebar -->
+
+  <!-- EXISTING APP CONTENT -->
+  <div class="vt-main">
+    <div class="vt-content">
 
 <!-- ── APP ── -->
 <div id="app">
@@ -1165,7 +1270,12 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
     </div>
 
   </div>
-</div>
+</div><!-- /#app -->
+
+    </div><!-- /.vt-content -->
+  </div><!-- /.vt-main -->
+  <aside class="vt-panel" id="vt-panel"></aside>
+</div><!-- /.vt-shell -->
 
 <!-- MOBILE GEN BAR -->
 <div class="mobile-gen-bar" id="mobile-gen-bar">
@@ -3937,6 +4047,44 @@ function buildSimReport(runText) {
 // ── INIT ─────────────────────────────────────────────────
 // initModal(), updateUI(), checkServerStatus() are called by
 // vibeAuthGuard() above, only after session is confirmed.
+
+// ── VT SHELL SYNC ────────────────────────────────────────
+// Keeps new sidebar in sync with existing phase/state logic.
+// Does NOT touch any business logic — only reads state & updates sidebar DOM.
+;(function(){
+  function vtSyncPhase(id){
+    document.querySelectorAll('.vts-item[data-vt-phase]').forEach(function(btn){
+      btn.classList.toggle('active', +btn.dataset.vtPhase === id);
+    });
+  }
+  function vtSyncDone(){
+    [1,2,3,4,5].forEach(function(i){
+      var dot = document.getElementById('vtd-'+i);
+      if(dot) dot.classList.toggle('show', S.status[i]==='done');
+    });
+  }
+  function vtSyncUser(){
+    var src = document.getElementById('user-email-lbl');
+    var dst = document.getElementById('vts-email-lbl');
+    var av  = document.getElementById('vts-avatar-lbl');
+    if(src && dst){
+      var email = src.textContent || '';
+      dst.textContent = email;
+      if(av) av.textContent = (email.charAt(0)||'U').toUpperCase();
+    }
+  }
+  // Patch setPhase to sync sidebar active item
+  var _sp = setPhase;
+  setPhase = function(id){ _sp(id); vtSyncPhase(id); };
+  // Patch updateUI to sync done dots and user
+  var _uui = updateUI;
+  updateUI = function(){ _uui(); vtSyncDone(); vtSyncUser(); };
+  // Observe async user email changes (set after auth)
+  var userLbl = document.getElementById('user-email-lbl');
+  if(userLbl) new MutationObserver(vtSyncUser).observe(userLbl,{childList:true,characterData:true,subtree:true});
+  // Initial sync
+  vtSyncPhase(S.ap);
+})();
 </script>
 </body>
 </html>
