@@ -442,9 +442,10 @@ var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 })
 
 // ── STATE ────────────────────────────────────────────────────
-var pendingEmail  = ''
-var resendTimer   = null
-var _deferredMsg  = null   // [id, type, text] — replayed by showView after loading state clears
+var pendingEmail      = ''
+var resendTimer       = null
+var _deferredMsg      = null   // [id, type, text] — replayed by showView after loading state clears
+var _recoveryHandled  = false  // set true when PASSWORD_RECOVERY fires; blocks SIGNED_IN redirect
 
 // ── INIT: handle URL params + session ───────────────────────
 ;(async function init() {
@@ -467,6 +468,7 @@ var _deferredMsg  = null   // [id, type, text] — replayed by showView after lo
     cleanUrl()
 
     if (event === 'PASSWORD_RECOVERY') {
+      _recoveryHandled = true   // block the SIGNED_IN that fires right after this event
       showView('v-reset')
       return
     }
@@ -481,7 +483,9 @@ var _deferredMsg  = null   // [id, type, text] — replayed by showView after lo
       return
     }
     if (event === 'SIGNED_IN' && session) {
-      if (isRecovery) return  // password-reset: wait for PASSWORD_RECOVERY event before routing
+      // Block redirect if PASSWORD_RECOVERY already fired (recovery session) OR
+      // if URL explicitly marks recovery (implicit-flow fallback)
+      if (_recoveryHandled || isRecovery) return
       if (session.user.email_confirmed_at) { redirect(); }
       else { showVerify(session.user.email); }
       return
