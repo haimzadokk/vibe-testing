@@ -452,9 +452,10 @@ var _deferredMsg  = null   // [id, type, text] — replayed by showView after lo
   // NOTE: do NOT clean URL here — Supabase SDK may still be exchanging token_hash.
   // URL is cleaned inside onAuthStateChange after the SDK confirms the exchange.
 
-  var type         = params.get('type')   // Supabase email link params: 'recovery' | 'signup'
+  var type         = params.get('type')   // 'recovery' | 'signup' | null — present in email link redirects
   var msg          = params.get('msg')    // our app params: 'logged_out' | 'session_expired' | 'password_reset' | 'verify'
-  var hasEmailCode = !!params.get('code') // PKCE code from any email link — defer INITIAL_SESSION redirect
+  var hasEmailCode = !!params.get('code') || !!params.get('token_hash') // defer INITIAL_SESSION for OAuth code AND email token_hash
+  var isRecovery   = type === 'recovery'  // password-reset flow — must wait for PASSWORD_RECOVERY before routing
 
   // ── Register onAuthStateChange FIRST — before any early returns ──
   // Single source of truth for all auth state: OAuth, email confirm, recovery, existing sessions.
@@ -467,8 +468,8 @@ var _deferredMsg  = null   // [id, type, text] — replayed by showView after lo
       return
     }
     if (event === 'INITIAL_SESSION') {
-      // If an email-link code is in the URL, wait for PASSWORD_RECOVERY or SIGNED_IN
-      // before deciding what to do — INITIAL_SESSION fires before the code is exchanged.
+      // If a PKCE code is in the URL, wait for the exchange to complete
+      // before routing — INITIAL_SESSION fires before the code is exchanged.
       if (hasEmailCode) return
       if (session && session.user.email_confirmed_at) { redirect(); return; }
       if (session && !session.user.email_confirmed_at) { showVerify(session.user.email); return; }
@@ -477,11 +478,21 @@ var _deferredMsg  = null   // [id, type, text] — replayed by showView after lo
       return
     }
     if (event === 'SIGNED_IN' && session) {
+      if (isRecovery) return  // password-reset: wait for PASSWORD_RECOVERY event before routing
       if (session.user.email_confirmed_at) { redirect(); }
       else { showVerify(session.user.email); }
       return
     }
   })
+
+  // ── OAuth/Supabase errors returned via redirect URL ─────────────────
+  var urlError = params.get('error')
+  if (urlError) {
+    _deferredMsg = ['login-msg', 'error', 'שגיאה בכניסה עם Google — נסה שוב']
+    cleanUrl()
+    showView('v-login')
+    return
+  }
 
   // ── Status messages — stored as deferred, replayed when showView fires ──
   // (showView clears messages before re-applying, so we can't set them before the view is shown)
