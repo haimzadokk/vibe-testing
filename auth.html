@@ -452,9 +452,12 @@ var _deferredMsg  = null   // [id, type, text] — replayed by showView after lo
   // NOTE: do NOT clean URL here — Supabase SDK may still be exchanging token_hash.
   // URL is cleaned inside onAuthStateChange after the SDK confirms the exchange.
 
-  var type         = params.get('type')   // 'recovery' | 'signup' | null — present in email link redirects
+  // Supabase can return tokens in EITHER query params (PKCE: ?code=) OR hash (implicit: #access_token=)
+  var hash         = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+  var type         = params.get('type') || hash.get('type')   // 'recovery' | 'signup' | null
   var msg          = params.get('msg')    // our app params: 'logged_out' | 'session_expired' | 'password_reset' | 'verify'
-  var hasEmailCode = !!params.get('code') || !!params.get('token_hash') // defer INITIAL_SESSION for OAuth code AND email token_hash
+  var hasEmailCode = !!params.get('code') || !!params.get('token_hash') ||
+                     !!hash.get('access_token') || !!hash.get('token_hash')  // defer for both PKCE and implicit
   var isRecovery   = type === 'recovery'  // password-reset flow — must wait for PASSWORD_RECOVERY before routing
 
   // ── Register onAuthStateChange FIRST — before any early returns ──
