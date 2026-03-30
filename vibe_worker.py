@@ -318,18 +318,29 @@ def admin_list_runs(
         .select(
             'id, status, target_type, target_label, '
             'pass_count, fail_count, skip_count, overall_status, '
-            'duration_sec, summary, created_at, updated_at, user_id, '
-            'profiles!runs_user_id_fkey(email)'
+            'duration_sec, summary, created_at, updated_at, user_id'
         )
         .order('created_at', desc=True)
         .range(offset, offset + limit - 1)
         .execute()
     )
     runs = result.data or []
-    # Flatten profile email onto each run row
+
+    # Fetch emails from profiles for all unique user_ids in one query.
+    # runs.user_id → auth.users(id), profiles.id → auth.users(id).
+    # No FK between runs and profiles exists, so we join manually.
+    user_ids = list({r['user_id'] for r in runs if r.get('user_id')})
+    email_map: dict = {}
+    if user_ids:
+        prof_result = (
+            _sb.table('profiles')
+            .select('id, email')
+            .in_('id', user_ids)
+            .execute()
+        )
+        email_map = {p['id']: p.get('email', '') for p in (prof_result.data or [])}
     for run in runs:
-        profile = run.pop('profiles', None)
-        run['user_email'] = (profile or {}).get('email', '')
+        run['user_email'] = email_map.get(run.get('user_id', ''), '')
     return {
         'runs':   runs,
         'limit':  limit,
