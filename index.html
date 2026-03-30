@@ -4,7 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>VIBE.TESTING v3 — AI QA Generator</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -796,6 +797,8 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
   .vt-sidebar{display:none}
 }
 </style>
+<!-- Stitch design layer — loads after inline styles so overrides take effect -->
+<link rel="stylesheet" href="ui/stitch.css"/>
 </head>
 <body>
 <div class="bg-noise"></div>
@@ -923,6 +926,14 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       <div>
         <div class="vts-logo-name">VIBE<span>.</span>TESTING</div>
         <div class="vts-logo-ver">AI QA · v3.0</div>
+      </div>
+    </div>
+
+    <div class="vts-ai-cmd">
+      <div class="vts-ai-cmd-title">AI COMMAND</div>
+      <div class="vts-ai-cmd-status">
+        <span class="vts-ai-pulse"></span>
+        SYSTEM ACTIVE
       </div>
     </div>
 
@@ -4192,5 +4203,8 @@ function buildSimReport(runText) {
 
 })();
 </script>
+<!-- Stitch ambient glow — purely decorative, z-index 0 -->
+<div class="stitch-glow-tr" aria-hidden="true"></div>
+<div class="stitch-glow-bl" aria-hidden="true"></div>
 </body>
 </html>
