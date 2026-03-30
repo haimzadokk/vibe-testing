@@ -446,6 +446,7 @@ var pendingEmail      = ''
 var resendTimer       = null
 var _deferredMsg      = null   // [id, type, text] — replayed by showView after loading state clears
 var _recoveryHandled  = false  // set true when PASSWORD_RECOVERY fires; blocks SIGNED_IN redirect
+var _signedInPending  = null   // timer: defer redirect when hasEmailCode, waiting for PASSWORD_RECOVERY
 
 // ── INIT: handle URL params + session ───────────────────────
 ;(async function init() {
@@ -459,16 +460,38 @@ var _recoveryHandled  = false  // set true when PASSWORD_RECOVERY fires; blocks 
   var msg          = params.get('msg')    // our app params: 'logged_out' | 'session_expired' | 'password_reset' | 'verify'
   var hasEmailCode = !!params.get('code') || !!params.get('token_hash') ||
                      !!hash.get('access_token') || !!hash.get('token_hash')  // defer for both PKCE and implicit
-  var isRecovery   = type === 'recovery'  // password-reset flow — must wait for PASSWORD_RECOVERY before routing
+  var isRecovery     = type === 'recovery'  // NOTE: type=recovery does NOT survive the Supabase PKCE redirect
+  // 'recovery=1' is added by doForgot() to the redirectTo URL.
+  // Supabase preserves existing query params when appending &code=..., so auth.html reliably
+  // receives '?recovery=1&code=<pkce_code>' after the user clicks the recovery email link.
+  var isRecoveryFlow = !!params.get('recovery')
+
+  // ── [AUTH-DBG] Phase A diagnostics — remove after diagnosis ──────────
+  console.log('[AUTH-DBG] INIT | url:', window.location.href)
+  console.log('[AUTH-DBG] INIT | search:', window.location.search, '| hash:', window.location.hash)
+  console.log('[AUTH-DBG] INIT | type(dead):', type, '| msg:', msg, '| hasEmailCode:', hasEmailCode)
+  console.log('[AUTH-DBG] INIT | isRecovery(always-false):', isRecovery, '| isRecoveryFlow:', isRecoveryFlow)
+  // ─────────────────────────────────────────────────────────────────────
 
   // ── Register onAuthStateChange FIRST — before any early returns ──
   // Single source of truth for all auth state: OAuth, email confirm, recovery, existing sessions.
   sb.auth.onAuthStateChange(function(event, session) {
+    // [AUTH-DBG] log every event ─────────────────────────────────────
+    console.log('[AUTH-DBG] EVENT |', new Date().toISOString(),
+      '| event:', event,
+      '| session?', !!session,
+      '| email_confirmed_at?', !!(session && session.user && session.user.email_confirmed_at),
+      '| _recoveryHandled:', _recoveryHandled,
+      '| isRecoveryFlow:', isRecoveryFlow,
+      '| hasEmailCode:', hasEmailCode)
+    // ─────────────────────────────────────────────────────────────────
+
     // URL is safe to clean now — SDK has finished processing token_hash
     cleanUrl()
 
     if (event === 'PASSWORD_RECOVERY') {
-      _recoveryHandled = true   // block the SIGNED_IN that fires right after this event
+      _recoveryHandled = true
+      if (_signedInPending) { clearTimeout(_signedInPending); _signedInPending = null; }
       showView('v-reset')
       return
     }
@@ -483,9 +506,28 @@ var _recoveryHandled  = false  // set true when PASSWORD_RECOVERY fires; blocks 
       return
     }
     if (event === 'SIGNED_IN' && session) {
-      // Block redirect if PASSWORD_RECOVERY already fired (recovery session) OR
-      // if URL explicitly marks recovery (implicit-flow fallback)
-      if (_recoveryHandled || isRecovery) return
+      if (_recoveryHandled) return
+      // isRecoveryFlow: 'recovery=1' param is present — stamped by doForgot() into redirectTo.
+      // This is the ONLY reliable recovery signal in PKCE flow: type=recovery does NOT survive
+      // the Supabase server-side redirect (the legacy isRecovery variable is always false).
+      if (isRecoveryFlow) {
+        console.log('[AUTH-DBG] SIGNED_IN in recovery flow — showing reset form, NOT redirecting to app')
+        _recoveryHandled = true
+        showView('v-reset')
+        return
+      }
+      // PKCE email-link flow (signup confirm / magic link, no recovery=1 marker).
+      // Wait up to 600ms for PASSWORD_RECOVERY in case an old-format recovery link fires it.
+      if (hasEmailCode) {
+        var _sess = session
+        _signedInPending = setTimeout(function() {
+          _signedInPending = null
+          if (_recoveryHandled) return  // PASSWORD_RECOVERY arrived in time — already showing reset form
+          if (_sess.user.email_confirmed_at) { redirect(); }
+          else { showVerify(_sess.user.email); }
+        }, 600)
+        return
+      }
       if (session.user.email_confirmed_at) { redirect(); }
       else { showVerify(session.user.email); }
       return
@@ -538,11 +580,13 @@ function cleanUrl() {
 // (root, /vibe-testing/, or any other base).
 // auth.html and index.html always live in the same directory.
 function redirect() {
+  console.log('[AUTH-DBG] redirect() → index.html called from:', new Error().stack.split('\n').slice(1,3).join(' | '))
   window.location.replace('index.html')
 }
 
 // ── VIEW HELPERS ─────────────────────────────────────────────
 function showView(id) {
+  console.log('[AUTH-DBG] showView:', id)
   // Capture and clear deferred message before showMsg is called below
   var dm = _deferredMsg; _deferredMsg = null
   // Remove loading state
@@ -722,7 +766,7 @@ async function doForgot() {
   setLoading('forgot-btn', true)
   // Always call — never reveal whether email exists (prevents enumeration)
   await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: APP_URL + '/auth.html'
+    redirectTo: APP_URL + '/auth.html?recovery=1'
   })
   setLoading('forgot-btn', false)
 
