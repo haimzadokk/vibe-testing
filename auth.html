@@ -218,6 +218,22 @@ body{
 .verify-icon{font-size:44px;text-align:center;margin-bottom:14px;}
 .resend-note{font-size:12px;color:var(--dim);text-align:center;margin-top:8px;min-height:18px;}
 
+/* ── PASSWORD FIELD WITH EYE TOGGLE ──────────── */
+.pass-wrap{position:relative;}
+/* RTL layout: eye button on the left (trailing) side — passwords are ASCII/LTR */
+.pass-wrap input{padding-left:44px;}
+.pass-eye{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:var(--dim);padding:4px;line-height:1;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  display:flex;align-items:center;
+}
+.pass-eye:hover{color:var(--muted);}
+
+/* ── PASSWORD STRENGTH HINT ───────────────────── */
+.pass-hint{font-size:11px;color:var(--dim);margin-top:6px;line-height:1.6;}
+
 /* ── VIEWS ───────────────────────────────────── */
 .view{display:none;}
 .view.active{display:block;}
@@ -282,8 +298,11 @@ body{
     </div>
     <div class="field">
       <label>סיסמה</label>
-      <input id="login-pass" type="password" placeholder="••••••••"
-             autocomplete="current-password"/>
+      <div class="pass-wrap">
+        <input id="login-pass" type="password" placeholder="••••••••"
+               autocomplete="current-password"/>
+        <button type="button" class="pass-eye" onclick="togglePass('login-pass',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+      </div>
     </div>
 
     <button class="btn btn-primary" id="login-btn" onclick="doLogin()">
@@ -324,13 +343,20 @@ body{
     </div>
     <div class="field">
       <label>סיסמה</label>
-      <input id="signup-pass" type="password" placeholder="לפחות 8 תווים"
-             autocomplete="new-password"/>
+      <div class="pass-wrap">
+        <input id="signup-pass" type="password" placeholder="לפחות 8 תווים"
+               autocomplete="new-password"/>
+        <button type="button" class="pass-eye" onclick="togglePass('signup-pass',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+      </div>
+      <div class="pass-hint">לפחות 8 תווים · אות גדולה (A–Z) · מספר (0–9) · תו מיוחד (!@#$%^&*) · אין עברית</div>
     </div>
     <div class="field">
       <label>אימות סיסמה</label>
-      <input id="signup-pass2" type="password" placeholder="חזור על הסיסמה"
-             autocomplete="new-password"/>
+      <div class="pass-wrap">
+        <input id="signup-pass2" type="password" placeholder="חזור על הסיסמה"
+               autocomplete="new-password"/>
+        <button type="button" class="pass-eye" onclick="togglePass('signup-pass2',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+      </div>
     </div>
 
     <button class="btn btn-primary" id="signup-btn" onclick="doSignup()">
@@ -406,13 +432,19 @@ body{
 
     <div class="field">
       <label>סיסמה חדשה</label>
-      <input id="reset-pass" type="password" placeholder="לפחות 8 תווים"
-             autocomplete="new-password"/>
+      <div class="pass-wrap">
+        <input id="reset-pass" type="password" placeholder="לפחות 8 תווים"
+               autocomplete="new-password"/>
+        <button type="button" class="pass-eye" onclick="togglePass('reset-pass',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+      </div>
     </div>
     <div class="field">
       <label>אימות סיסמה</label>
-      <input id="reset-pass2" type="password" placeholder="חזור על הסיסמה"
-             autocomplete="new-password"/>
+      <div class="pass-wrap">
+        <input id="reset-pass2" type="password" placeholder="חזור על הסיסמה"
+               autocomplete="new-password"/>
+        <button type="button" class="pass-eye" onclick="togglePass('reset-pass2',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+      </div>
     </div>
 
     <button class="btn btn-primary" id="reset-btn" onclick="doReset()">
@@ -466,26 +498,9 @@ var _signedInPending  = null   // timer: defer redirect when hasEmailCode, waiti
   // receives '?recovery=1&code=<pkce_code>' after the user clicks the recovery email link.
   var isRecoveryFlow = !!params.get('recovery')
 
-  // ── [AUTH-DBG] Phase A diagnostics — remove after diagnosis ──────────
-  console.log('[AUTH-DBG] INIT | url:', window.location.href)
-  console.log('[AUTH-DBG] INIT | search:', window.location.search, '| hash:', window.location.hash)
-  console.log('[AUTH-DBG] INIT | type(dead):', type, '| msg:', msg, '| hasEmailCode:', hasEmailCode)
-  console.log('[AUTH-DBG] INIT | isRecovery(always-false):', isRecovery, '| isRecoveryFlow:', isRecoveryFlow)
-  // ─────────────────────────────────────────────────────────────────────
-
   // ── Register onAuthStateChange FIRST — before any early returns ──
   // Single source of truth for all auth state: OAuth, email confirm, recovery, existing sessions.
   sb.auth.onAuthStateChange(function(event, session) {
-    // [AUTH-DBG] log every event ─────────────────────────────────────
-    console.log('[AUTH-DBG] EVENT |', new Date().toISOString(),
-      '| event:', event,
-      '| session?', !!session,
-      '| email_confirmed_at?', !!(session && session.user && session.user.email_confirmed_at),
-      '| _recoveryHandled:', _recoveryHandled,
-      '| isRecoveryFlow:', isRecoveryFlow,
-      '| hasEmailCode:', hasEmailCode)
-    // ─────────────────────────────────────────────────────────────────
-
     // URL is safe to clean now — SDK has finished processing token_hash
     cleanUrl()
 
@@ -511,7 +526,6 @@ var _signedInPending  = null   // timer: defer redirect when hasEmailCode, waiti
       // This is the ONLY reliable recovery signal in PKCE flow: type=recovery does NOT survive
       // the Supabase server-side redirect (the legacy isRecovery variable is always false).
       if (isRecoveryFlow) {
-        console.log('[AUTH-DBG] SIGNED_IN in recovery flow — showing reset form, NOT redirecting to app')
         _recoveryHandled = true
         showView('v-reset')
         return
@@ -580,13 +594,11 @@ function cleanUrl() {
 // (root, /vibe-testing/, or any other base).
 // auth.html and index.html always live in the same directory.
 function redirect() {
-  console.log('[AUTH-DBG] redirect() → index.html called from:', new Error().stack.split('\n').slice(1,3).join(' | '))
   window.location.replace('index.html')
 }
 
 // ── VIEW HELPERS ─────────────────────────────────────────────
 function showView(id) {
-  console.log('[AUTH-DBG] showView:', id)
   // Capture and clear deferred message before showMsg is called below
   var dm = _deferredMsg; _deferredMsg = null
   // Remove loading state
@@ -631,8 +643,58 @@ function setLoading(btnId, on) {
   btn.classList.toggle('loading', on)
 }
 
+// ── PASSWORD EYE TOGGLE ──────────────────────────────────────
+function togglePass(id, btn) {
+  var input   = document.getElementById(id)
+  var visible = input.type === 'text'
+  input.type  = visible ? 'password' : 'text'
+  // Toggle slash line on the SVG eye icon
+  var svg  = btn.querySelector('svg')
+  var line = svg.querySelector('line')
+  if (visible) {
+    if (line) line.remove()
+  } else {
+    if (!line) {
+      var l = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+      l.setAttribute('x1','2'); l.setAttribute('y1','1')
+      l.setAttribute('x2','18'); l.setAttribute('y2','13')
+      svg.appendChild(l)
+    }
+  }
+  input.focus()
+}
+
+// Block Hebrew characters from password fields in real-time (typing + paste)
+;(function() {
+  var ids = ['login-pass','signup-pass','signup-pass2','reset-pass','reset-pass2']
+  var heRe = /[\u0590-\u05FF\uFB1D-\uFB4F]/g
+  ids.forEach(function(id) {
+    var el = document.getElementById(id)
+    if (!el) return
+    el.addEventListener('input', function() {
+      var cleaned = el.value.replace(heRe, '')
+      if (cleaned !== el.value) {
+        var pos = Math.max(0, el.selectionStart - (el.value.length - cleaned.length))
+        el.value = cleaned
+        el.setSelectionRange(pos, pos)
+      }
+    })
+  })
+})()
+
 // ── VALIDATION ───────────────────────────────────────────────
 function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) }
+
+// Returns error string or '' if valid.
+// Rules: 8+ chars, uppercase, digit, symbol, no Hebrew.
+function validPass(p) {
+  if (p.length < 8)                            return 'הסיסמה חייבת להכיל לפחות 8 תווים'
+  if (/[\u0590-\u05FF\uFB1D-\uFB4F]/.test(p)) return 'הסיסמה אינה יכולה להכיל תווים בעברית'
+  if (!/[A-Z]/.test(p))                        return 'הסיסמה חייבת להכיל לפחות אות גדולה אחת (A–Z)'
+  if (!/[0-9]/.test(p))                        return 'הסיסמה חייבת להכיל לפחות מספר אחד (0–9)'
+  if (!/[^A-Za-z0-9\s]/.test(p))              return 'הסיסמה חייבת להכיל לפחות תו מיוחד (!@#$%...)'
+  return ''
+}
 
 // ── LOGIN ────────────────────────────────────────────────────
 async function doLogin() {
@@ -669,7 +731,8 @@ async function doSignup() {
   var pass2 = document.getElementById('signup-pass2').value
 
   if (!validEmail(email))   return showMsg('signup-msg', 'error', 'כתובת אימייל לא תקינה')
-  if (pass.length < 8)      return showMsg('signup-msg', 'error', 'הסיסמה חייבת להכיל לפחות 8 תווים')
+  var passErr = validPass(pass)
+  if (passErr)              return showMsg('signup-msg', 'error', passErr)
   if (pass !== pass2)       return showMsg('signup-msg', 'error', 'הסיסמאות אינן תואמות')
 
   setLoading('signup-btn', true)
@@ -779,7 +842,8 @@ async function doReset() {
   var pass  = document.getElementById('reset-pass').value
   var pass2 = document.getElementById('reset-pass2').value
 
-  if (pass.length < 8) return showMsg('reset-msg', 'error', 'הסיסמה חייבת להכיל לפחות 8 תווים')
+  var passErr = validPass(pass)
+  if (passErr)         return showMsg('reset-msg', 'error', passErr)
   if (pass !== pass2)  return showMsg('reset-msg', 'error', 'הסיסמאות אינן תואמות')
 
   setLoading('reset-btn', true)
