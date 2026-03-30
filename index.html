@@ -589,6 +589,25 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .reports-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:200px;color:var(--muted);font-size:13px;text-align:center}
 .server-offline-banner{display:none;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:12px;text-align:center}
 .server-offline-banner.show{display:block}
+/* ── PHASE TIMELINE (run detail) ── */
+.phase-timeline{display:flex;flex-direction:column;gap:3px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.phase-timeline-hdr{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--dim);margin-bottom:4px}
+.pt-row{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:6px;font-size:12px;background:rgba(4,8,15,.5)}
+.pt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pt-dot.completed{background:var(--green);box-shadow:0 0 5px rgba(0,229,160,.5)}
+.pt-dot.running{background:var(--amber);animation:pt-pulse 1.2s ease-in-out infinite}
+.pt-dot.failed{background:var(--red)}
+.pt-dot.pending{background:var(--dim)}
+@keyframes pt-pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.pt-phase{font-weight:700;width:28px;color:var(--text);flex-shrink:0}
+.pt-he{color:var(--muted);width:68px;flex-shrink:0}
+.pt-status{font-size:10px;letter-spacing:1px;font-weight:700;width:76px;flex-shrink:0}
+.pt-status.completed{color:var(--green)}
+.pt-status.running{color:var(--amber)}
+.pt-status.failed{color:var(--red)}
+.pt-status.pending{color:var(--dim)}
+.pt-times{color:var(--dim);font-size:10px;flex:1}
+.pt-err{font-size:10px;color:var(--red);padding:2px 10px 4px 0;opacity:.85}
 
 /* ── SETTINGS BUTTON ── */
 .settings-btn{background:transparent;border:1px solid var(--border2);border-radius:6px;padding:7px 14px;font-size:15px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px;display:flex;align-items:center;gap:5px}
@@ -3441,6 +3460,45 @@ function renderReportsList() {
   }).join('');
 }
 
+function renderPhaseTimeline(phaseStatus) {
+  var _PT_META = {
+    stp: {label:'STP', he:'עץ בדיקות'},
+    std: {label:'STD', he:'תסריטים'},
+    run: {label:'RUN', he:'הרצה'},
+    str: {label:'STR', he:'סיכום'},
+  };
+  var _PT_ICON = {completed:'✓', running:'⟳', failed:'✗', pending:'·'};
+  var html = '<div class="phase-timeline"><div class="phase-timeline-hdr">PHASE TIMELINE</div>';
+  if (!phaseStatus || phaseStatus.length === 0) {
+    html += '<div class="pt-row"><span style="color:var(--dim);font-size:11px">אין נתוני timeline לריצה זו</span></div>';
+    return html + '</div>';
+  }
+  phaseStatus.forEach(function(ps) {
+    var m   = _PT_META[ps.phase] || {label: (ps.phase||'').toUpperCase(), he:''};
+    var st  = ps.status || 'pending';
+    var icon = _PT_ICON[st] || '·';
+    var times = '';
+    if (ps.started_at) {
+      times += 'התחיל ' + new Date(ps.started_at).toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+      if (ps.completed_at) {
+        var dur = Math.round((new Date(ps.completed_at) - new Date(ps.started_at)) / 1000);
+        times += ' · ' + dur + 's';
+      }
+    }
+    html += '<div class="pt-row">'
+      + '<div class="pt-dot ' + st + '"></div>'
+      + '<div class="pt-phase">'  + esc(m.label) + '</div>'
+      + '<div class="pt-he">'     + esc(m.he)    + '</div>'
+      + '<div class="pt-status '  + st + '">' + esc(icon + ' ' + st.toUpperCase()) + '</div>'
+      + '<div class="pt-times">'  + esc(times)   + '</div>'
+      + '</div>';
+    if (st === 'failed' && ps.error_message) {
+      html += '<div class="pt-err">↳ ' + esc(ps.error_message) + '</div>';
+    }
+  });
+  return html + '</div>';
+}
+
 async function toggleReportDetail(id) {
   var detail = document.getElementById('rd-' + id);
   if (!detail) return;
@@ -3452,9 +3510,10 @@ async function toggleReportDetail(id) {
   var html = '<div class="report-tc-list">';
 
   if (isSupabase) {
-    // Supabase run — fetch phase outputs from the worker
+    // Supabase run — fetch phase outputs + timeline from the worker
     var data = await workerFetch('GET', '/api/runs/' + id);
     if (!data) { showToast('✗ לא ניתן לטעון דוח', 'err'); return; }
+    html = renderPhaseTimeline(data.phase_status || []) + '<div class="report-tc-list">';
     var outputs = data.outputs || [];
     if (outputs.length === 0) {
       html += '<div class="report-tc-row" style="color:var(--muted);font-size:12px">אין פלטים שמורים לריצה זו</div>';

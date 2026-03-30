@@ -231,7 +231,7 @@ def list_runs(
 @app.get('/api/runs/{run_id}')
 def get_run(run_id: str, user: dict = Depends(current_user)):
     """
-    Fetch a single run with its phase outputs.
+    Fetch a single run with its phase outputs and per-phase status timeline.
     Ownership is verified server-side: user_id from JWT must match run.user_id.
     Returns 404 whether the run does not exist or belongs to another user.
     """
@@ -247,6 +247,20 @@ def get_run(run_id: str, user: dict = Depends(current_user)):
         .execute()
     )
     run['outputs'] = outputs_result.data or []
+
+    # Per-phase lifecycle status, returned in logical pipeline order.
+    # Missing phases are omitted (not all runs reach every phase).
+    _PHASE_ORDER = ['stp', 'std', 'run', 'str']
+    ps_result = (
+        _sb.table('run_phase_status')
+        .select('phase, status, started_at, completed_at, error_message, updated_at')
+        .eq('run_id', run_id)
+        .eq('user_id', user['id'])
+        .execute()
+    )
+    ps_by_phase = {row['phase']: row for row in (ps_result.data or [])}
+    run['phase_status'] = [ps_by_phase[p] for p in _PHASE_ORDER if p in ps_by_phase]
+
     return run
 
 
