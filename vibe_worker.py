@@ -48,7 +48,7 @@ SUPABASE_SERVICE_KEY = _require_env('SUPABASE_SERVICE_KEY')
 # If ALLOWED_ORIGINS is not set, fall back to localhost only (safe for local
 # development; will block all cross-origin requests in a deployed environment,
 # making a missing config a loud, obvious failure rather than a silent risk).
-_ORIGINS_DEFAULT = 'http://localhost:5500,http://127.0.0.1:5500'
+_ORIGINS_DEFAULT = 'http://localhost:5500,http://127.0.0.1:5500,https://haimzadokk.github.io'
 ALLOWED_ORIGINS  = [o.strip() for o in os.environ.get('ALLOWED_ORIGINS', _ORIGINS_DEFAULT).split(',')]
 
 # ── Supabase client (service role) ────────────────────────
