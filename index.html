@@ -54,6 +54,17 @@ body.light-mode .stg-overlay{background:rgba(248,250,252,.98)}
 body.light-mode .disp-section,body.light-mode .info-phase-card,body.light-mode .info-btn-item{background:#f1f5f9;border-color:#e2e8f0}
 body.light-mode .report-row{background:#f8fafc;border-color:#e2e8f0}
 body.light-mode .dash-overlay{background:#f8fafc}
+body.light-mode .logo-text .logo-title{color:#0f172a}
+body.light-mode .logo-text .logo-sub{color:var(--muted)}
+body.light-mode .logo-icon{box-shadow:0 0 16px rgba(5,150,105,.2)}
+body.light-mode .sb-phase-title{color:#0f172a}
+body.light-mode .sb-desc{color:#475569}
+body.light-mode .prog-label{color:#475569}
+body.light-mode .prog-num{border-color:#cbd5e1;color:#475569}
+body.light-mode .sb-phase-card{background:#f1f5f9;border-color:#e2e8f0}
+body.light-mode .reports-panel{background:#f8fafc}
+body.light-mode .reports-title{color:#0f172a}
+body.light-mode .reports-count{color:#475569}
 html,body{height:100%;background:var(--bg);font-family:'JetBrains Mono','Courier New',monospace;color:var(--text);overflow:hidden;font-size:18px}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -154,12 +165,12 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 
 /* ── SIDEBAR ── */
 .sidebar{width:240px;flex-shrink:0;border-left:1px solid var(--border);padding:18px 16px;display:flex;flex-direction:column;gap:12px;background:rgba(4,8,15,.3);overflow-y:auto}
-.sb-sec{font-size:14px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
+.sb-sec{font-size:16px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
 .sb-phase-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px}
 .sb-phase-icon{font-size:28px;line-height:1}
 .sb-phase-title{font-size:22px;font-weight:700;color:#e8f4ff}
 .sb-phase-sub{font-size:17px;color:var(--muted)}
-.sb-desc{font-size:15px;color:#8ab0d0;line-height:1.8}
+.sb-desc{font-size:16px;color:#8ab0d0;line-height:1.8}
 .sb-divider{height:1px;background:var(--border);margin:2px 0}
 .prog-list{display:flex;flex-direction:column;gap:7px}
 .prog-item{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
@@ -167,12 +178,12 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .prog-num{width:20px;height:20px;border-radius:5px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--dim);flex-shrink:0}
 .prog-num.done{border-color:var(--green);color:var(--green);background:rgba(0,229,160,.08)}
 .prog-num.run{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.08);animation:pulse 1s infinite}
-.prog-label{font-size:14px;color:#a0c0de;white-space:nowrap}
-.prog-badge{font-size:13px;padding:3px 6px;border-radius:3px;font-weight:700;letter-spacing:1px;background:var(--border);color:var(--dim)}
+.prog-label{font-size:16px;color:#a0c0de;white-space:nowrap}
+.prog-badge{font-size:14px;padding:3px 6px;border-radius:3px;font-weight:700;letter-spacing:1px;background:var(--border);color:var(--dim)}
 .prog-badge.done{background:rgba(0,229,160,.1);color:var(--green);white-space:nowrap;flex-shrink:0}
 .prog-badge.run{background:rgba(245,158,11,.1);color:var(--amber)}
 .sb-grow{flex:1}
-.gen-btn{width:100%;padding:16px 0;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all .3s;border:1px solid var(--border);background:var(--surface2);color:var(--dim);position:relative;overflow:hidden}
+.gen-btn{width:100%;padding:16px 0;border-radius:10px;font-family:inherit;font-size:18px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all .3s;border:1px solid var(--border);background:var(--surface2);color:var(--dim);position:relative;overflow:hidden}
 .gen-btn.on{border-color:var(--phase);background:color-mix(in srgb,var(--phase) 10%,transparent);color:var(--phase);box-shadow:0 0 18px color-mix(in srgb,var(--phase) 18%,transparent)}
 .gen-btn.on:hover{background:color-mix(in srgb,var(--phase) 16%,transparent);transform:translateY(-1px)}
 .gen-btn:disabled{cursor:not-allowed;opacity:.45}
@@ -1560,7 +1571,7 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       <div class="run-ob-steps-title">⚡ כדי להפעיל אוטומציה אמיתית</div>
       <div class="run-ob-step">
         <div class="run-ob-step-num">1</div>
-        <div class="run-ob-step-text">התקן את הדרישות (פעם אחת בלבד):<br>
+        <div class="run-ob-step-text">התקן את הדרישות מהטרמינל או CMD (פעם אחת בלבד):<br>
           <code>pip install pywinauto playwright anthropic python-dotenv</code><br>
           <code>playwright install chromium</code>
         </div>
@@ -1780,6 +1791,7 @@ var S = {
   runResult: null,
   runReports: [],
   runId: null,   // active Supabase run id — set at pipeline start, reused across phases
+  _pendingChat: null,
 };
 
 var PHASES = {
@@ -2627,7 +2639,11 @@ function getContext(p) {
   if (p>=4 && S.data[3]) c += '\n\n=== RUN (הרצת בדיקות) ===\n'+S.data[3].slice(0,12000);
   return c;
 }
-function canRun(p) { return p!==5 && (p===1 || !!S.data[p-1]); }
+function canRun(p) {
+  if (p===5) return false;
+  if (p===1) return !!(S.fileContent || (S.files && S.files.length > 0));
+  return !!S.data[p-1];
+}
 
 function buildPrompt(phase, context, ft, targetUrl) {
   var fh = ft ? ' [קובץ '+ft+']' : '';
@@ -2766,7 +2782,7 @@ async function runRefine(phaseId, instruction) {
     S.status[phaseId] = 'done';
     showOut(phaseId, full, false);
     updateTabDones();
-    showToast('✓ שופר בהצלחה!', 'ok');
+    showToast('✓ Improved successfully!', 'ok');
     _vibeRunSaveOutput(_PHASE_OUTPUT_TYPE[phaseId], full);
     _vibePhaseStatus(phaseId, 'completed');
   } catch(err) {
@@ -2958,7 +2974,7 @@ function updateUI() {
   // Chat
   document.getElementById('chat-pfx').style.color = ph.c;
   document.getElementById('send-btn').style.background = ph.c;
-  document.getElementById('send-btn').disabled = S.streaming;
+  document.getElementById('send-btn').disabled = false;
   document.getElementById('chat-wrap').style.borderColor = 'color-mix(in srgb,'+ph.c+' 22%,transparent)';
 
   // URL connect (Phase 3 only — hidden if target already configured from Phase 1)
@@ -3017,6 +3033,17 @@ function updateUI() {
 
   renderChips();
   renderHist();
+
+  // Process queued chat message (sent during generation via stop+redirect)
+  if (!S.streaming && S._pendingChat) {
+    var pc = S._pendingChat; S._pendingChat = null;
+    setTimeout(function(){
+      if (pc.phase !== S.ap) setPhase(pc.phase);
+      var ta = document.getElementById('chat-ta');
+      ta.value = pc.msg;
+      sendChat();
+    }, 150);
+  }
 }
 
 function setPhase(id) {
@@ -3035,7 +3062,10 @@ function renderChips() {
   }).join('');
   el.querySelectorAll('.chip:not([disabled])').forEach(function(btn){
     btn.addEventListener('click', function(){
-      if(!S.streaming) runRefine(S.ap, CHIPS[S.ap][+btn.dataset.i].p);
+      if(S.streaming) return;
+      var ta = document.getElementById('chat-ta');
+      ta.value = CHIPS[S.ap][+btn.dataset.i].p;
+      sendChat();
     });
   });
 }
@@ -3805,7 +3835,25 @@ document.addEventListener('drop', function(e){ e.preventDefault(); if(e.dataTran
 async function sendChat() {
   var ta = document.getElementById('chat-ta');
   var msg = ta.value.trim();
-  if (!msg || S.streaming) return;
+  if (!msg) return;
+
+  // Handle commands during active generation
+  if (S.streaming) {
+    var STOP_WORDS = ['עצור','stop','הפסק','halt','עצור!','stop!'];
+    if (STOP_WORDS.indexOf(msg.toLowerCase().trim()) !== -1) {
+      stopGeneration();
+      ta.value = ''; ta.style.height = 'auto';
+      showToast('⏹ ייצור הופסק', '');
+      return;
+    }
+    // Non-stop message during streaming: stop and queue
+    stopGeneration();
+    S._pendingChat = { phase: S.ap, msg: msg };
+    ta.value = ''; ta.style.height = 'auto';
+    showToast('⏹ עוצר ייצור — ממשיך בצ\'אט...', '');
+    return;
+  }
+
   ta.value=''; ta.style.height='auto';
   var p = S.ap;
 

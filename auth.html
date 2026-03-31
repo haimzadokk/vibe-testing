@@ -17,6 +17,40 @@
   --amber:#f59e0b;--red:#f43f5e;--blue:#3b82f6;
   --radius:12px;
 }
+body.light-mode{
+  --bg:#ffffff;--surface:#f8fafc;--surface2:#f1f5f9;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --text:#0f172a;--muted:#475569;--dim:#94a3b8;
+  --green:#059669;--green2:#10b981;--purple2:#8b5cf6;
+  --amber:#d97706;--red:#dc2626;--blue:#2563eb;
+}
+body.light-mode .bg-grid{
+  background-image:
+    linear-gradient(rgba(5,150,105,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(5,150,105,.04) 1px,transparent 1px);
+}
+body.light-mode .bg-glow{
+  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(5,150,105,.08),transparent);
+}
+body.light-mode .auth-card{
+  background:linear-gradient(135deg,#f8fafc 0%,#f1f5f9 100%);
+  border-color:#e2e8f0;
+  box-shadow:0 4px 32px rgba(0,0,0,.08);
+}
+body.light-mode .field input{background:#ffffff;border-color:#cbd5e1;color:#0f172a;}
+body.light-mode .field input::placeholder{color:#94a3b8;}
+body.light-mode .field input:focus{border-color:#059669;}
+body.light-mode .btn-google{background:#ffffff;border-color:#cbd5e1;color:#0f172a;}
+body.light-mode .btn-secondary{border-color:#cbd5e1;color:#475569;}
+body.light-mode .divider{color:#94a3b8;}
+body.light-mode .divider::before,body.light-mode .divider::after{background:#e2e8f0;}
+body.light-mode .auth-links p{color:#475569;}
+body.light-mode .resend-note{color:#94a3b8;}
+body.light-mode #auth-loading-lbl{color:#94a3b8;}
+body.light-mode .init-spin{border-color:#e2e8f0;border-top-color:#059669;}
+body.light-mode .pass-eye{color:#94a3b8;}
+body.light-mode .pass-eye:hover{color:#475569;}
+body.light-mode .pass-hint{color:#94a3b8;}
 
 html{
   height:100%;
@@ -63,12 +97,13 @@ body{
 .auth-card{
   width:100%;
   max-width:420px;
-  background:var(--surface);
+  background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);
   border:1px solid var(--border2);
   border-radius:20px;
   padding:36px 32px 32px;
   position:relative;
   overflow:hidden;
+  box-shadow:0 0 80px rgba(0,229,160,.06),0 40px 80px rgba(0,0,0,.5);
 }
 
 /* top gradient bar — same style as index.html modals */
@@ -855,6 +890,14 @@ async function doReset() {
   await sb.auth.signOut()
   window.location.replace('auth.html?msg=password_reset')
 }
+
+// ── THEME: sync with main app's light/dark setting ───────────
+;(function(){
+  try {
+    var d = JSON.parse(localStorage.getItem('vibe_display') || '{}');
+    if (d.theme === 'light') document.body.classList.add('light-mode');
+  } catch(e){}
+})();
 
 // ── KEYBOARD: Enter submits active form ──────────────────────
 // Each action function checks btn.disabled internally — no extra guard needed here.
