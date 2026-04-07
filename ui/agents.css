@@ -372,3 +372,130 @@ body.light-mode .vibe-et-rejected  { background: #f43f5e15; }
   border-inline-start: none;
   border-inline-end: 2px solid #f59e0b40;
 }
+
+
+/* ─── §7  AGENT RUNTIME LOG PANEL ───────────────────────────────────── */
+.agent-log-panel {
+  margin: 12px 0 0 0;
+  border: 1px solid var(--border, rgba(59,73,75,.18));
+  border-radius: 8px;
+  overflow: hidden;
+  animation: agent-fade-in .2s ease both;
+  background: var(--surface, #0d1117);
+}
+
+.alp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg2, rgba(10,20,28,.6));
+  border-bottom: 1px solid var(--border, rgba(59,73,75,.14));
+  transition: background .18s;
+}
+.alp-header:hover { background: var(--bg2, rgba(10,20,28,.85)); }
+
+.alp-title {
+  flex: 1;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted, #7a9abf);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.alp-toggle {
+  font-size: 11px;
+  color: var(--muted, #7a9abf);
+  transition: transform .2s;
+}
+
+.alp-body {
+  max-height: 260px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  transition: max-height .22s ease, padding .22s ease, opacity .18s;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, rgba(59,73,75,.3)) transparent;
+}
+.alp-body.alp-collapsed {
+  max-height: 0;
+  padding: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* Log row */
+.alp-row {
+  display: grid;
+  grid-template-columns: 40px 44px 120px 1fr 56px;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: background .12s;
+}
+.alp-row:hover { background: var(--bg2, rgba(10,20,28,.4)); }
+
+.alp-icon {
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: .5px;
+}
+.alp-phase {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.alp-event {
+  font-size: 9px;
+  color: var(--text, #c8d8e4);
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+.alp-detail {
+  font-size: 9px;
+  color: var(--muted, #7a9abf);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.alp-time {
+  font-size: 8px;
+  color: var(--muted, #7a9abf);
+  text-align: right;
+  opacity: .6;
+}
+
+.alp-empty {
+  font-size: 11px;
+  color: var(--muted, #7a9abf);
+  font-style: italic;
+  padding: 8px 14px;
+  opacity: .5;
+}
+
+
+/* ─── §8  PHASE TAB HEALTH INDICATORS ───────────────────────────────── */
+/* Adds a small dot to phase tabs based on runtime health */
+.ph-tab.ph-health-good::after    { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #00e5a0; }
+.ph-tab.ph-health-medium::after  { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #f59e0b; }
+.ph-tab.ph-health-low::after     { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #f43f5e; box-shadow: 0 0 5px #f43f5e; }
+.ph-tab.ph-health-degraded::after{ content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #f59e0b; animation: agent-pulse-glow 1.5s ease infinite; }
+
+/* Ensure tabs have position:relative so ::after works */
+.ph-tab { position: relative; }
+
+
+/* ─── §9  LIGHT MODE — RUNTIME ADDITIONS ────────────────────────────── */
+body.light-mode .agent-log-panel { background: #ffffff; border-color: #e2e8f0; }
+body.light-mode .alp-header      { background: #f8fafc; border-bottom-color: #e2e8f0; }
+body.light-mode .alp-header:hover{ background: #f1f5f9; }
+body.light-mode .alp-row:hover   { background: #f1f5f9; }
