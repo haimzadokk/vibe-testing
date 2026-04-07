@@ -581,18 +581,43 @@
       }
     })();
 
-    /* ── Onboarding (first-time users only) ── */
+    /* ── Onboarding (first-time users only, AFTER welcome screen dismissed) ── */
     var seen = false;
     try { seen = !!localStorage.getItem(LS_KEY); } catch (e) {}
     if (seen) return;
 
-    // Short delay so main app is visually settled before overlay appears
-    setTimeout(function () {
+    // Wait until the user dismisses the welcome screen (#modal gains 'hidden' class)
+    // before showing our onboarding overlay — preserves the existing landing page.
+    function showOnboarding() {
       var overlay = buildOnboarding();
       document.body.appendChild(overlay);
-      goStep(1); // initializes dots + first step
+      goStep(1);
       overlay.focus();
-    }, 500);
+    }
+
+    var modal = document.getElementById('modal');
+    if (!modal) {
+      // No modal in this build — fall back to timed show
+      setTimeout(showOnboarding, 500);
+      return;
+    }
+
+    // If modal is already hidden (e.g. user hit back, localStorage cleared) show immediately
+    if (modal.classList.contains('hidden')) {
+      setTimeout(showOnboarding, 300);
+      return;
+    }
+
+    // Otherwise observe for the 'hidden' class being added
+    var obs = new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        if (m.attributeName === 'class' && modal.classList.contains('hidden')) {
+          obs.disconnect();
+          setTimeout(showOnboarding, 300); // brief pause so vt-shell settle-animation plays
+        }
+      });
+    });
+    obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
   }
 
   if (document.readyState === 'loading') {
