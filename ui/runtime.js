@@ -7,6 +7,9 @@
  * v3 → explicit runAgentPhase() as the runtime execution owner.
  *       runGen now delegates post-execution entirely to runAgentPhase.
  *       All v1/v2 functions are UNCHANGED.
+ * v3.1 → decision propagation enrichment (structured STP→STD risk signals,
+ *         structured RUN→STR rejection analysis, caution signals for degraded phases),
+ *         deterministic recommendedAction layer, STR memory write policy.
  *
  * Load order: stitch.js → agents.js → runtime.js
  * WRAP principle: zero existing IDs, functions, or pipeline altered.
@@ -79,6 +82,8 @@
     input_summary:      '⋮',
     error:              '✕',
     annotation:         '→',
+    recommendation:     '⟹',
+    memory_policy:      '◐',
   };
 
   var LOG_COLORS = {
@@ -94,6 +99,8 @@
     input_summary:      '#7a9abf',
     error:              '#f43f5e',
     annotation:         '#7a9abf',
+    recommendation:     '#06b6d4',
+    memory_policy:      '#7a9abf',
   };
 
   function logEvent(phaseId, event, data) {
@@ -260,8 +267,11 @@
     }
 
     // Explicit status — finer-grained than S.status
+    // completed_degraded = phase ran to 'done' but decision engine rated it 'degraded'
+    // (artifact presence alone is insufficient: artifact can exist AND be degraded,
+    //  or be absent while raw-text fallback still gives usable context)
     var resultStatus = statusAfter === 'done'
-      ? (artifact ? 'completed' : 'completed_degraded')
+      ? ((decision && decision.health === 'degraded') ? 'completed_degraded' : 'completed')
       : (statusAfter === 'error' ? 'error' : 'aborted');
 
     return {
@@ -278,9 +288,10 @@
       },
       validation:  validation,
       decisions:   decisions,
-      status:      resultStatus,
-      elapsed:     elapsed,
-      timestamp:   new Date().toISOString(),
+      status:         resultStatus,
+      elapsed:        elapsed,
+      timestamp:      new Date().toISOString(),
+      recommendation: computeRecommendedAction(phaseId, artifact, decision),
     };
   }
 
@@ -383,6 +394,91 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
+     §7a  RISK FOCUS HINTS
+     Maps a risk area name to recommended test coverage types.
+     Used by buildAnnotations to produce structured STD guidance.
+  ═══════════════════════════════════════════════════════════════════ */
+  function _riskFocusHints(area) {
+    var a = (area || '').toLowerCase();
+    if (/auth|login|session|token|password|jwt|oauth/.test(a))
+      return 'auth bypass, token expiry, concurrent sessions, privilege escalation';
+    if (/pay|billing|transaction|invoice|stripe|charge/.test(a))
+      return 'integration, boundary values, error recovery, idempotency';
+    if (/data|valid|input|form|field|sanitiz/.test(a))
+      return 'boundary conditions, injection patterns, edge inputs, empty/null';
+    if (/api|endpoint|request|response|http|rest|graphql/.test(a))
+      return 'contract, error codes, timeout, malformed payload';
+    if (/security|xss|sql|inject|csrf|ssrf/.test(a))
+      return 'penetration, XSS, injection patterns, header manipulation';
+    if (/perf|load|stress|scale|throughput|latency/.test(a))
+      return 'load, stress, throughput limits, degraded-mode behavior';
+    if (/notif|email|sms|push|webhook/.test(a))
+      return 'delivery, retry, idempotency, failure fallback';
+    if (/file|upload|download|storage|s3|blob/.test(a))
+      return 'file size limits, type validation, concurrent access, partial upload';
+    return 'boundary conditions, equivalence partitioning, negative paths';
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §7b  RECOMMENDED ACTION LAYER
+     Deterministic, bounded — no autonomy, no auto-reruns.
+     Evaluates phase output quality and recommends the next human action.
+     Attached to every phaseResult as phaseResult.recommendation.
+  ═══════════════════════════════════════════════════════════════════ */
+  function computeRecommendedAction(phaseId, artifact, decision) {
+    var health     = decision ? decision.health     : 'degraded';
+    var confidence = decision ? (decision.confidence || 0) : 0;
+
+    // Phase produced no usable structured output
+    if (health === 'degraded') {
+      return { safeToProceed: false, needsUserReview: true,
+               recommendedAction: 'rerun_phase' };
+    }
+
+    // STR: explicit NO-GO verdict
+    if (phaseId === 4 && artifact && artifact.goNoGo === 'NO-GO') {
+      return { safeToProceed: false, needsUserReview: true,
+               recommendedAction: 'investigate_failures' };
+    }
+
+    // RUN: critical-severity blockers found
+    if (phaseId === 3 && artifact && artifact.failures) {
+      var blockers = artifact.failures.filter(function (f) { return f.severity === 'Critical'; });
+      if (blockers.length > 0) {
+        return { safeToProceed: false, needsUserReview: true,
+                 recommendedAction: 'investigate_failures' };
+      }
+    }
+
+    // Low confidence: input was too sparse for reliable output
+    if (health === 'low') {
+      return { safeToProceed: false, needsUserReview: true,
+               recommendedAction: 'add_context' };
+    }
+
+    // RUN: assumptions rejected at execution time
+    if (phaseId === 3 && artifact && artifact.assumptionUpdates) {
+      var rejected = artifact.assumptionUpdates.filter(function (u) { return u.newTag === '[REJECTED]'; });
+      if (rejected.length > 0) {
+        return { safeToProceed: true, needsUserReview: true,
+                 recommendedAction: 'review_assumptions' };
+      }
+    }
+
+    // Medium confidence: proceed but flag assumptions for review
+    if (health === 'medium') {
+      return { safeToProceed: true, needsUserReview: true,
+               recommendedAction: 'review_assumptions' };
+    }
+
+    // All checks passed — clean output, no blockers
+    return { safeToProceed: true, needsUserReview: false,
+             recommendedAction: 'proceed' };
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
      §8  NEXT-PHASE ANNOTATION  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function buildAnnotations(phaseId, artifact, decision) {
@@ -391,25 +487,46 @@
 
     var lines = [];
 
+    // STP → STD: structured high-risk areas with recommended coverage type per area
     if (phaseId === 1 && artifact.riskMap && artifact.riskMap.length) {
       var hot = artifact.riskMap.filter(function (r) { return (r.score || 0) >= 15; });
       if (hot.length) {
-        lines.push('PRIORITIZE THESE HIGH-RISK AREAS (score≥15): ' +
-          hot.map(function (r) { return r.id + ' [' + r.area + ']'; }).join(' | '));
+        lines.push('PRIORITIZE HIGH-RISK AREAS (score≥15) — STD must include targeted test cases for each:');
+        hot.slice(0, 6).forEach(function (r) {
+          lines.push('  · ' + r.id + ' [' + r.area + '] score:' + r.score +
+            ' → coverage: ' + _riskFocusHints(r.area));
+        });
       }
     }
-    if (phaseId === 2 && artifact.coverageMatrix && artifact.coverageMatrix.gaps && artifact.coverageMatrix.gaps.length) {
-      lines.push('STD COVERAGE GAPS NOTED: ' + artifact.coverageMatrix.gaps.slice(0, 5).join('; '));
+
+    // STD → RUN: structured coverage gaps so RUN can flag if failures occur in these areas
+    if (phaseId === 2 && artifact.coverageMatrix) {
+      var gaps = (artifact.coverageMatrix.gaps || []);
+      if (gaps.length) {
+        lines.push('STD COVERAGE GAPS (' + gaps.length + ') — RUN: note if failures occur in uncovered areas:');
+        gaps.slice(0, 5).forEach(function (g) { lines.push('  · ' + g); });
+      }
     }
+
+    // RUN → STR: structured rejected assumption analysis with evidence for root cause
     if (phaseId === 3 && artifact.assumptionUpdates) {
       var rej = artifact.assumptionUpdates.filter(function (u) { return u.newTag === '[REJECTED]'; });
       if (rej.length) {
-        lines.push('REJECTED IN EXECUTION: ' +
-          rej.map(function (u) { return u.id + ' — ' + (u.evidence || 'see RUN log'); }).join('; '));
+        lines.push('REJECTED ASSUMPTIONS (' + rej.length + ') — STR Insight Agent must perform root cause analysis:');
+        rej.slice(0, 5).forEach(function (u) {
+          lines.push('  · ' + u.id + ': ' + (u.text || '(see RUN output)').slice(0, 80) +
+            ' → evidence: "' + (u.evidence || 'see RUN log').slice(0, 80) + '"');
+        });
+        lines.push('  ACTION REQUIRED: Determine if each rejected assumption should be retired from future test plans.');
       }
     }
+
+    // All phases: caution signal when prior phase was degraded or low-confidence
     if (decision.health !== 'good' && decision.warnings.length) {
-      lines.push('PRIOR PHASE HEALTH ' + decision.health.toUpperCase() + ': ' + decision.warnings[0]);
+      var conf = decision.confidence ? Math.round(decision.confidence * 100) + '%' : '—';
+      lines.push('CAUTION: Prior phase health=' + decision.health.toUpperCase() +
+        ' (confidence:' + conf + ') — treat all [ASSUMED] items as unverified;' +
+        ' validate independently before relying on this output.');
     }
 
     if (lines.length) {
@@ -468,6 +585,68 @@
       goNoGo:            goNoGo || '—',
       degradedCount:     rt.degradedPhases.length,
     });
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §9a  MEMORY WRITE POLICY — DURABLE INSIGHTS FILTER
+     Called after STR completes. Reads S.artifacts[1..4] and S.assumptions
+     to separate durable, validated insights from transient run details.
+     Result stored in S.runtime.durableInsights — agents.js memory write
+     is NOT intercepted; this snapshot can inform future write policy.
+
+     Durable:   lessons with confidence≥0.65, [VALIDATED] assumptions,
+                STP high-risk areas confirmed by RUN failures
+     Excluded:  [ASSUMED] items (unvalidated), low-confidence lessons,
+                run-specific counts/pass-rates (transient)
+  ═══════════════════════════════════════════════════════════════════ */
+  function _buildDurableInsights(strArtifact) {
+    if (!strArtifact) return null;
+
+    var insights = {
+      durableLessons:    [],
+      validatedFacts:    [],
+      recurringRisks:    [],
+      excludedTransient: [],
+      builtAt:           new Date().toISOString(),
+    };
+
+    // 1. Durable lessons: only items with confidence≥0.65 from STR lessonsLearned
+    if (Array.isArray(strArtifact.lessonsLearned)) {
+      strArtifact.lessonsLearned.forEach(function (l) {
+        if (l && (l.confidence == null || l.confidence >= 0.65)) {
+          insights.durableLessons.push(l);
+        } else {
+          insights.excludedTransient.push({ item: l, reason: 'low_confidence_lesson' });
+        }
+      });
+    }
+
+    // 2. Validated facts: assumptions marked [VALIDATED] across all phases
+    if (window.S && S.assumptions) {
+      S.assumptions.filter(function (a) { return a.tag === '[VALIDATED]'; }).forEach(function (a) {
+        insights.validatedFacts.push({ id: a.id, text: a.text, phase: a.phase });
+      });
+      // Unvalidated assumptions are transient — exclude from durable write
+      S.assumptions.filter(function (a) { return a.tag === '[ASSUMED]'; }).forEach(function (a) {
+        insights.excludedTransient.push({ item: a, reason: 'unvalidated_assumption' });
+      });
+    }
+
+    // 3. Recurring risks: STP high-risk areas (score≥15) confirmed by actual RUN failures
+    if (window.S && S.artifacts) {
+      var stpRisks   = (S.artifacts[1] && S.artifacts[1].riskMap) ? S.artifacts[1].riskMap : [];
+      var runFails   = (S.artifacts[3] && S.artifacts[3].failures) ? S.artifacts[3].failures : [];
+      var failRiskIds = runFails.map(function (f) { return (f.riskId || '').toLowerCase(); });
+
+      stpRisks.filter(function (r) { return (r.score || 0) >= 15; }).forEach(function (r) {
+        if (failRiskIds.indexOf((r.id || '').toLowerCase()) !== -1) {
+          insights.recurringRisks.push({ id: r.id, area: r.area, score: r.score, confirmedByRUN: true });
+        }
+      });
+    }
+
+    return insights;
   }
 
 
@@ -662,14 +841,24 @@
       if (errored) {
         phaseResult.validation.missingCriticalData.push('Phase ended in error state — check console');
       }
-      // Even for aborted/errored phases: write to phaseResults so pipeline knows what happened
-      if (S.runtime) S.runtime.phaseResults[phaseId] = phaseResult;
+      // Apply health + accumulate runtime state for ALL terminal outcomes
+      // updateRuntimeState writes rt.phaseResults, rt.flags, rt.warnings, rt.decisions
+      S.phaseHealth[phaseId] = decision;
+      applyTabHealth(phaseId, decision.health);
+      updateRuntimeState(phaseId, phaseResult, decision);
+      // Log recommendation even for non-success outcomes (always rerun_phase or add_context)
+      var nsRec = phaseResult.recommendation;
+      logEvent(phaseId, 'recommendation', {
+        action:          nsRec ? nsRec.recommendedAction : 'rerun_phase',
+        safeToProceed:   false,
+        needsUserReview: true,
+      });
       logEvent(phaseId, 'complete', { elapsed: elapsed, status: phaseResult.status });
       _refreshLogPanel();
       return phaseResult;
     }
 
-    // §14.9  Update S.runtime (only on success path)
+    // §14.9  Update S.runtime — success path
     S.phaseHealth[phaseId] = decision;
     applyTabHealth(phaseId, decision.health);
     updateRuntimeState(phaseId, phaseResult, decision);
@@ -713,6 +902,21 @@
       );
     }
 
+    // §14.10b  Surface recommendedAction if user action is needed
+    var rec = phaseResult.recommendation;
+    if (rec && !rec.safeToProceed) {
+      surfaceWarning(phaseId,
+        'Recommended action: ' + rec.recommendedAction.replace(/_/g, ' ').toUpperCase() +
+        ' — proceeding to the next phase may produce low-quality results',
+        'error'
+      );
+    }
+    logEvent(phaseId, 'recommendation', {
+      action:          rec ? rec.recommendedAction : 'proceed',
+      safeToProceed:   rec ? rec.safeToProceed   : true,
+      needsUserReview: rec ? rec.needsUserReview  : false,
+    });
+
     // §14.11  Build annotations for next phase (1→2, 2→3, 3→4 only)
     if (phaseId < 4) buildAnnotations(phaseId, artifact, decision);
 
@@ -723,6 +927,22 @@
         passRate: S.memory.previousPassRate != null
           ? Math.round(S.memory.previousPassRate * 100) + '%' : '—',
       });
+    }
+
+    // §14.12b  Memory write policy — durable insights filter (STR only)
+    // Does NOT intercept agents.js memory write — builds a policy-filtered snapshot
+    // in S.runtime.durableInsights for audit and future selective persistence.
+    if (phaseId === 4) {
+      var di = _buildDurableInsights(artifact);
+      if (di && S.runtime) {
+        S.runtime.durableInsights = di;
+        logEvent(phaseId, 'memory_policy', {
+          durableLessons: di.durableLessons.length,
+          validatedFacts: di.validatedFacts.length,
+          recurringRisks: di.recurringRisks.length,
+          excluded:       di.excludedTransient.length,
+        });
+      }
     }
 
     // §14.13  Pipeline summary (only after STR)
@@ -898,6 +1118,17 @@
       if (e.event === 'pipeline_summary') {
         detail = (e.completedPhases || '') + ' · ' + (e.overallConfidence || '—') +
                  ' · GoNoGo:' + (e.goNoGo || '—');
+      }
+      if (e.event === 'recommendation') {
+        var safeIcon = e.safeToProceed ? '✓' : '✕';
+        detail = safeIcon + ' ' + (e.action || '—').replace(/_/g, ' ') +
+                 (e.needsUserReview ? ' · review needed' : '');
+      }
+      if (e.event === 'memory_policy') {
+        detail = 'durable:' + (e.durableLessons || 0) +
+                 ' facts:' + (e.validatedFacts || 0) +
+                 ' risks:' + (e.recurringRisks || 0) +
+                 ' excl:' + (e.excluded || 0);
       }
 
       html +=

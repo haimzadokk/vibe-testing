@@ -1,0 +1,794 @@
+/**
+ * onboarding.css — VIBE.TESTING Onboarding + Agent Visualization
+ * Adds: 5-step onboarding overlay + always-on agent team panel
+ * WRAP: zero existing classes or IDs touched.
+ */
+
+/* ══════════════════════════════════════════════════════════════════
+   KEYFRAMES
+══════════════════════════════════════════════════════════════════ */
+@keyframes ob-fade-in      { from{opacity:0}           to{opacity:1} }
+@keyframes ob-slide-up     { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
+@keyframes ob-node-in      { from{opacity:0;transform:scale(.65)} to{opacity:1;transform:scale(1)} }
+@keyframes ob-line-draw    { from{transform:scaleX(0);opacity:0} to{transform:scaleX(1);opacity:1} }
+@keyframes ob-card-in      { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+@keyframes ob-glow-pulse   { 0%,100%{box-shadow:0 0 24px rgba(0,229,160,.35)} 50%{box-shadow:0 0 48px rgba(0,229,160,.65)} }
+@keyframes ob-check-draw   { to{stroke-dashoffset:0} }
+@keyframes ob-shimmer-ltr  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+@keyframes vap-dot-pulse   { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes vap-border-glow { 0%,100%{opacity:.7} 50%{opacity:1} }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §1  ONBOARDING OVERLAY
+══════════════════════════════════════════════════════════════════ */
+#vt-onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2,5,12,.97);
+  backdrop-filter: blur(28px);
+  overflow: auto;
+  padding: 24px 16px;
+  animation: ob-fade-in .4s ease;
+  direction: ltr;
+}
+
+#vt-onboarding.ob-hidden { display: none; }
+
+/* grid bg texture */
+#vt-onboarding::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,229,160,.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,160,.022) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* corner glows */
+#vt-onboarding::after {
+  content: '';
+  position: fixed;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,160,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Card wrapper ── */
+.ob-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 700px;
+  background: linear-gradient(145deg, rgba(8,14,26,.98), rgba(12,18,32,.98));
+  border: 1px solid #1e2d45;
+  border-radius: 22px;
+  padding: 52px 56px 44px;
+  box-shadow: 0 0 80px rgba(0,229,160,.07), 0 48px 96px rgba(0,0,0,.7);
+  overflow: hidden;
+}
+
+/* top accent line */
+.ob-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #00e5a0 40%, #8b5cf6 70%, transparent 100%);
+}
+
+/* ambient corner glow inside card */
+.ob-card::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; right: -80px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(109,40,217,.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §2  STEP SYSTEM
+══════════════════════════════════════════════════════════════════ */
+.ob-step {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.ob-step.ob-active {
+  display: flex;
+  animation: ob-slide-up .38s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* section eyebrow label */
+.ob-eyebrow {
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: #4a6480;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §3  NAVIGATION
+══════════════════════════════════════════════════════════════════ */
+.ob-nav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.ob-dots {
+  display: flex;
+  gap: 9px;
+}
+
+.ob-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #162035;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all .28s cubic-bezier(.22,1,.36,1);
+}
+
+.ob-dot.ob-dot-active {
+  background: #00e5a0;
+  box-shadow: 0 0 10px rgba(0,229,160,.5);
+  width: 22px;
+  border-radius: 4px;
+}
+
+.ob-skip {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #2a3d52;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  transition: color .2s;
+}
+
+.ob-skip:hover { color: #7a9abf; }
+
+/* ── Button row ── */
+.ob-btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+  justify-content: center;
+}
+
+.ob-btn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #00e5a0, #00c086);
+  color: #04080f;
+  transition: all .25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.ob-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.18), transparent);
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.ob-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,229,160,.38); }
+.ob-btn:hover::after { opacity: 1; }
+
+.ob-btn-outline {
+  background: transparent;
+  color: #4a6480;
+  border: 1px solid #1e2d45;
+}
+
+.ob-btn-outline:hover {
+  transform: translateY(-1px);
+  box-shadow: none;
+  border-color: #4a6480;
+  color: #7a9abf;
+}
+
+.ob-btn-large {
+  padding: 16px 44px;
+  font-size: 13px;
+  letter-spacing: 4px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §4  STEP 1 — WELCOME
+══════════════════════════════════════════════════════════════════ */
+.ob-logo-icon {
+  width: 78px;
+  height: 78px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #00e5a0 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 900;
+  color: #04080f;
+  letter-spacing: -2px;
+  font-family: 'JetBrains Mono', monospace;
+  animation: ob-glow-pulse 2.4s ease infinite;
+  margin: 0 auto 32px;
+}
+
+.ob-welcome-title {
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: 7px;
+  color: #f0f8ff;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.ob-welcome-title em {
+  color: #00e5a0;
+  font-style: normal;
+}
+
+.ob-welcome-sub {
+  font-size: 14px;
+  color: #5a7090;
+  letter-spacing: 1.5px;
+  line-height: 1.9;
+  max-width: 440px;
+  margin: 0 auto 24px;
+}
+
+.ob-tags {
+  display: flex;
+  gap: 9px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ob-tag {
+  padding: 5px 13px;
+  border: 1px solid rgba(0,229,160,.2);
+  border-radius: 20px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #00e5a0;
+  background: rgba(0,229,160,.04);
+  text-transform: uppercase;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §5  STEP 2 — THINKING MODEL
+══════════════════════════════════════════════════════════════════ */
+.ob-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  overflow-x: auto;
+  padding: 8px 0 24px;
+  scrollbar-width: none;
+}
+
+.ob-flow::-webkit-scrollbar { display: none; }
+
+.ob-flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  opacity: 0;
+  animation: ob-node-in .4s cubic-bezier(.22,1,.36,1) both;
+}
+
+.ob-flow-dot {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  transition: transform .2s;
+}
+
+.ob-flow-node:hover .ob-flow-dot { transform: scale(1.12); }
+
+.ob-flow-lbl {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ob-flow-arrow {
+  width: 30px;
+  height: 2px;
+  flex-shrink: 0;
+  transform-origin: left center;
+  opacity: 0;
+  animation: ob-line-draw .35s ease both;
+}
+
+.ob-flow-desc {
+  font-size: 12px;
+  color: #4a6480;
+  line-height: 1.9;
+  max-width: 460px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §6  STEP 3 — PIPELINE
+══════════════════════════════════════════════════════════════════ */
+.ob-pipeline {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  overflow-x: auto;
+  padding: 4px 0 20px;
+  scrollbar-width: none;
+  gap: 0;
+}
+
+.ob-pipeline::-webkit-scrollbar { display: none; }
+
+.ob-phase-card {
+  flex: 1;
+  min-width: 130px;
+  background: rgba(4,8,15,.7);
+  border: 1px solid #1e2d45;
+  border-radius: 12px;
+  padding: 18px 14px;
+  text-align: center;
+  opacity: 0;
+  animation: ob-card-in .4s ease both;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s, transform .2s;
+}
+
+.ob-phase-card:hover {
+  border-color: var(--pc, #1e2d45);
+  transform: translateY(-3px);
+}
+
+/* top accent */
+.ob-phase-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--pc, #1e2d45);
+  box-shadow: 0 0 8px var(--pc, transparent);
+}
+
+.ob-phase-code {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+
+.ob-phase-name {
+  font-size: 11px;
+  color: #7a9abf;
+  letter-spacing: .5px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  min-height: 32px;
+}
+
+.ob-phase-desc {
+  font-size: 10px;
+  color: #3a5068;
+  line-height: 1.7;
+}
+
+.ob-pipe-arrow {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 36px;
+  padding: 36px 6px 0;
+  color: #1e2d45;
+  font-size: 20px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §7  STEP 4 — AGENTS
+══════════════════════════════════════════════════════════════════ */
+.ob-agents-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.ob-agent-card {
+  background: rgba(4,8,15,.8);
+  border: 1px solid #1e2d45;
+  border-radius: 12px;
+  padding: 18px 12px;
+  text-align: center;
+  opacity: 0;
+  animation: ob-card-in .4s ease both;
+  transition: all .25s;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+
+.ob-agent-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, var(--ac, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.ob-agent-card:hover {
+  border-color: var(--ac, #1e2d45);
+  transform: translateY(-4px);
+  background: rgba(8,14,26,.9);
+}
+
+.ob-agent-card:hover::before { opacity: .07; }
+
+.ob-agent-icon {
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.ob-agent-name {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.ob-agent-role {
+  font-size: 9px;
+  color: #3a5068;
+  line-height: 1.7;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §8  STEP 5 — READY
+══════════════════════════════════════════════════════════════════ */
+.ob-check-ring {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: rgba(0,229,160,.06);
+  border: 2px solid rgba(0,229,160,.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 32px;
+  box-shadow: 0 0 40px rgba(0,229,160,.18);
+}
+
+.ob-check-svg {
+  width: 38px;
+  height: 38px;
+}
+
+.ob-check-path {
+  stroke: #00e5a0;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: ob-check-draw .55s cubic-bezier(.22,1,.36,1) .2s forwards;
+}
+
+.ob-ready-title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: #f0f8ff;
+  margin-bottom: 14px;
+}
+
+.ob-ready-title em {
+  color: #00e5a0;
+  font-style: normal;
+}
+
+.ob-ready-sub {
+  font-size: 13px;
+  color: #4a6480;
+  letter-spacing: 1px;
+  line-height: 1.9;
+  max-width: 400px;
+  margin: 0 auto 32px;
+}
+
+/* shimmer CTA */
+.ob-btn-start {
+  background: linear-gradient(
+    110deg,
+    #00e5a0 20%,
+    #00ffc8 40%,
+    #00e5a0 60%
+  );
+  background-size: 200% 100%;
+  animation: ob-shimmer-ltr 2.4s ease infinite;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §9  AGENT TEAM PANEL  (main app, injected into .out-scroll)
+══════════════════════════════════════════════════════════════════ */
+#vt-agent-panel {
+  margin-bottom: 18px;
+  border: 1px solid #162035;
+  border-radius: 12px;
+  background: rgba(4,8,15,.7);
+  overflow: hidden;
+  direction: ltr;
+}
+
+/* ── Header ── */
+.vap-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid #162035;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s;
+}
+
+.vap-header:hover { background: rgba(0,229,160,.02); }
+
+.vap-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #00e5a0;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.vap-phase-pill {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #2a3d52;
+  text-transform: uppercase;
+  transition: color .3s;
+}
+
+.vap-phase-pill.vap-running {
+  color: #00e5a0;
+}
+
+.vap-toggle-btn {
+  background: none;
+  border: none;
+  color: #2a3d52;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 0;
+  line-height: 1;
+  transition: color .2s;
+}
+
+.vap-header:hover .vap-toggle-btn { color: #7a9abf; }
+
+/* ── Agent card grid ── */
+.vap-body {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.vap-body.vap-collapsed { display: none; }
+
+.vap-card {
+  background: rgba(4,8,15,.95);
+  padding: 12px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-right: 1px solid #162035;
+  transition: background .35s, opacity .35s, filter .35s;
+  position: relative;
+  overflow: hidden;
+  min-height: 96px;
+}
+
+.vap-card:last-child { border-right: none; }
+
+/* top accent bar */
+.vap-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--vc, transparent);
+  box-shadow: 0 0 8px var(--vc, transparent);
+  opacity: 0;
+  transition: opacity .3s;
+  animation: vap-border-glow 1.4s ease infinite;
+}
+
+/* state modifiers */
+.vap-card.vap-active .vap-accent  { opacity: 1; }
+.vap-card.vap-done .vap-accent    { opacity: .45; animation: none; }
+.vap-card.vap-degraded .vap-accent {
+  opacity: 1;
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+  animation: none;
+}
+
+.vap-card.vap-active  { background: rgba(var(--vc-rgb,0,229,160),.04); }
+.vap-card.vap-degraded { background: rgba(245,158,11,.04); }
+.vap-card.vap-idle    { opacity: .38; filter: saturate(.35); }
+
+/* ── Card internals ── */
+.vap-icon {
+  font-size: 17px;
+  line-height: 1;
+  margin-top: 4px;
+  margin-bottom: 2px;
+  transition: color .3s;
+}
+
+.vap-name {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #d8eeff;
+  text-transform: uppercase;
+}
+
+.vap-role {
+  font-size: 8.5px;
+  color: #2a3d52;
+  line-height: 1.5;
+  display: none; /* shown only on hover via JS — keep compact */
+}
+
+.vap-status-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.vap-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #162035;
+  flex-shrink: 0;
+  transition: all .3s;
+}
+
+.vap-card.vap-active .vap-dot {
+  background: var(--vc, #00e5a0);
+  box-shadow: 0 0 6px var(--vc, #00e5a0);
+  animation: vap-dot-pulse 1s ease infinite;
+}
+
+.vap-card.vap-done .vap-dot     { background: #00e5a0; }
+.vap-card.vap-degraded .vap-dot { background: #f59e0b; }
+
+.vap-status-lbl {
+  font-size: 8.5px;
+  letter-spacing: 1.5px;
+  color: #2a3d52;
+  text-transform: uppercase;
+}
+
+.vap-card.vap-active .vap-status-lbl   { color: var(--vc, #00e5a0); }
+.vap-card.vap-done .vap-status-lbl     { color: #00e5a0; }
+.vap-card.vap-degraded .vap-status-lbl { color: #f59e0b; }
+
+.vap-confidence {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vc, #2a3d52);
+  line-height: 1;
+  margin-top: auto;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.vap-card.vap-done .vap-confidence,
+.vap-card.vap-active .vap-confidence   { opacity: 1; }
+.vap-card.vap-degraded .vap-confidence { opacity: 1; color: #f59e0b; }
+
+.vap-action {
+  font-size: 8px;
+  color: #1e3050;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §10  LAYOUT FIXES when agent panel exists in out-scroll
+══════════════════════════════════════════════════════════════════ */
+/* Prevent empty-state height:100% from conflicting with panel above it */
+#vt-agent-panel ~ .empty-state {
+  height: auto;
+  min-height: 220px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   §11  RESPONSIVE
+══════════════════════════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .ob-card       { padding: 32px 24px 28px; }
+  .ob-welcome-title { font-size: 28px; letter-spacing: 4px; }
+  .ob-agents-grid   { grid-template-columns: repeat(3, 1fr); }
+  .vap-body         { grid-template-columns: repeat(3, 1fr); }
+  .vap-card         { min-height: 80px; }
+  .ob-phase-card    { min-width: 110px; padding: 14px 10px; }
+}
+
+@media (max-width: 480px) {
+  .ob-flow-dot   { width: 36px; height: 36px; font-size: 14px; }
+  .ob-flow-arrow { width: 18px; }
+  .ob-agents-grid { grid-template-columns: repeat(2, 1fr); }
+  .vap-body       { grid-template-columns: repeat(3, 1fr); }
+}
