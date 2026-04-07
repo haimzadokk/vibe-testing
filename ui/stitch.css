@@ -611,20 +611,16 @@ body.light-mode .gen-btn.on {
 
 /* ─── §14  WELCOME SCREEN ────────────────────────────────────────── */
 
-.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 72px; font-weight: 800; letter-spacing: 6px; }
-.wlc-version { font-family: 'Inter', sans-serif; font-size: 18px; letter-spacing: 4px; }
-.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 32px; line-height: 1.75; }
+.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 58px; font-weight: 900; letter-spacing: 6px; }
+.wlc-version { font-family: 'Inter', sans-serif; font-size: 14px; letter-spacing: 4px; }
+.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 26px; line-height: 1.7; }
 
-.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 25px; font-weight: 700; letter-spacing: 2px; }
-.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 20px; }
-
-.wlc-icon { width: 95px !important; height: 95px !important; font-size: 30px !important; }
-.wlc-phase-icon { font-size: 28px; }
-.wlc-arrow  { font-size: 22px; }
+.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; }
+.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 16px; }
 
 .wlc-feature {
   font-family: 'Inter', sans-serif;
-  font-size: 21px;
+  font-size: 17px;
   border: 1px solid rgba(59,73,75,.18);
   border-radius: 8px;
   background: rgba(17,19,24,.7);
@@ -632,14 +628,14 @@ body.light-mode .gen-btn.on {
 
 .wlc-btn {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 26px;
+  font-size: 21px;
   font-weight: 700;
   letter-spacing: 3px;
   border-radius: 12px;
-  padding: 22px 70px;
+  padding: 18px 56px;
 }
 
-.wlc-footer { font-family: 'Inter', sans-serif; font-size: 19px; }
+.wlc-footer { font-family: 'Inter', sans-serif; font-size: 15px; }
 
 
 /* ─── §15  TOAST ─────────────────────────────────────────────────── */
@@ -903,7 +899,9 @@ body.light-mode #chat-ta { color: #0f172a; }
 }
 
 .auth-card {
-  border-radius: 12px;
+  max-width: 380px;
+  padding: 28px 28px 24px;
+  border-radius: 16px;
   border: 1px solid rgba(59,73,75,.28);
   background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
   box-shadow: 0 0 60px rgba(0,219,233,.04), 0 32px 64px rgba(0,0,0,.4);
@@ -911,6 +909,10 @@ body.light-mode #chat-ta { color: #0f172a; }
 
 .auth-card::before {
   background: linear-gradient(90deg, var(--green), var(--brand), #7000ff);
+}
+
+.auth-logo {
+  margin-bottom: 20px;
 }
 
 .auth-logo-eyebrow {
