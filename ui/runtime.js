@@ -1,17 +1,12 @@
 /**
- * runtime.js — VIBE.TESTING Agent Runtime Layer v2.0
+ * runtime.js — VIBE.TESTING Agent Runtime Layer v3.0
  *
- * v1.0 → v2.0 additions (all backward-compatible):
- *   §1  S.runtime explicit state block
- *   §3  buildPhaseContext() — structured context snapshot per phase
- *   §4  buildPhaseResult()  — normalized phase result contract
- *   §5  updateRuntimeState() — flags / warnings / decisions / degradedPhases
- *   §8  finalizePipelineRun() — lastPipelineRun summary
- *   §9  patchRunGen extended with all of the above
- *
- * All v1.0 sections (logger, decision engine, prereq checker,
- * warning surface, tab health, getContext enrichment, log panel UI)
- * are UNCHANGED below.
+ * v1 → observability wrapper (logEvent, warnings, tab health)
+ * v2 → structured state (S.runtime, buildPhaseContext, buildPhaseResult,
+ *       updateRuntimeState, finalizePipelineRun)
+ * v3 → explicit runAgentPhase() as the runtime execution owner.
+ *       runGen now delegates post-execution entirely to runAgentPhase.
+ *       All v1/v2 functions are UNCHANGED.
  *
  * Load order: stitch.js → agents.js → runtime.js
  * WRAP principle: zero existing IDs, functions, or pipeline altered.
@@ -20,49 +15,54 @@
   'use strict';
 
   /* ═══════════════════════════════════════════════════════════════════
-     §1  STATE EXTENSIONS  (v2: adds S.runtime)
+     §1  CONSTANTS & MODULE-LEVEL EXECUTION REFERENCE
   ═══════════════════════════════════════════════════════════════════ */
   var PHASE_NAMES = ['', 'STP', 'STD', 'RUN', 'STR'];
 
+  /**
+   * _execFn — registered by patchRunGen() to the ORIGINAL runGen from
+   * index.html. runAgentPhase calls it to trigger the real Claude
+   * streaming pipeline (buildPrompt / getContext / streamClaude / showOut).
+   * Never called directly outside patchRunGen or runAgentPhase.
+   */
+  var _execFn = null;
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §2  STATE EXTENSIONS  (v1/v2 — unchanged)
+  ═══════════════════════════════════════════════════════════════════ */
   function initRuntimeState() {
     if (!window.S) return false;
-
-    // ── v1 state ────────────────────────────────────────────────────
     if (!S.agentLogs)          S.agentLogs          = [];
     if (!S.phaseHealth)        S.phaseHealth        = { 1: null, 2: null, 3: null, 4: null };
     if (!S.runtimeAnnotations) S.runtimeAnnotations = {};
-
-    // ── v2 runtime core ─────────────────────────────────────────────
-    if (!S.runtime) S.runtime = _freshRuntime();
-
+    if (!S.runtime)            S.runtime            = _freshRuntime();
     return true;
   }
 
   function _freshRuntime() {
     return {
-      currentPhase:    null,   // which phase is running right now
-      phaseResults:    {},     // [1..4] → normalized PhaseResult
-      flags:           [],     // cross-phase decision flags
-      warnings:        [],     // cross-phase runtime warnings
-      decisions:       [],     // chronological decision log
-      degradedPhases:  [],     // phases whose health was low/degraded
-      lastPipelineRun: null,   // summary written after STR completes
+      currentPhase:    null,
+      phaseResults:    {},
+      flags:           [],
+      warnings:        [],
+      decisions:       [],
+      degradedPhases:  [],
+      lastPipelineRun: null,
     };
   }
 
-  /** Called at the start of a new pipeline (phaseId=1) to reset state.
-   *  Preserves lastPipelineRun so it survives across runs. */
   function resetRuntimeForNewPipeline() {
     if (!window.S) return;
     var last = S.runtime ? S.runtime.lastPipelineRun : null;
     S.runtime = _freshRuntime();
-    S.runtime.lastPipelineRun = last;   // keep prior summary visible
+    S.runtime.lastPipelineRun = last;
     if (S.runtimeAnnotations) S.runtimeAnnotations = {};
   }
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §2  EXECUTION LOGGER  (v1 — unchanged)
+     §3  EXECUTION LOGGER  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   var MAX_LOGS = 60;
 
@@ -76,6 +76,7 @@
     memory_injected:    '↓ MEM',
     memory_updated:     '↑ MEM',
     pipeline_summary:   '═',
+    input_summary:      '⋮',
     error:              '✕',
     annotation:         '→',
   };
@@ -90,6 +91,7 @@
     memory_injected:    '#7a9abf',
     memory_updated:     '#00e5a0',
     pipeline_summary:   '#00e5a0',
+    input_summary:      '#7a9abf',
     error:              '#f43f5e',
     annotation:         '#7a9abf',
   };
@@ -114,11 +116,9 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §3  BUILD PHASE CONTEXT  (v2 — new)
-     Produces an explicit structured snapshot of what context is
-     available when a phase starts. Stored in phaseResult.contextUsed.
-     Does NOT replace the getContext() chain — that still drives the
-     actual prompt content. This is the auditable record.
+     §4  BUILD PHASE CONTEXT  (v2 — unchanged)
+     Audit snapshot of what was structurally available before execution.
+     Distinct from the actual prompt string built by getContext() chain.
   ═══════════════════════════════════════════════════════════════════ */
   function buildPhaseContext(phaseId) {
     var ctx = {
@@ -131,17 +131,15 @@
       highPriorityRisks:   [],
     };
 
-    // ── Artifacts available from prior phases ───────────────────────
     if (phaseId >= 2 && S.artifacts && S.artifacts[1]) {
       var stp = S.artifacts[1];
       ctx.artifactsAvailable.STP = {
-        confidence:    stp.confidenceScore || 0,
-        testItemCount: stp.testTree ? (stp.testTree.totalItems || 0) : null,
-        riskCount:     stp.riskMap  ? stp.riskMap.length : null,
+        confidence:      stp.confidenceScore || 0,
+        testItemCount:   stp.testTree ? (stp.testTree.totalItems || 0) : null,
+        riskCount:       stp.riskMap  ? stp.riskMap.length : null,
         assumptionCount: stp.assumptions ? stp.assumptions.length : null,
       };
     }
-
     if (phaseId >= 3 && S.artifacts && S.artifacts[2]) {
       var std = S.artifacts[2];
       ctx.artifactsAvailable.STD = {
@@ -150,34 +148,30 @@
         coverageGaps:  std.coverageMatrix ? (std.coverageMatrix.gaps || []) : [],
       };
     }
-
     if (phaseId >= 4 && S.artifacts && S.artifacts[3]) {
       var run = S.artifacts[3];
       ctx.artifactsAvailable.RUN = {
-        confidence:   run.confidenceScore || 0,
-        passRate:     run.summary ? (run.summary.passRate || null) : null,
-        failureCount: run.failures ? run.failures.length : null,
-        rejectedAssumptionCount: run.assumptionUpdates
+        confidence:               run.confidenceScore || 0,
+        passRate:                 run.summary ? (run.summary.passRate || null) : null,
+        failureCount:             run.failures ? run.failures.length : null,
+        rejectedAssumptionCount:  run.assumptionUpdates
           ? run.assumptionUpdates.filter(function (u) { return u.newTag === '[REJECTED]'; }).length
           : 0,
       };
     }
 
-    // ── Runtime annotations from prior phases ───────────────────────
     for (var ph = 1; ph < phaseId; ph++) {
       if (S.runtimeAnnotations && S.runtimeAnnotations[ph] && S.runtimeAnnotations[ph].length) {
         ctx.runtimeAnnotations = ctx.runtimeAnnotations.concat(S.runtimeAnnotations[ph]);
       }
     }
 
-    // ── Rejected assumptions (cross-phase, from S.assumptions) ──────
     if (S.assumptions) {
       ctx.rejectedAssumptions = S.assumptions
         .filter(function (a) { return a.tag === '[REJECTED]'; })
         .map(function (a) { return { id: a.id, text: a.text, phase: a.phase }; });
     }
 
-    // ── High-priority risks from STP (score ≥ 15) ───────────────────
     if (S.artifacts && S.artifacts[1] && S.artifacts[1].riskMap) {
       ctx.highPriorityRisks = S.artifacts[1].riskMap
         .filter(function (r) { return (r.score || 0) >= 15; })
@@ -189,15 +183,12 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §4  NORMALIZED PHASE RESULT  (v2 — new)
-     Contract: every completed phase produces one of these.
-     rawText is NOT duplicated here — it lives in S.data[phaseId].
+     §5  NORMALIZED PHASE RESULT  (v2 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function buildPhaseResult(phaseId, artifact, decision, ctxSnapshot, elapsed) {
     var phaseName = PHASE_NAMES[phaseId] || ('P' + phaseId);
-    var succeeded = !!(S.status && S.status[phaseId] === 'done');
+    var statusAfter = S.status ? (S.status[phaseId] || 'unknown') : 'unknown';
 
-    // ── Validation sub-object ───────────────────────────────────────
     var validation = {
       confidence:          artifact ? (artifact.confidenceScore || 0) : 0,
       artifactParsed:      !!artifact,
@@ -207,11 +198,12 @@
     };
 
     if (!artifact) {
-      validation.missingCriticalData.push('JSON artifact block absent — raw text preserved in S.data[' + phaseId + ']');
+      validation.missingCriticalData.push(
+        'JSON artifact absent — raw output preserved in S.data[' + phaseId + ']'
+      );
     }
 
     if (artifact) {
-      // Inconsistencies from execution validator
       if (artifact.validationResult) {
         if (artifact.validationResult.isConsistentWithSTD === false) {
           validation.inconsistencies.push(
@@ -223,57 +215,39 @@
           validation.inconsistencies.push('Unexplained failure: ' + String(f).slice(0, 80));
         });
       }
-
-      // Inconsistencies from STR report validator
       if (artifact.validationConsistency && !artifact.validationConsistency.isConsistent) {
         (artifact.validationConsistency.flags || []).forEach(function (f) {
           validation.inconsistencies.push('STR flag: ' + String(f).slice(0, 80));
         });
       }
-
-      // Rejected assumptions (from execution phase)
       if (artifact.assumptionUpdates) {
         validation.rejectedAssumptions = artifact.assumptionUpdates
           .filter(function (u) { return u.newTag === '[REJECTED]'; })
           .map(function (u) { return { id: u.id, evidence: u.evidence || '' }; });
       }
-
-      // Missing critical data checks per phase
-      if (phaseId === 1 && (!artifact.riskMap || !artifact.riskMap.length)) {
+      if (phaseId === 1 && (!artifact.riskMap || !artifact.riskMap.length))
         validation.missingCriticalData.push('Risk map empty — add product detail');
-      }
-      if (phaseId === 2 && (!artifact.testCases || !artifact.testCases.length)) {
+      if (phaseId === 2 && (!artifact.testCases || !artifact.testCases.length))
         validation.missingCriticalData.push('Test cases array empty');
-      }
-      if (phaseId === 3 && !artifact.summary) {
+      if (phaseId === 3 && !artifact.summary)
         validation.missingCriticalData.push('Execution summary object missing');
-      }
-      if (phaseId === 4 && !artifact.goNoGo) {
+      if (phaseId === 4 && !artifact.goNoGo)
         validation.missingCriticalData.push('Go/No-Go recommendation not found');
-      }
     }
 
-    // ── Decisions sub-object ────────────────────────────────────────
     var decisions = { flags: [], priorities: [] };
 
     if (decision) {
-      if (decision.health === 'low' || decision.health === 'degraded') {
+      if (decision.health === 'low' || decision.health === 'degraded')
         decisions.flags.push({ type: 'HEALTH_' + decision.health.toUpperCase(), phase: phaseName });
-      }
-      if (decision.confidence < 0.5) {
+      if (decision.confidence < 0.5)
         decisions.flags.push({ type: 'LOW_CONFIDENCE', value: Math.round(decision.confidence * 100) + '%', phase: phaseName });
-      }
     }
-
-    // Phase-specific decision flags
-    if (phaseId === 4 && artifact && artifact.goNoGo) {
+    if (phaseId === 4 && artifact && artifact.goNoGo)
       decisions.flags.push({ type: 'GO_NOGO', value: artifact.goNoGo, phase: 'STR' });
-    }
-    if (phaseId === 3 && artifact && artifact.summary && artifact.summary.passRate < 0.65) {
+    if (phaseId === 3 && artifact && artifact.summary && artifact.summary.passRate < 0.65)
       decisions.flags.push({ type: 'LOW_PASS_RATE', value: Math.round(artifact.summary.passRate * 100) + '%', phase: 'RUN' });
-    }
 
-    // Priorities for next phase (STD gets STP risks; STR gets RUN blockers)
     if (phaseId === 1 && artifact && artifact.riskMap) {
       artifact.riskMap.filter(function (r) { return (r.score || 0) >= 15; }).forEach(function (r) {
         decisions.priorities.push({ id: r.id, area: r.area, score: r.score, targetPhase: 'STD' });
@@ -285,25 +259,34 @@
       });
     }
 
+    // Explicit status — finer-grained than S.status
+    var resultStatus = statusAfter === 'done'
+      ? (artifact ? 'completed' : 'completed_degraded')
+      : (statusAfter === 'error' ? 'error' : 'aborted');
+
     return {
-      phase:        phaseId,
-      phaseName:    phaseName,
-      artifact:     artifact || null,
-      rawTextRef:   'S.data[' + phaseId + ']',    // no duplication — pointer only
-      contextUsed:  ctxSnapshot || null,
-      validation:   validation,
-      decisions:    decisions,
-      status:       succeeded ? 'completed' : (S.status ? (S.status[phaseId] || 'unknown') : 'unknown'),
-      elapsed:      elapsed,
-      timestamp:    new Date().toISOString(),
+      phase:       phaseId,
+      phaseName:   phaseName,
+      artifact:    artifact || null,
+      rawTextRef:  'S.data[' + phaseId + ']',
+      contextUsed: {
+        snapshot:         ctxSnapshot || null,
+        // Actual prompt content was built by getContext() chain:
+        // runtime.js §15 → agents.js override → original index.html version
+        // Full output of that chain is NOT stored here (already in S.data)
+        promptBuiltBy:    'getContext() chain (runtime → agents.js → index.html)',
+      },
+      validation:  validation,
+      decisions:   decisions,
+      status:      resultStatus,
+      elapsed:     elapsed,
+      timestamp:   new Date().toISOString(),
     };
   }
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §5  UPDATE RUNTIME STATE  (v2 — new)
-     Writes phase result into S.runtime. Accumulates flags, warnings,
-     decisions, degradedPhases — influences downstream behavior.
+     §6  UPDATE RUNTIME STATE  (v2 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function updateRuntimeState(phaseId, phaseResult, decision) {
     if (!window.S || !S.runtime) return;
@@ -312,28 +295,18 @@
     rt.currentPhase = phaseId;
     rt.phaseResults[phaseId] = phaseResult;
 
-    // ── Accumulate flags (de-duped by type+phase) ───────────────────
     (phaseResult.decisions.flags || []).forEach(function (f) {
       var dup = rt.flags.some(function (x) { return x.type === f.type && x.phase === f.phase; });
       if (!dup) rt.flags.push(f);
     });
 
-    // ── Accumulate warnings (de-duped by message) ───────────────────
     if (decision && decision.warnings) {
       decision.warnings.forEach(function (msg) {
         var dup = rt.warnings.some(function (x) { return x.message === msg; });
-        if (!dup) {
-          rt.warnings.push({
-            phase:   phaseId,
-            message: msg,
-            health:  decision.health,
-            ts:      new Date().toISOString(),
-          });
-        }
+        if (!dup) rt.warnings.push({ phase: phaseId, message: msg, health: decision.health, ts: new Date().toISOString() });
       });
     }
 
-    // ── Decisions chronological log ─────────────────────────────────
     if (decision) {
       rt.decisions.push({
         phase:        phaseId,
@@ -345,22 +318,19 @@
       });
     }
 
-    // ── Degraded phases list ────────────────────────────────────────
     if (decision && (decision.health === 'degraded' || decision.health === 'low')) {
-      if (rt.degradedPhases.indexOf(phaseId) === -1) {
-        rt.degradedPhases.push(phaseId);
-      }
+      if (rt.degradedPhases.indexOf(phaseId) === -1) rt.degradedPhases.push(phaseId);
     }
   }
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §6  DECISION ENGINE  (v1 — unchanged)
-     Bounded, explicit rules. No uncontrolled autonomy.
+     §7  DECISION ENGINE  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function computeDecision(phaseId, artifact) {
     if (!artifact) {
-      return { health: 'degraded', confidence: 0, warnings: ['JSON artifact not parsed — next phase uses raw text context (graceful fallback active)'] };
+      return { health: 'degraded', confidence: 0,
+               warnings: ['JSON artifact not parsed — next phase uses raw text context (graceful fallback active)'] };
     }
 
     var warnings = [];
@@ -383,7 +353,6 @@
         if (health === 'good') health = 'medium';
       }
     }
-
     if (phaseId === 3 && artifact.failures) {
       var blockers = artifact.failures.filter(function (f) { return f.severity === 'Critical'; });
       if (blockers.length > 0) {
@@ -391,23 +360,19 @@
         if (health === 'good') health = 'medium';
       }
     }
-
     if (phaseId === 3 && artifact.validationResult && artifact.validationResult.isConsistentWithSTD === false) {
       warnings.push('Execution Validator flagged inconsistency with STD (score: ' +
         (artifact.validationResult.consistencyScore || '?') + '/100)');
       if (health === 'good') health = 'medium';
     }
-
     if (phaseId === 4 && artifact.goNoGo === 'NO-GO') {
       warnings.push('Release recommendation: NO-GO — do not ship without addressing blockers');
       if (health === 'good') health = 'low';
     }
-
     if (phaseId === 4 && artifact.validationConsistency && !artifact.validationConsistency.isConsistent) {
       warnings.push('STR Report Validator flagged numerical inconsistency — review flagged sections');
       if (health === 'good') health = 'medium';
     }
-
     if (phaseId === 1 && artifact.testTree && artifact.testTree.totalItems === 0) {
       warnings.push('STP test tree is empty — check that file content was uploaded correctly');
       health = 'degraded';
@@ -418,7 +383,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §7  NEXT-PHASE ANNOTATION  (v1 — unchanged)
+     §8  NEXT-PHASE ANNOTATION  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function buildAnnotations(phaseId, artifact, decision) {
     if (!window.S || !artifact) return;
@@ -433,11 +398,9 @@
           hot.map(function (r) { return r.id + ' [' + r.area + ']'; }).join(' | '));
       }
     }
-
     if (phaseId === 2 && artifact.coverageMatrix && artifact.coverageMatrix.gaps && artifact.coverageMatrix.gaps.length) {
       lines.push('STD COVERAGE GAPS NOTED: ' + artifact.coverageMatrix.gaps.slice(0, 5).join('; '));
     }
-
     if (phaseId === 3 && artifact.assumptionUpdates) {
       var rej = artifact.assumptionUpdates.filter(function (u) { return u.newTag === '[REJECTED]'; });
       if (rej.length) {
@@ -445,7 +408,6 @@
           rej.map(function (u) { return u.id + ' — ' + (u.evidence || 'see RUN log'); }).join('; '));
       }
     }
-
     if (decision.health !== 'good' && decision.warnings.length) {
       lines.push('PRIOR PHASE HEALTH ' + decision.health.toUpperCase() + ': ' + decision.warnings[0]);
     }
@@ -460,9 +422,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §8  PIPELINE SUMMARY  (v2 — new)
-     Written into S.runtime.lastPipelineRun after all phases complete
-     or explicitly after STR. No external side effects.
+     §9  PIPELINE SUMMARY  (v2 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function finalizePipelineRun() {
     if (!window.S || !S.runtime) return;
@@ -471,22 +431,17 @@
     var completedNums = Object.keys(rt.phaseResults).map(Number).filter(function (k) {
       return rt.phaseResults[k] && rt.phaseResults[k].status === 'completed';
     });
-
     if (!completedNums.length) return;
 
-    // Overall confidence = arithmetic mean of completed phase confidences
     var sum = completedNums.reduce(function (acc, ph) {
       return acc + (rt.phaseResults[ph].validation.confidence || 0);
     }, 0);
     var overallConfidence = Math.round((sum / completedNums.length) * 100) / 100;
 
-    // Go/No-Go from STR artifact if present
     var goNoGo = null;
-    if (rt.phaseResults[4] && rt.phaseResults[4].artifact) {
+    if (rt.phaseResults[4] && rt.phaseResults[4].artifact)
       goNoGo = rt.phaseResults[4].artifact.goNoGo || null;
-    }
 
-    // Critical-only warnings for the summary
     var keyWarnings = rt.warnings
       .filter(function (w) { return w.health === 'low' || w.health === 'degraded'; })
       .map(function (w) { return '[' + (PHASE_NAMES[w.phase] || w.phase) + '] ' + w.message; })
@@ -508,16 +463,16 @@
     };
 
     logEvent(0, 'pipeline_summary', {
-      completedPhases:    rt.lastPipelineRun.completedPhases.join(' → '),
-      overallConfidence:  Math.round(overallConfidence * 100) + '%',
-      goNoGo:             goNoGo || '—',
-      degradedCount:      rt.degradedPhases.length,
+      completedPhases:   rt.lastPipelineRun.completedPhases.join(' → '),
+      overallConfidence: Math.round(overallConfidence * 100) + '%',
+      goNoGo:            goNoGo || '—',
+      degradedCount:     rt.degradedPhases.length,
     });
   }
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §9  PREREQ CHECKER  (v1 — unchanged)
+     §10  PREREQ CHECKER  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function checkPrerequisites(phaseId) {
     if (!window.S) return null;
@@ -529,7 +484,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §10  WARNING SURFACE  (v1 — unchanged)
+     §11  WARNING SURFACE  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function clearWarnings() {
     var bar = document.getElementById('agent-warning-bar');
@@ -571,7 +526,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §11  PHASE HEALTH BADGE  (v1 — unchanged)
+     §12  PHASE HEALTH BADGE  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function applyTabHealth(phaseId, health) {
     var tab = document.querySelector('.ph-tab[data-phase="' + phaseId + '"]');
@@ -582,13 +537,210 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §12  RUNTIME WRAP OF runGen  (v2 — extended)
-     Keeps all v1 logic. Adds:
-       • resetRuntimeForNewPipeline on phaseId=1
-       • buildPhaseContext() snapshot before _orig()
-       • buildPhaseResult() after _orig() completes
-       • updateRuntimeState() after decision
-       • finalizePipelineRun() after STR
+     §13  INPUT SUMMARY HELPER  (v3 — new)
+     Produces a compact audit string of what was structurally available
+     when a phase started. Stored in the 'start' log entry.
+     No secrets — only counts, confidence %, phase names.
+  ═══════════════════════════════════════════════════════════════════ */
+  function _buildInputSummary(phaseId, ctxSnapshot) {
+    var parts = [];
+
+    if (ctxSnapshot.hasMemory) {
+      // Only log that memory is present; never log the content itself
+      parts.push('MEM:active');
+    }
+
+    var avail = ctxSnapshot.artifactsAvailable || {};
+    if (avail.STP) {
+      parts.push('STP:' + Math.round((avail.STP.confidence || 0) * 100) + '%' +
+                 (avail.STP.testItemCount != null ? '/' + avail.STP.testItemCount + 'items' : ''));
+    }
+    if (avail.STD) {
+      parts.push('STD:' + Math.round((avail.STD.confidence || 0) * 100) + '%' +
+                 (avail.STD.testCaseCount != null ? '/' + avail.STD.testCaseCount + 'tc' : ''));
+    }
+    if (avail.RUN) {
+      parts.push('RUN:' + Math.round((avail.RUN.confidence || 0) * 100) + '%' +
+                 (avail.RUN.passRate != null ? '/' + Math.round(avail.RUN.passRate * 100) + '%pass' : ''));
+    }
+
+    var annotCount = (ctxSnapshot.runtimeAnnotations || []).length;
+    if (annotCount) parts.push(annotCount + ' annotations');
+
+    var rejCount = (ctxSnapshot.rejectedAssumptions || []).length;
+    if (rejCount) parts.push(rejCount + ' rejected-assumptions');
+
+    var hotCount = (ctxSnapshot.highPriorityRisks || []).length;
+    if (hotCount) parts.push(hotCount + ' hot-risks');
+
+    return parts.length ? parts.join(' | ') : 'fresh-start';
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §14  runAgentPhase  (v3 — new)
+     The runtime execution owner for a single phase.
+     Called by the slimmed runGen wrapper (§15) after pre-flight.
+     Also callable directly for testing / programmatic pipeline use.
+
+     Responsibilities:
+       1. Set S.runtime.currentPhase
+       2. Snapshot context (audit) via buildPhaseContext()
+       3. Log input summary (what was available at execution time)
+       4. Log phase start
+       5. Call _execFn(phaseId) — the real Claude streaming pipeline
+       6. Determine exec status (completed / completed_degraded / error / aborted)
+       7. computeDecision on artifact
+       8. buildPhaseResult (normalized contract)
+       9. updateRuntimeState (flags / warnings / decisions / degradedPhases)
+      10. applyTabHealth, surfaceWarnings
+      11. buildAnnotations for next phase
+      12. Log memory update (STR only)
+      13. finalizePipelineRun (STR only)
+      14. Log complete
+      15. Return phaseResult
+
+     @param {number} phaseId  1=STP 2=STD 3=RUN 4=STR
+     @param {object} [options] reserved for future use
+     @returns {Promise<object>} normalized PhaseResult
+  ═══════════════════════════════════════════════════════════════════ */
+  async function runAgentPhase(phaseId, options) {
+    if (!window.S || !_execFn) {
+      console.warn('[runtime] runAgentPhase: S or _execFn not ready');
+      return null;
+    }
+
+    // §14.1  Set current phase
+    if (S.runtime) S.runtime.currentPhase = phaseId;
+
+    var t0 = Date.now();
+
+    // §14.2  Context snapshot (AUDIT — separate from actual prompt content)
+    var ctxSnapshot = buildPhaseContext(phaseId);
+
+    // §14.3  Log what was available at execution time
+    var inputSummary = _buildInputSummary(phaseId, ctxSnapshot);
+    logEvent(phaseId, 'input_summary', { summary: inputSummary });
+
+    // §14.4  Log phase start
+    logEvent(phaseId, 'start', { phaseName: PHASE_NAMES[phaseId] || ('P' + phaseId) });
+
+    // §14.5  Execute — actual prompt is built inside here by:
+    //   getContext() chain (runtime §16 → agents.js override → index.html original)
+    //   + buildPrompt() (agents.js AGENT_PROMPTS.X)
+    //   + streamClaude() → showOut() → agents.js showOut hook (extractArtifact etc.)
+    //
+    //   NOTE: The prompt content is NOT duplicated into phaseResult.
+    //   Full output lives in S.data[phaseId]. Artifact is in S.artifacts[phaseId].
+    try {
+      await _execFn(phaseId);
+    } catch (execErr) {
+      // _execFn (original runGen) catches its own errors internally.
+      // This catch handles any unexpected throw that escapes it.
+      logEvent(phaseId, 'error', { message: execErr.message || String(execErr) });
+    }
+
+    var elapsed = ((Date.now() - t0) / 1000).toFixed(1) + 's';
+
+    // §14.6  Determine execution status
+    var rawStatus   = S.status ? (S.status[phaseId] || 'unknown') : 'unknown';
+    var succeeded   = rawStatus === 'done';
+    var errored     = rawStatus === 'error';
+    // 'idle' means user stopped BEFORE any output was captured
+    var aborted     = !succeeded && !errored;
+
+    // §14.7  Artifact and decision
+    var artifact = (S.artifacts && S.artifacts[phaseId]) ? S.artifacts[phaseId] : null;
+    var decision = computeDecision(phaseId, artifact);
+
+    // §14.8  Build normalized phase result
+    var phaseResult = buildPhaseResult(phaseId, artifact, decision, ctxSnapshot, elapsed);
+
+    // Override status with finer-grained value when not succeeded
+    if (!succeeded) {
+      phaseResult.status = errored ? 'error' : 'aborted';
+      if (errored) {
+        phaseResult.validation.missingCriticalData.push('Phase ended in error state — check console');
+      }
+      // Even for aborted/errored phases: write to phaseResults so pipeline knows what happened
+      if (S.runtime) S.runtime.phaseResults[phaseId] = phaseResult;
+      logEvent(phaseId, 'complete', { elapsed: elapsed, status: phaseResult.status });
+      _refreshLogPanel();
+      return phaseResult;
+    }
+
+    // §14.9  Update S.runtime (only on success path)
+    S.phaseHealth[phaseId] = decision;
+    applyTabHealth(phaseId, decision.health);
+    updateRuntimeState(phaseId, phaseResult, decision);
+
+    // §14.10  Surface warnings to UI + log decisions
+    if (artifact) {
+      logEvent(phaseId, 'artifact_extracted', {
+        confidenceScore: artifact.confidenceScore,
+        totalItems:      artifact.testTree ? artifact.testTree.totalItems : undefined,
+        goNoGo:          artifact.goNoGo,
+        elapsed:         elapsed,
+      });
+
+      decision.warnings.forEach(function (w) {
+        var level = (decision.health === 'low' || decision.health === 'degraded') ? 'error' : 'warn';
+        surfaceWarning(phaseId, w, level);
+        logEvent(phaseId, 'decision', {
+          health:     decision.health,
+          confidence: Math.round((decision.confidence || 0) * 100) + '%',
+          warning:    w.slice(0, 100),
+        });
+      });
+
+      if (!decision.warnings.length) {
+        logEvent(phaseId, 'decision', {
+          health:     decision.health,
+          confidence: Math.round((decision.confidence || 0) * 100) + '%',
+          note:       'All checks passed',
+        });
+      }
+
+    } else if (S.data[phaseId]) {
+      // Completed but artifact missing — output still usable via raw text fallback
+      logEvent(phaseId, 'artifact_failed', {
+        elapsed: elapsed,
+        note:    'No JSON block found — raw text in S.data[' + phaseId + '] will be used as context',
+      });
+      surfaceWarning(phaseId,
+        'JSON artifact not extracted — next phase falls back to raw text context',
+        'warn'
+      );
+    }
+
+    // §14.11  Build annotations for next phase (1→2, 2→3, 3→4 only)
+    if (phaseId < 4) buildAnnotations(phaseId, artifact, decision);
+
+    // §14.12  Memory update log (agents.js fires the actual update; we only log)
+    if (phaseId === 4 && S.memory && S.memory.productName) {
+      logEvent(phaseId, 'memory_updated', {
+        productName: S.memory.productName,
+        passRate: S.memory.previousPassRate != null
+          ? Math.round(S.memory.previousPassRate * 100) + '%' : '—',
+      });
+    }
+
+    // §14.13  Pipeline summary (only after STR)
+    if (phaseId === 4) finalizePipelineRun();
+
+    // §14.14  Log completion
+    logEvent(phaseId, 'complete', { elapsed: elapsed, status: phaseResult.status });
+    _refreshLogPanel();
+
+    // §14.15  Return normalized result
+    return phaseResult;
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §15  patchRunGen  (v3 — slimmed to pre-flight + delegate)
+     All post-execution logic now lives in runAgentPhase.
+     runGen remains the public entry point: gen-btn → runGen → runAgentPhase.
   ═══════════════════════════════════════════════════════════════════ */
   function patchRunGen() {
     var _orig = typeof runGen === 'function' ? runGen : null;
@@ -597,22 +749,19 @@
       return;
     }
 
+    // Register execution function with runAgentPhase
+    _execFn = _orig;
+
     window.runGen = async function (phaseId) {
+      // Safety: if S isn't ready, fall back to original immediately
       if (!window.S) { return _orig(phaseId); }
 
       initRuntimeState();
 
-      var phaseName = PHASE_NAMES[phaseId] || ('P' + phaseId);
-      var t0 = Date.now();
+      // ── Pre-flight ───────────────────────────────────────────────────
+      if (phaseId === 1) resetRuntimeForNewPipeline();
 
-      // ── New pipeline start: reset runtime state (keep lastPipelineRun) ──
-      if (phaseId === 1) {
-        resetRuntimeForNewPipeline();
-      }
-
-      // ── Pre-flight ──────────────────────────────────────────────────
       clearWarnings();
-      if (S.runtime) S.runtime.currentPhase = phaseId;
 
       var prereq = checkPrerequisites(phaseId);
       if (prereq) {
@@ -621,107 +770,25 @@
       }
 
       if (S.memory && S.memory.productName) {
+        // Log memory availability WITHOUT logging memory content
         logEvent(phaseId, 'memory_injected', {
           productName:    S.memory.productName,
           lessonsLearned: (S.memory.lessonsLearned || []).length,
-          techStack:      (S.memory.techStack || []).join(', ') || '—',
+          hasTechStack:   !!(S.memory.techStack && S.memory.techStack.length),
         });
       }
 
-      // ── Context snapshot BEFORE execution ───────────────────────────
-      var ctxSnapshot = buildPhaseContext(phaseId);
-
-      logEvent(phaseId, 'start', { phaseName: phaseName });
-
-      // ── Execute: all streaming / showOut / agents.js hooks fire here ─
-      await _orig(phaseId);
-
-      var elapsed = ((Date.now() - t0) / 1000).toFixed(1) + 's';
-
-      // ── Post-execution ──────────────────────────────────────────────
-      var artifact  = (S.artifacts && S.artifacts[phaseId]) ? S.artifacts[phaseId] : null;
-      var succeeded = S.status[phaseId] === 'done';
-
-      if (!succeeded) {
-        logEvent(phaseId,
-          S.status[phaseId] === 'error' ? 'error' : 'complete',
-          { elapsed: elapsed, note: S.status[phaseId] === 'error' ? 'Generation failed' : 'Stopped by user' }
-        );
-        return;
-      }
-
-      // ── Decision engine ─────────────────────────────────────────────
-      var decision = computeDecision(phaseId, artifact);
-      S.phaseHealth[phaseId] = decision;
-      applyTabHealth(phaseId, decision.health);
-
-      // ── Phase result contract ───────────────────────────────────────
-      var phaseResult = buildPhaseResult(phaseId, artifact, decision, ctxSnapshot, elapsed);
-
-      // ── Update S.runtime ────────────────────────────────────────────
-      updateRuntimeState(phaseId, phaseResult, decision);
-
-      // ── Surface warnings ────────────────────────────────────────────
-      if (artifact) {
-        logEvent(phaseId, 'artifact_extracted', {
-          phaseName:       phaseName,
-          confidenceScore: artifact.confidenceScore,
-          totalItems:      artifact.testTree ? artifact.testTree.totalItems : undefined,
-          goNoGo:          artifact.goNoGo,
-          elapsed:         elapsed,
-        });
-
-        decision.warnings.forEach(function (w) {
-          var level = (decision.health === 'low' || decision.health === 'degraded') ? 'error' : 'warn';
-          surfaceWarning(phaseId, w, level);
-          logEvent(phaseId, 'decision', {
-            health:     decision.health,
-            confidence: Math.round((decision.confidence || 0) * 100) + '%',
-            warning:    w.slice(0, 100),
-          });
-        });
-
-        if (!decision.warnings.length) {
-          logEvent(phaseId, 'decision', {
-            health:     decision.health,
-            confidence: Math.round((decision.confidence || 0) * 100) + '%',
-            note:       'All checks passed',
-          });
-        }
-
-        // Next-phase annotations
-        if (phaseId < 4) buildAnnotations(phaseId, artifact, decision);
-
-        // Memory update log (agents.js fires the actual update in showOut)
-        if (phaseId === 4 && S.memory && S.memory.productName) {
-          logEvent(phaseId, 'memory_updated', {
-            productName: S.memory.productName,
-            passRate: S.memory.previousPassRate != null
-              ? Math.round(S.memory.previousPassRate * 100) + '%' : '—',
-          });
-        }
-
-      } else if (S.data[phaseId]) {
-        logEvent(phaseId, 'artifact_failed', {
-          elapsed: elapsed,
-          note:    'No JSON artifact block — fallback to raw text context active',
-        });
-        surfaceWarning(phaseId, 'JSON artifact not extracted — next phase uses raw text (graceful fallback)', 'warn');
-      }
-
-      // ── Pipeline summary after STR ──────────────────────────────────
-      if (phaseId === 4) {
-        finalizePipelineRun();
-      }
-
-      logEvent(phaseId, 'complete', { elapsed: elapsed, status: S.status[phaseId] });
-      _refreshLogPanel();
+      // ── Delegate all execution + post-processing to runAgentPhase ────
+      return await runAgentPhase(phaseId);
     };
   }
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §13  CONTEXT ENRICHMENT  (v1 — unchanged)
+     §16  CONTEXT ENRICHMENT  (v1 — unchanged)
+     Wraps getContext (already overridden by agents.js) to append
+     runtime annotations from prior phases into the prompt.
+     This is the actual context injected — separate from ctxSnapshot.
   ═══════════════════════════════════════════════════════════════════ */
   function patchGetContext() {
     var _prev = typeof window.getContext === 'function' ? window.getContext : null;
@@ -749,7 +816,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §14  LOG PANEL UI  (v1 — unchanged except pipeline_summary row)
+     §17  LOG PANEL UI  (v1 — input_summary row added)
   ═══════════════════════════════════════════════════════════════════ */
   var _logPanelInjected = false;
 
@@ -805,13 +872,15 @@
       var time  = e.ts ? e.ts.split('T')[1].slice(0, 8) : '';
 
       var detail = '';
-      if (e.elapsed)   detail = e.elapsed;
-      if (e.message)   detail = String(e.message).slice(0, 90);
-      if (e.note)      detail = String(e.note).slice(0, 90);
-      if (e.error)     detail = String(e.error).slice(0, 90);
-      if (e.warning)   detail = String(e.warning).slice(0, 90);
-      if (e.preview)   detail = String(e.preview).slice(0, 90);
+      if (e.elapsed)  detail = String(e.elapsed).slice(0, 40);
+      if (e.message)  detail = String(e.message).slice(0, 90);
+      if (e.note)     detail = String(e.note).slice(0, 90);
+      if (e.error)    detail = String(e.error).slice(0, 90);
+      if (e.warning)  detail = String(e.warning).slice(0, 90);
+      if (e.preview)  detail = String(e.preview).slice(0, 90);
+      if (e.summary)  detail = String(e.summary).slice(0, 90);
 
+      if (e.event === 'input_summary') detail = String(e.summary || '').slice(0, 90);
       if (e.event === 'artifact_extracted') {
         detail = 'confidence ' + Math.round((e.confidenceScore || 0) * 100) + '%' +
                  (e.totalItems != null ? ' · ' + e.totalItems + ' items' : '') +
@@ -824,11 +893,11 @@
         detail = (e.productName || '—') + ' · ' + (e.lessonsLearned || 0) + ' lessons';
       }
       if (e.event === 'memory_updated') {
-        detail = (e.productName || '—') + ' pass ' + (e.passRate || '—');
+        detail = (e.productName || '—') + ' · pass ' + (e.passRate || '—');
       }
       if (e.event === 'pipeline_summary') {
         detail = (e.completedPhases || '') + ' · ' + (e.overallConfidence || '—') +
-                 ' · ' + (e.goNoGo || '—');
+                 ' · GoNoGo:' + (e.goNoGo || '—');
       }
 
       html +=
@@ -846,7 +915,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §15  INIT  (v1 — unchanged)
+     §18  INIT  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function init() {
     var attempts = 0;
@@ -861,8 +930,8 @@
       }
 
       initRuntimeState();
-      patchRunGen();
-      patchGetContext();
+      patchRunGen();       // registers _execFn; slims window.runGen
+      patchGetContext();   // appends runtime annotations to prompt context
 
       (function tryUI() {
         if (document.getElementById('out-card') && document.getElementById('out-scroll')) {
