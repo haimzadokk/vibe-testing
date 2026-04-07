@@ -23,9 +23,11 @@
 
 html, body {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   letter-spacing: 0;
-  line-height: 1.6;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Monospace: terminal / code / data */
@@ -137,22 +139,22 @@ header::after {
 
 .hdr-badge {
   font-family: 'Inter', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
-  padding: 4px 9px;
+  padding: 4px 10px;
   border-radius: 4px;
 }
 
 .srv-badge {
   font-family: 'Inter', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1.5px;
   border-radius: 20px;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-color: rgba(59,73,75,.2);
   background: rgba(17,19,24,.5);
-  gap: 5px;
+  gap: 6px;
 }
 
 .srv-dot.online {
@@ -162,10 +164,10 @@ header::after {
 
 .key-btn, .export-btn, .settings-btn {
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  padding: 5px 11px;
+  font-size: 12px;
+  padding: 6px 13px;
   border-radius: 4px;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   font-weight: 600;
 }
 
@@ -175,18 +177,18 @@ header::after {
 .export-menu { border-radius: 8px; border-color: rgba(59,73,75,.28); }
 .export-menu-item {
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  padding: 10px 16px;
-  letter-spacing: .3px;
+  font-size: 13px;
+  padding: 11px 16px;
+  letter-spacing: .2px;
   border-radius: 5px;
 }
 
 .settings-drop { border-radius: 8px; border-color: rgba(59,73,75,.28); }
 .settings-drop-item {
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  padding: 10px 14px;
-  letter-spacing: .3px;
+  font-size: 13px;
+  padding: 11px 14px;
+  letter-spacing: .2px;
 }
 
 
@@ -259,7 +261,7 @@ header::after {
 
 .vts-nav-label {
   font-family: 'Inter', sans-serif;
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 3px;
   color: rgba(185,202,203,.33);
@@ -267,10 +269,10 @@ header::after {
 }
 
 .vts-item {
-  padding: 9px 16px;
+  padding: 10px 16px;
   gap: 10px;
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -293,11 +295,11 @@ header::after {
 }
 
 .vts-item.active .vts-num { color: var(--green); }
-.vts-lbl { font-weight: 600; letter-spacing: 1.5px; font-size: 11px; }
+.vts-lbl { font-weight: 600; letter-spacing: 1.5px; font-size: 13px; }
 
 .vts-sub {
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: rgba(185,202,203,.36);
 }
 
@@ -334,33 +336,33 @@ body.light-mode .vts-ctl-btn { background: #f1f5f9; border-color: #d1d9e0; color
   border-bottom: 1px solid rgba(59,73,75,.15);
 }
 
-.ph-tab { padding: 11px 18px; gap: 8px; }
+.ph-tab { padding: 12px 20px; gap: 10px; }
 
 .ph-tab-num {
-  width: 22px;
-  height: 22px;
-  border-radius: 5px;
-  font-size: 9px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-size: 11px;
   font-family: 'JetBrains Mono', monospace;
   border-color: rgba(59,73,75,.28);
 }
 
 .ph-tab-lbl {
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
 }
 
 .ph-tab-sub {
   font-family: 'Inter', sans-serif;
-  font-size: 9px;
-  color: rgba(185,202,203,.36);
+  font-size: 11px;
+  color: rgba(185,202,203,.38);
 }
 
-.upload-btn { font-family: 'Inter', sans-serif; font-size: 10px; padding: 6px 13px; border-radius: 5px; letter-spacing: .5px; }
-.file-pill  { font-family: 'Inter', sans-serif; font-size: 10px; padding: 3px 10px; }
-.files-count{ font-family: 'Inter', sans-serif; font-size: 10px; }
+.upload-btn { font-family: 'Inter', sans-serif; font-size: 12px; padding: 7px 15px; border-radius: 6px; letter-spacing: .5px; }
+.file-pill  { font-family: 'Inter', sans-serif; font-size: 12px; padding: 3px 11px; }
+.files-count{ font-family: 'Inter', sans-serif; font-size: 11px; }
 
 
 /* ─── §6  RIGHT SIDEBAR ──────────────────────────────────────────── */
@@ -372,26 +374,26 @@ body.light-mode .vts-ctl-btn { background: #f1f5f9; border-color: #d1d9e0; color
   padding: 16px 14px;
 }
 
-.sb-sec { font-family: 'Inter', sans-serif; font-size: 8px; letter-spacing: 3px; font-weight: 700; }
+.sb-sec { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 3px; font-weight: 700; }
 
-.sb-phase-card { background: rgba(17,19,24,.8); border: 1px solid rgba(59,73,75,.2); border-radius: 8px; padding: 12px; }
-.sb-phase-icon { font-size: 22px; line-height: 1; }
-.sb-phase-title{ font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: #e2e2e8; }
-.sb-phase-sub  { font-family: 'Inter', sans-serif; font-size: 11px; }
-.sb-desc       { font-family: 'Inter', sans-serif; font-size: 11px; line-height: 1.7; }
+.sb-phase-card { background: rgba(17,19,24,.8); border: 1px solid rgba(59,73,75,.2); border-radius: 8px; padding: 14px; }
+.sb-phase-icon { font-size: 24px; line-height: 1; }
+.sb-phase-title{ font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: #e2e2e8; }
+.sb-phase-sub  { font-family: 'Inter', sans-serif; font-size: 13px; }
+.sb-desc       { font-family: 'Inter', sans-serif; font-size: 13px; line-height: 1.7; }
 
-.prog-num   { width: 18px; height: 18px; border-radius: 4px; font-size: 9px; border-color: rgba(59,73,75,.28); }
-.prog-label { font-family: 'Inter', sans-serif; font-size: 11px; }
-.prog-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 2px 6px; border-radius: 3px; }
+.prog-num   { width: 20px; height: 20px; border-radius: 5px; font-size: 10px; border-color: rgba(59,73,75,.28); }
+.prog-label { font-family: 'Inter', sans-serif; font-size: 13px; }
+.prog-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 3px; }
 
 /* Generate button */
 .gen-btn {
   border-radius: 8px;
   font-family: 'Inter', sans-serif;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 2px;
-  padding: 14px 0;
+  padding: 15px 0;
   border: 1px solid rgba(59,73,75,.28);
   transition: all .3s;
 }
@@ -438,12 +440,12 @@ body.light-mode .gen-btn.on {
   border-bottom: 1px solid rgba(59,73,75,.15);
 }
 
-.out-card-label { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 2.5px; }
+.out-card-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
 
 .out-action-btn {
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  padding: 4px 10px;
+  font-size: 12px;
+  padding: 5px 12px;
   border-radius: 4px;
   letter-spacing: .5px;
   border-color: rgba(59,73,75,.28);
@@ -454,10 +456,10 @@ body.light-mode .gen-btn.on {
 
 /* ─── §8  EMPTY STATE ────────────────────────────────────────────── */
 
-.empty-icon  { font-size: 44px; opacity: .13; }
-.empty-title { font-size: 12px; font-weight: 700; letter-spacing: 3px; color: rgba(226,226,232,.62); }
-.empty-sub   { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(185,202,203,.44); line-height: 1.8; }
-.empty-hint  { font-family: 'Inter', sans-serif; font-size: 11px; padding: 6px 12px; border-radius: 6px; border-color: rgba(59,73,75,.18); }
+.empty-icon  { font-size: 48px; opacity: .15; }
+.empty-title { font-size: 14px; font-weight: 700; letter-spacing: 3px; color: rgba(226,226,232,.65); }
+.empty-sub   { font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(185,202,203,.5); line-height: 1.85; }
+.empty-hint  { font-family: 'Inter', sans-serif; font-size: 12px; padding: 7px 14px; border-radius: 6px; border-color: rgba(59,73,75,.18); }
 
 
 /* ─── §9  REFINE / CHAT BAR ──────────────────────────────────────── */
@@ -468,12 +470,12 @@ body.light-mode .gen-btn.on {
   border-top: 1px solid rgba(59,73,75,.15);
 }
 
-.refine-lbl { font-family: 'Inter', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 2px; color: rgba(185,202,203,.38); text-transform: uppercase; }
+.refine-lbl { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; color: rgba(185,202,203,.42); text-transform: uppercase; }
 
 .chip {
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  padding: 4px 12px;
+  font-size: 12px;
+  padding: 5px 14px;
   border-radius: 20px;
   letter-spacing: .3px;
   border: 1px solid rgba(59,73,75,.2);
@@ -494,9 +496,9 @@ body.light-mode .gen-btn.on {
   box-shadow: 0 0 0 3px var(--phase-glow);
 }
 
-#chat-ta { font-size: 13px; line-height: 1.55; }
-.send-btn { width: 32px; height: 32px; border-radius: 6px; font-size: 14px; }
-.hist-pill{ font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 9px; border-radius: 12px; border-color: rgba(59,73,75,.2); }
+#chat-ta { font-size: 15px; line-height: 1.6; }
+.send-btn { width: 36px; height: 36px; border-radius: 7px; font-size: 15px; }
+.hist-pill{ font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 12px; border-color: rgba(59,73,75,.2); }
 
 
 /* ─── §10  INPUT PANELS ──────────────────────────────────────────── */
@@ -526,7 +528,9 @@ body.light-mode .gen-btn.on {
   border: 1px solid rgba(59,73,75,.28);
   border-radius: 6px;
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 14px;
+  min-height: 42px;
+  padding: 10px 13px;
 }
 
 .url-input:focus,
@@ -535,15 +539,15 @@ body.light-mode .gen-btn.on {
 
 .conn-tab,
 .stp-src-tab,
-.target-tab { font-family: 'Inter', sans-serif; font-size: 10px; padding: 4px 11px; border-radius: 5px; }
+.target-tab { font-family: 'Inter', sans-serif; font-size: 12px; padding: 5px 13px; border-radius: 5px; }
 
 .url-connect-btn,
 .target-btn,
-.email-send-btn { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .5px; border-radius: 6px; }
+.email-send-btn { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .5px; border-radius: 6px; }
 
 .run-status-bar { background: rgba(17,19,24,.8); border: 1px solid rgba(59,73,75,.2); border-radius: 8px; }
-.run-status-item{ font-family: 'Inter', sans-serif; font-size: 11px; }
-.run-status-help{ font-family: 'Inter', sans-serif; font-size: 10px; border-radius: 4px; }
+.run-status-item{ font-family: 'Inter', sans-serif; font-size: 13px; }
+.run-status-help{ font-family: 'Inter', sans-serif; font-size: 12px; border-radius: 4px; }
 
 
 /* ─── §11  REPORTS ───────────────────────────────────────────────── */
@@ -551,19 +555,19 @@ body.light-mode .gen-btn.on {
 .report-row { background: rgba(17,19,24,.8); border: 1px solid rgba(59,73,75,.18); border-radius: 8px; }
 .report-row:hover { border-color: rgba(59,73,75,.35); }
 
-.report-id   { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; }
-.report-name { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; }
-.report-meta { font-family: 'Inter', sans-serif; font-size: 10px; }
+.report-id   { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; }
+.report-name { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; }
+.report-meta { font-family: 'Inter', sans-serif; font-size: 12px; }
 
-.reports-title { font-family: 'Space Grotesk', sans-serif; font-size: 12px; }
-.reports-count { font-family: 'Inter', sans-serif; font-size: 10px; }
+.reports-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; }
+.reports-count { font-family: 'Inter', sans-serif; font-size: 12px; }
 
-.report-stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 16px; }
-.report-stat-lbl { font-family: 'Inter', sans-serif; font-size: 8px; letter-spacing: 1px; }
+.report-stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 18px; }
+.report-stat-lbl { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 1px; }
 
-.report-action-btn { font-family: 'Inter', sans-serif; font-size: 10px; padding: 4px 9px; border-radius: 4px; border-color: rgba(59,73,75,.25); }
+.report-action-btn { font-family: 'Inter', sans-serif; font-size: 12px; padding: 5px 11px; border-radius: 4px; border-color: rgba(59,73,75,.25); }
 
-.reports-refresh-btn { font-family: 'Inter', sans-serif; font-size: 10px; border-radius: 4px; }
+.reports-refresh-btn { font-family: 'Inter', sans-serif; font-size: 12px; border-radius: 4px; }
 
 
 /* ─── §12  DASHBOARD MODAL ───────────────────────────────────────── */
@@ -864,12 +868,14 @@ body.light-mode .btn-secondary {
 /* ─── §22  MOBILE ────────────────────────────────────────────────── */
 
 @media (max-width: 700px) {
-  html, body { font-size: 13px; }
-  .logo-text .logo-title { font-size: 13px; letter-spacing: 2px; }
+  html, body { font-size: 14px; }
+  .logo-text .logo-title { font-size: 14px; letter-spacing: 2px; }
   .logo-text .logo-sub   { display: none; }
-  .logo-icon  { width: 30px; height: 30px; font-size: 11px; }
-  .ph-tab-lbl { font-size: 10px; letter-spacing: 1.5px; }
-  .ph-tab-num { font-size: 8px; width: 20px; height: 20px; }
-  .out-content{ font-size: 13px; }
-  .chip       { font-size: 10px; padding: 3px 10px; }
+  .logo-icon  { width: 32px; height: 32px; font-size: 12px; }
+  .ph-tab-lbl { font-size: 12px; letter-spacing: 1px; }
+  .ph-tab-num { font-size: 10px; width: 22px; height: 22px; }
+  .out-content{ font-size: 14px; }
+  .chip       { font-size: 12px; padding: 4px 11px; }
+  #chat-ta    { font-size: 16px; } /* prevent iOS auto-zoom */
+  .url-input, .target-input, .email-input { font-size: 16px; } /* prevent iOS auto-zoom */
 }
