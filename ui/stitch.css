@@ -616,13 +616,15 @@ body.light-mode .gen-btn.on {
   height: 100vh;
   overflow: hidden;
   align-items: center;
-  justify-content: center;
+  justify-content: stretch;
   min-height: unset !important;
 }
 
 .wlc-wrap {
-  gap: 12px !important;
-  padding: 12px 32px !important;
+  gap: 0 !important;
+  padding: 0 32px !important;
+  height: 100%;
+  justify-content: space-evenly;
 }
 
 .wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 50px; font-weight: 900; letter-spacing: 5px; line-height: 1; }
