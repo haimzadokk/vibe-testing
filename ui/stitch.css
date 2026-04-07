@@ -611,16 +611,20 @@ body.light-mode .gen-btn.on {
 
 /* ─── §14  WELCOME SCREEN ────────────────────────────────────────── */
 
-.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 65px; font-weight: 800; letter-spacing: 6px; }
-.wlc-version { font-family: 'Inter', sans-serif; font-size: 14px; letter-spacing: 4px; }
-.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 22px; line-height: 1.75; }
+.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 72px; font-weight: 800; letter-spacing: 6px; }
+.wlc-version { font-family: 'Inter', sans-serif; font-size: 18px; letter-spacing: 4px; }
+.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 32px; line-height: 1.75; }
 
-.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 2px; }
-.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 14px; }
+.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 25px; font-weight: 700; letter-spacing: 2px; }
+.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 20px; }
+
+.wlc-icon { width: 95px !important; height: 95px !important; font-size: 30px !important; }
+.wlc-phase-icon { font-size: 28px; }
+.wlc-arrow  { font-size: 22px; }
 
 .wlc-feature {
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
+  font-size: 21px;
   border: 1px solid rgba(59,73,75,.18);
   border-radius: 8px;
   background: rgba(17,19,24,.7);
@@ -628,14 +632,14 @@ body.light-mode .gen-btn.on {
 
 .wlc-btn {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 19px;
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: 3px;
   border-radius: 12px;
-  padding: 20px 64px;
+  padding: 22px 70px;
 }
 
-.wlc-footer { font-family: 'Inter', sans-serif; font-size: 14px; }
+.wlc-footer { font-family: 'Inter', sans-serif; font-size: 19px; }
 
 
 /* ─── §15  TOAST ─────────────────────────────────────────────────── */
@@ -832,14 +836,22 @@ body.light-mode .alp-header {
 
 /* Welcome screen — light mode adaptation */
 body.light-mode .modal-overlay {
-  background: rgba(241,245,249,.97);
+  background: linear-gradient(135deg, #f0fdf4, #f8fafc) !important;
+}
+
+/* Kill the dark starfield in light mode */
+body.light-mode .wlc-particles,
+body.light-mode .wlc-particles * {
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 body.light-mode .welcome-screen { background: transparent; }
 
 body.light-mode .wlc-phase {
-  background: #ffffff;
+  background: rgba(255,255,255,0.85);
   border-color: rgba(5,150,105,.2);
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
 }
 
 body.light-mode .wlc-phase:hover {
