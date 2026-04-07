@@ -23,7 +23,7 @@
 
 html, body {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: 0;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -611,16 +611,16 @@ body.light-mode .gen-btn.on {
 
 /* ─── §14  WELCOME SCREEN ────────────────────────────────────────── */
 
-.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 52px; font-weight: 800; letter-spacing: 5px; }
-.wlc-version { font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 4px; }
-.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 18px; line-height: 1.75; }
+.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 65px; font-weight: 800; letter-spacing: 6px; }
+.wlc-version { font-family: 'Inter', sans-serif; font-size: 14px; letter-spacing: 4px; }
+.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 22px; line-height: 1.75; }
 
-.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; }
-.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 11px; }
+.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 2px; }
+.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 14px; }
 
 .wlc-feature {
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  font-size: 16px;
   border: 1px solid rgba(59,73,75,.18);
   border-radius: 8px;
   background: rgba(17,19,24,.7);
@@ -628,14 +628,14 @@ body.light-mode .gen-btn.on {
 
 .wlc-btn {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: 3px;
-  border-radius: 10px;
-  padding: 16px 52px;
+  border-radius: 12px;
+  padding: 20px 64px;
 }
 
-.wlc-footer { font-family: 'Inter', sans-serif; font-size: 11px; }
+.wlc-footer { font-family: 'Inter', sans-serif; font-size: 14px; }
 
 
 /* ─── §15  TOAST ─────────────────────────────────────────────────── */
@@ -722,6 +722,164 @@ body.light-mode .logo-text .logo-title span {
 
 body.light-mode .logo-text .logo-sub { color: rgba(71,85,105,.55); }
 body.light-mode .chat-wrap { background: #ffffff; border-color: #e2e8f0; }
+
+/* Chips — dark background not overridden by inline CSS */
+body.light-mode .chip {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+body.light-mode .chip:hover:not([disabled]) {
+  background: rgba(5,150,105,.08);
+  border-color: rgba(5,150,105,.35);
+  color: #059669;
+}
+
+/* Input panels — reinforce light mode */
+body.light-mode .url-connect,
+body.light-mode .stp-src-panel,
+body.light-mode .target-panel {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+body.light-mode .url-input,
+body.light-mode .target-input,
+body.light-mode .target-select,
+body.light-mode .email-input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body.light-mode .conn-tab,
+body.light-mode .stp-src-tab,
+body.light-mode .target-tab {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+body.light-mode .conn-tab.active,
+body.light-mode .stp-src-tab.active { border-color: #059669; color: #059669; background: rgba(5,150,105,.06); }
+body.light-mode .target-tab.active  { border-color: #d97706; color: #d97706; background: rgba(217,119,6,.06); }
+
+/* Run status bar */
+body.light-mode .run-status-bar {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+/* Out card — ensure borders also adapt */
+body.light-mode .out-card {
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+body.light-mode .out-card-header { background: #f8fafc; border-bottom-color: #e2e8f0; }
+body.light-mode .out-action-btn  { border-color: #cbd5e1; color: #475569; }
+
+/* Sidebar right */
+body.light-mode .sb-phase-card { background: #f1f5f9; border-color: #e2e8f0; }
+body.light-mode .sb-desc        { color: #475569; }
+body.light-mode .prog-badge     { background: #e2e8f0; color: #64748b; }
+
+/* Export / settings menus */
+body.light-mode .export-menu,
+body.light-mode .settings-drop  { background: #ffffff; border-color: #e2e8f0; box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+body.light-mode .export-menu-item:hover,
+body.light-mode .settings-drop-item:hover { background: #f1f5f9; color: #0f172a; }
+
+/* Hist pills */
+body.light-mode .hist-pill { background: #f1f5f9; border-color: #e2e8f0; color: #64748b; }
+
+/* Agent panel — hardcoded dark colors in onboarding.css */
+body.light-mode #vt-agent-panel {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.light-mode .vap-header {
+  background: #f8fafc;
+  border-bottom-color: #e2e8f0;
+}
+
+body.light-mode .vap-header:hover { background: #f1f5f9; }
+
+body.light-mode .vap-title       { color: #059669; }
+body.light-mode .vap-phase-pill  { color: #94a3b8; }
+body.light-mode .vap-toggle-btn  { color: #94a3b8; }
+
+body.light-mode .vap-card {
+  background: #f8fafc;
+  border-right-color: #e2e8f0;
+}
+
+body.light-mode .vap-card:last-child { border-right: none; }
+
+/* Agent confidence bar + assumptions panel */
+body.light-mode .agent-confidence-bar,
+body.light-mode .agent-assumptions-panel,
+body.light-mode .agent-log-panel {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+body.light-mode .aap-header,
+body.light-mode .alp-header {
+  background: #f8fafc;
+  border-bottom-color: #e2e8f0;
+}
+
+/* Welcome screen — light mode adaptation */
+body.light-mode .modal-overlay {
+  background: rgba(241,245,249,.97);
+}
+
+body.light-mode .welcome-screen { background: transparent; }
+
+body.light-mode .wlc-phase {
+  background: #ffffff;
+  border-color: rgba(5,150,105,.2);
+}
+
+body.light-mode .wlc-phase:hover {
+  border-color: rgba(5,150,105,.45);
+  box-shadow: 0 8px 24px rgba(5,150,105,.1);
+}
+
+body.light-mode .wlc-feature {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+body.light-mode .wlc-title     { color: #0f172a; }
+body.light-mode .wlc-title span{ color: #059669; }
+body.light-mode .wlc-tagline   { color: #334155; }
+body.light-mode .wlc-version   { color: #64748b; }
+body.light-mode .wlc-hi        { color: #059669; text-shadow: 0 0 20px rgba(5,150,105,.3); }
+body.light-mode .wlc-phase-name{ color: #1e293b; }
+body.light-mode .wlc-phase-desc{ color: #64748b; }
+body.light-mode .wlc-arrow     { color: #94a3b8; }
+body.light-mode .wlc-footer    { color: #64748b; }
+
+body.light-mode .wlc-btn {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(5,150,105,.3);
+}
+
+body.light-mode .wlc-icon {
+  box-shadow: 0 0 30px rgba(5,150,105,.3), 0 0 60px rgba(5,150,105,.1);
+}
+
+/* Phase bar in light mode (reinforce) */
+body.light-mode .phase-bar { background: rgba(248,250,252,.95); border-bottom-color: #e2e8f0; }
+
+/* Refine bar */
+body.light-mode .refine { background: rgba(255,255,255,.98); border-top-color: #e2e8f0; }
+body.light-mode .refine-lbl { color: #94a3b8; }
+body.light-mode #chat-ta { color: #0f172a; }
 
 
 /* ─── §21  AUTH PAGE (auth.html) ────────────────────────────────── */
@@ -868,14 +1026,14 @@ body.light-mode .btn-secondary {
 /* ─── §22  MOBILE ────────────────────────────────────────────────── */
 
 @media (max-width: 700px) {
-  html, body { font-size: 14px; }
-  .logo-text .logo-title { font-size: 14px; letter-spacing: 2px; }
+  html, body  { font-size: 15px; }
+  .logo-text .logo-title { font-size: 15px; letter-spacing: 2px; }
   .logo-text .logo-sub   { display: none; }
   .logo-icon  { width: 32px; height: 32px; font-size: 12px; }
   .ph-tab-lbl { font-size: 12px; letter-spacing: 1px; }
   .ph-tab-num { font-size: 10px; width: 22px; height: 22px; }
   .out-content{ font-size: 14px; }
   .chip       { font-size: 12px; padding: 4px 11px; }
-  #chat-ta    { font-size: 16px; } /* prevent iOS auto-zoom */
-  .url-input, .target-input, .email-input { font-size: 16px; } /* prevent iOS auto-zoom */
+  #chat-ta    { font-size: 16px; }
+  .url-input, .target-input, .email-input { font-size: 16px; }
 }
