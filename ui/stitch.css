@@ -611,46 +611,59 @@ body.light-mode .gen-btn.on {
 
 /* ─── §14  WELCOME SCREEN ────────────────────────────────────────── */
 
-/* Tighten layout so all content fits in one viewport without scrolling */
+/* Fit all content in one viewport — no scroll */
 .welcome-screen {
+  height: 100vh;
+  overflow: hidden;
   align-items: center;
   justify-content: center;
+  min-height: unset !important;
 }
 
 .wlc-wrap {
-  gap: 18px;
-  padding: 16px 32px 16px;
+  gap: 12px !important;
+  padding: 12px 32px !important;
 }
 
-.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 58px; font-weight: 900; letter-spacing: 6px; }
-.wlc-version { font-family: 'Inter', sans-serif; font-size: 14px; letter-spacing: 4px; }
-.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 22px; line-height: 1.5; max-width: 700px; }
+.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 50px; font-weight: 900; letter-spacing: 5px; line-height: 1; }
+.wlc-version { font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: 4px; margin-top: 2px; }
+.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 19px; line-height: 1.4; max-width: 900px !important; white-space: nowrap; }
 
-.wlc-phase { padding: 14px 14px; }
-.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; }
-.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 14px; }
-.wlc-features  { gap: 8px; }
-.wlc-feature   { padding: 6px 12px; }
+.wlc-phase     { padding: 12px 12px !important; gap: 6px !important; }
+.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 13px; }
+.wlc-phase-icon { font-size: 18px !important; }
+
+.wlc-features {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 7px !important;
+  max-width: 680px !important;
+  width: 100%;
+}
 
 .wlc-feature {
   font-family: 'Inter', sans-serif;
-  font-size: 17px;
+  font-size: 14px;
+  padding: 6px 12px;
   border: 1px solid rgba(59,73,75,.18);
   border-radius: 8px;
   background: rgba(17,19,24,.7);
+  white-space: nowrap;
+  justify-content: center;
 }
 
 .wlc-btn {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 3px;
   border-radius: 12px;
-  padding: 14px 52px;
+  padding: 13px 50px;
   margin-top: 0;
 }
 
-.wlc-footer { font-family: 'Inter', sans-serif; font-size: 13px; letter-spacing: 0; }
+.wlc-footer { font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: 0; }
 
 
 /* ─── §15  TOAST ─────────────────────────────────────────────────── */
