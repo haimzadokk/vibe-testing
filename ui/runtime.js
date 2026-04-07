@@ -1,9 +1,17 @@
 /**
- * runtime.js — VIBE.TESTING Agent Runtime Layer v1.0
+ * runtime.js — VIBE.TESTING Agent Runtime Layer v2.0
  *
- * Sits between the UI/phase actions and the Claude call pipeline.
- * Wraps runGen() to add: pre-flight checks, execution logging,
- * decision logic, validation surfacing, and next-phase annotations.
+ * v1.0 → v2.0 additions (all backward-compatible):
+ *   §1  S.runtime explicit state block
+ *   §3  buildPhaseContext() — structured context snapshot per phase
+ *   §4  buildPhaseResult()  — normalized phase result contract
+ *   §5  updateRuntimeState() — flags / warnings / decisions / degradedPhases
+ *   §8  finalizePipelineRun() — lastPipelineRun summary
+ *   §9  patchRunGen extended with all of the above
+ *
+ * All v1.0 sections (logger, decision engine, prereq checker,
+ * warning surface, tab health, getContext enrichment, log panel UI)
+ * are UNCHANGED below.
  *
  * Load order: stitch.js → agents.js → runtime.js
  * WRAP principle: zero existing IDs, functions, or pipeline altered.
@@ -12,29 +20,51 @@
   'use strict';
 
   /* ═══════════════════════════════════════════════════════════════════
-     §1  STATE EXTENSIONS
+     §1  STATE EXTENSIONS  (v2: adds S.runtime)
   ═══════════════════════════════════════════════════════════════════ */
+  var PHASE_NAMES = ['', 'STP', 'STD', 'RUN', 'STR'];
+
   function initRuntimeState() {
     if (!window.S) return false;
 
-    // Structured execution log — capped at MAX_LOGS entries
+    // ── v1 state ────────────────────────────────────────────────────
     if (!S.agentLogs)          S.agentLogs          = [];
-
-    // Per-phase health: { health, confidence, warnings }
     if (!S.phaseHealth)        S.phaseHealth        = { 1: null, 2: null, 3: null, 4: null };
-
-    // Runtime annotations injected into next-phase prompts
     if (!S.runtimeAnnotations) S.runtimeAnnotations = {};
+
+    // ── v2 runtime core ─────────────────────────────────────────────
+    if (!S.runtime) S.runtime = _freshRuntime();
 
     return true;
   }
 
+  function _freshRuntime() {
+    return {
+      currentPhase:    null,   // which phase is running right now
+      phaseResults:    {},     // [1..4] → normalized PhaseResult
+      flags:           [],     // cross-phase decision flags
+      warnings:        [],     // cross-phase runtime warnings
+      decisions:       [],     // chronological decision log
+      degradedPhases:  [],     // phases whose health was low/degraded
+      lastPipelineRun: null,   // summary written after STR completes
+    };
+  }
+
+  /** Called at the start of a new pipeline (phaseId=1) to reset state.
+   *  Preserves lastPipelineRun so it survives across runs. */
+  function resetRuntimeForNewPipeline() {
+    if (!window.S) return;
+    var last = S.runtime ? S.runtime.lastPipelineRun : null;
+    S.runtime = _freshRuntime();
+    S.runtime.lastPipelineRun = last;   // keep prior summary visible
+    if (S.runtimeAnnotations) S.runtimeAnnotations = {};
+  }
+
 
   /* ═══════════════════════════════════════════════════════════════════
-     §2  EXECUTION LOGGER
+     §2  EXECUTION LOGGER  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
-  var MAX_LOGS   = 60;
-  var PHASE_NAMES = ['', 'STP', 'STD', 'RUN', 'STR'];
+  var MAX_LOGS = 60;
 
   var LOG_ICONS = {
     start:              '▶',
@@ -45,6 +75,7 @@
     decision:           '◈',
     memory_injected:    '↓ MEM',
     memory_updated:     '↑ MEM',
+    pipeline_summary:   '═',
     error:              '✕',
     annotation:         '→',
   };
@@ -58,6 +89,7 @@
     decision:           '#06b6d4',
     memory_injected:    '#7a9abf',
     memory_updated:     '#00e5a0',
+    pipeline_summary:   '#00e5a0',
     error:              '#f43f5e',
     annotation:         '#7a9abf',
   };
@@ -82,20 +114,260 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §3  DECISION ENGINE
-     Bounded, explicit rules — no uncontrolled autonomy.
+     §3  BUILD PHASE CONTEXT  (v2 — new)
+     Produces an explicit structured snapshot of what context is
+     available when a phase starts. Stored in phaseResult.contextUsed.
+     Does NOT replace the getContext() chain — that still drives the
+     actual prompt content. This is the auditable record.
+  ═══════════════════════════════════════════════════════════════════ */
+  function buildPhaseContext(phaseId) {
+    var ctx = {
+      phase:               phaseId,
+      phaseName:           PHASE_NAMES[phaseId] || ('P' + phaseId),
+      hasMemory:           !!(S.memory && S.memory.productName),
+      artifactsAvailable:  {},
+      runtimeAnnotations:  [],
+      rejectedAssumptions: [],
+      highPriorityRisks:   [],
+    };
+
+    // ── Artifacts available from prior phases ───────────────────────
+    if (phaseId >= 2 && S.artifacts && S.artifacts[1]) {
+      var stp = S.artifacts[1];
+      ctx.artifactsAvailable.STP = {
+        confidence:    stp.confidenceScore || 0,
+        testItemCount: stp.testTree ? (stp.testTree.totalItems || 0) : null,
+        riskCount:     stp.riskMap  ? stp.riskMap.length : null,
+        assumptionCount: stp.assumptions ? stp.assumptions.length : null,
+      };
+    }
+
+    if (phaseId >= 3 && S.artifacts && S.artifacts[2]) {
+      var std = S.artifacts[2];
+      ctx.artifactsAvailable.STD = {
+        confidence:    std.confidenceScore || 0,
+        testCaseCount: std.testCases ? std.testCases.length : null,
+        coverageGaps:  std.coverageMatrix ? (std.coverageMatrix.gaps || []) : [],
+      };
+    }
+
+    if (phaseId >= 4 && S.artifacts && S.artifacts[3]) {
+      var run = S.artifacts[3];
+      ctx.artifactsAvailable.RUN = {
+        confidence:   run.confidenceScore || 0,
+        passRate:     run.summary ? (run.summary.passRate || null) : null,
+        failureCount: run.failures ? run.failures.length : null,
+        rejectedAssumptionCount: run.assumptionUpdates
+          ? run.assumptionUpdates.filter(function (u) { return u.newTag === '[REJECTED]'; }).length
+          : 0,
+      };
+    }
+
+    // ── Runtime annotations from prior phases ───────────────────────
+    for (var ph = 1; ph < phaseId; ph++) {
+      if (S.runtimeAnnotations && S.runtimeAnnotations[ph] && S.runtimeAnnotations[ph].length) {
+        ctx.runtimeAnnotations = ctx.runtimeAnnotations.concat(S.runtimeAnnotations[ph]);
+      }
+    }
+
+    // ── Rejected assumptions (cross-phase, from S.assumptions) ──────
+    if (S.assumptions) {
+      ctx.rejectedAssumptions = S.assumptions
+        .filter(function (a) { return a.tag === '[REJECTED]'; })
+        .map(function (a) { return { id: a.id, text: a.text, phase: a.phase }; });
+    }
+
+    // ── High-priority risks from STP (score ≥ 15) ───────────────────
+    if (S.artifacts && S.artifacts[1] && S.artifacts[1].riskMap) {
+      ctx.highPriorityRisks = S.artifacts[1].riskMap
+        .filter(function (r) { return (r.score || 0) >= 15; })
+        .map(function (r) { return { id: r.id, area: r.area, score: r.score }; });
+    }
+
+    return ctx;
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §4  NORMALIZED PHASE RESULT  (v2 — new)
+     Contract: every completed phase produces one of these.
+     rawText is NOT duplicated here — it lives in S.data[phaseId].
+  ═══════════════════════════════════════════════════════════════════ */
+  function buildPhaseResult(phaseId, artifact, decision, ctxSnapshot, elapsed) {
+    var phaseName = PHASE_NAMES[phaseId] || ('P' + phaseId);
+    var succeeded = !!(S.status && S.status[phaseId] === 'done');
+
+    // ── Validation sub-object ───────────────────────────────────────
+    var validation = {
+      confidence:          artifact ? (artifact.confidenceScore || 0) : 0,
+      artifactParsed:      !!artifact,
+      inconsistencies:     [],
+      missingCriticalData: [],
+      rejectedAssumptions: [],
+    };
+
+    if (!artifact) {
+      validation.missingCriticalData.push('JSON artifact block absent — raw text preserved in S.data[' + phaseId + ']');
+    }
+
+    if (artifact) {
+      // Inconsistencies from execution validator
+      if (artifact.validationResult) {
+        if (artifact.validationResult.isConsistentWithSTD === false) {
+          validation.inconsistencies.push(
+            'Execution not consistent with STD — score: ' +
+            (artifact.validationResult.consistencyScore || '?') + '/100'
+          );
+        }
+        (artifact.validationResult.unexplainedFailures || []).forEach(function (f) {
+          validation.inconsistencies.push('Unexplained failure: ' + String(f).slice(0, 80));
+        });
+      }
+
+      // Inconsistencies from STR report validator
+      if (artifact.validationConsistency && !artifact.validationConsistency.isConsistent) {
+        (artifact.validationConsistency.flags || []).forEach(function (f) {
+          validation.inconsistencies.push('STR flag: ' + String(f).slice(0, 80));
+        });
+      }
+
+      // Rejected assumptions (from execution phase)
+      if (artifact.assumptionUpdates) {
+        validation.rejectedAssumptions = artifact.assumptionUpdates
+          .filter(function (u) { return u.newTag === '[REJECTED]'; })
+          .map(function (u) { return { id: u.id, evidence: u.evidence || '' }; });
+      }
+
+      // Missing critical data checks per phase
+      if (phaseId === 1 && (!artifact.riskMap || !artifact.riskMap.length)) {
+        validation.missingCriticalData.push('Risk map empty — add product detail');
+      }
+      if (phaseId === 2 && (!artifact.testCases || !artifact.testCases.length)) {
+        validation.missingCriticalData.push('Test cases array empty');
+      }
+      if (phaseId === 3 && !artifact.summary) {
+        validation.missingCriticalData.push('Execution summary object missing');
+      }
+      if (phaseId === 4 && !artifact.goNoGo) {
+        validation.missingCriticalData.push('Go/No-Go recommendation not found');
+      }
+    }
+
+    // ── Decisions sub-object ────────────────────────────────────────
+    var decisions = { flags: [], priorities: [] };
+
+    if (decision) {
+      if (decision.health === 'low' || decision.health === 'degraded') {
+        decisions.flags.push({ type: 'HEALTH_' + decision.health.toUpperCase(), phase: phaseName });
+      }
+      if (decision.confidence < 0.5) {
+        decisions.flags.push({ type: 'LOW_CONFIDENCE', value: Math.round(decision.confidence * 100) + '%', phase: phaseName });
+      }
+    }
+
+    // Phase-specific decision flags
+    if (phaseId === 4 && artifact && artifact.goNoGo) {
+      decisions.flags.push({ type: 'GO_NOGO', value: artifact.goNoGo, phase: 'STR' });
+    }
+    if (phaseId === 3 && artifact && artifact.summary && artifact.summary.passRate < 0.65) {
+      decisions.flags.push({ type: 'LOW_PASS_RATE', value: Math.round(artifact.summary.passRate * 100) + '%', phase: 'RUN' });
+    }
+
+    // Priorities for next phase (STD gets STP risks; STR gets RUN blockers)
+    if (phaseId === 1 && artifact && artifact.riskMap) {
+      artifact.riskMap.filter(function (r) { return (r.score || 0) >= 15; }).forEach(function (r) {
+        decisions.priorities.push({ id: r.id, area: r.area, score: r.score, targetPhase: 'STD' });
+      });
+    }
+    if (phaseId === 3 && artifact && artifact.failures) {
+      artifact.failures.filter(function (f) { return f.severity === 'Critical'; }).forEach(function (f) {
+        decisions.priorities.push({ id: f.tcId, title: (f.title || '').slice(0, 60), severity: 'Critical', targetPhase: 'STR' });
+      });
+    }
+
+    return {
+      phase:        phaseId,
+      phaseName:    phaseName,
+      artifact:     artifact || null,
+      rawTextRef:   'S.data[' + phaseId + ']',    // no duplication — pointer only
+      contextUsed:  ctxSnapshot || null,
+      validation:   validation,
+      decisions:    decisions,
+      status:       succeeded ? 'completed' : (S.status ? (S.status[phaseId] || 'unknown') : 'unknown'),
+      elapsed:      elapsed,
+      timestamp:    new Date().toISOString(),
+    };
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §5  UPDATE RUNTIME STATE  (v2 — new)
+     Writes phase result into S.runtime. Accumulates flags, warnings,
+     decisions, degradedPhases — influences downstream behavior.
+  ═══════════════════════════════════════════════════════════════════ */
+  function updateRuntimeState(phaseId, phaseResult, decision) {
+    if (!window.S || !S.runtime) return;
+    var rt = S.runtime;
+
+    rt.currentPhase = phaseId;
+    rt.phaseResults[phaseId] = phaseResult;
+
+    // ── Accumulate flags (de-duped by type+phase) ───────────────────
+    (phaseResult.decisions.flags || []).forEach(function (f) {
+      var dup = rt.flags.some(function (x) { return x.type === f.type && x.phase === f.phase; });
+      if (!dup) rt.flags.push(f);
+    });
+
+    // ── Accumulate warnings (de-duped by message) ───────────────────
+    if (decision && decision.warnings) {
+      decision.warnings.forEach(function (msg) {
+        var dup = rt.warnings.some(function (x) { return x.message === msg; });
+        if (!dup) {
+          rt.warnings.push({
+            phase:   phaseId,
+            message: msg,
+            health:  decision.health,
+            ts:      new Date().toISOString(),
+          });
+        }
+      });
+    }
+
+    // ── Decisions chronological log ─────────────────────────────────
+    if (decision) {
+      rt.decisions.push({
+        phase:        phaseId,
+        phaseName:    PHASE_NAMES[phaseId] || ('P' + phaseId),
+        health:       decision.health,
+        confidence:   decision.confidence,
+        warningCount: (decision.warnings || []).length,
+        ts:           new Date().toISOString(),
+      });
+    }
+
+    // ── Degraded phases list ────────────────────────────────────────
+    if (decision && (decision.health === 'degraded' || decision.health === 'low')) {
+      if (rt.degradedPhases.indexOf(phaseId) === -1) {
+        rt.degradedPhases.push(phaseId);
+      }
+    }
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §6  DECISION ENGINE  (v1 — unchanged)
+     Bounded, explicit rules. No uncontrolled autonomy.
   ═══════════════════════════════════════════════════════════════════ */
   function computeDecision(phaseId, artifact) {
     if (!artifact) {
       return { health: 'degraded', confidence: 0, warnings: ['JSON artifact not parsed — next phase uses raw text context (graceful fallback active)'] };
     }
 
-    var warnings  = [];
-    var health    = 'good';
-    var score     = artifact.confidenceScore || 0;
-    var pct       = Math.round(score * 100);
+    var warnings = [];
+    var health   = 'good';
+    var score    = artifact.confidenceScore || 0;
+    var pct      = Math.round(score * 100);
 
-    // ── Confidence thresholds ────────────────────────────────────────
     if (score < 0.4) {
       health = 'low';
       warnings.push('Low confidence ' + pct + '% — input lacks sufficient product detail. Add more context before proceeding.');
@@ -104,7 +376,6 @@
       warnings.push('Moderate confidence ' + pct + '% — review [ASSUMED] items in the output before running the next phase.');
     }
 
-    // ── RUN: rejected assumptions ────────────────────────────────────
     if (phaseId === 3 && artifact.assumptionUpdates) {
       var rejected = artifact.assumptionUpdates.filter(function (u) { return u.newTag === '[REJECTED]'; });
       if (rejected.length > 0) {
@@ -113,7 +384,6 @@
       }
     }
 
-    // ── RUN: critical blockers ────────────────────────────────────────
     if (phaseId === 3 && artifact.failures) {
       var blockers = artifact.failures.filter(function (f) { return f.severity === 'Critical'; });
       if (blockers.length > 0) {
@@ -122,26 +392,22 @@
       }
     }
 
-    // ── RUN: validator inconsistency ─────────────────────────────────
     if (phaseId === 3 && artifact.validationResult && artifact.validationResult.isConsistentWithSTD === false) {
       warnings.push('Execution Validator flagged inconsistency with STD (score: ' +
         (artifact.validationResult.consistencyScore || '?') + '/100)');
       if (health === 'good') health = 'medium';
     }
 
-    // ── STR: NO-GO ────────────────────────────────────────────────────
     if (phaseId === 4 && artifact.goNoGo === 'NO-GO') {
       warnings.push('Release recommendation: NO-GO — do not ship without addressing blockers');
       if (health === 'good') health = 'low';
     }
 
-    // ── STR: report validator flags ───────────────────────────────────
     if (phaseId === 4 && artifact.validationConsistency && !artifact.validationConsistency.isConsistent) {
       warnings.push('STR Report Validator flagged numerical inconsistency — review flagged sections');
       if (health === 'good') health = 'medium';
     }
 
-    // ── STP: zero test items ──────────────────────────────────────────
     if (phaseId === 1 && artifact.testTree && artifact.testTree.totalItems === 0) {
       warnings.push('STP test tree is empty — check that file content was uploaded correctly');
       health = 'degraded';
@@ -152,8 +418,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §4  NEXT-PHASE ANNOTATION
-     Stores high-signal context items for injection into next prompt.
+     §7  NEXT-PHASE ANNOTATION  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function buildAnnotations(phaseId, artifact, decision) {
     if (!window.S || !artifact) return;
@@ -161,7 +426,6 @@
 
     var lines = [];
 
-    // High-severity risks from STP (for STD to prioritize)
     if (phaseId === 1 && artifact.riskMap && artifact.riskMap.length) {
       var hot = artifact.riskMap.filter(function (r) { return (r.score || 0) >= 15; });
       if (hot.length) {
@@ -170,12 +434,10 @@
       }
     }
 
-    // Coverage gaps from STD (for RUN to handle carefully)
     if (phaseId === 2 && artifact.coverageMatrix && artifact.coverageMatrix.gaps && artifact.coverageMatrix.gaps.length) {
       lines.push('STD COVERAGE GAPS NOTED: ' + artifact.coverageMatrix.gaps.slice(0, 5).join('; '));
     }
 
-    // Rejected assumptions from RUN (for STR root cause)
     if (phaseId === 3 && artifact.assumptionUpdates) {
       var rej = artifact.assumptionUpdates.filter(function (u) { return u.newTag === '[REJECTED]'; });
       if (rej.length) {
@@ -184,7 +446,6 @@
       }
     }
 
-    // Phase health annotation
     if (decision.health !== 'good' && decision.warnings.length) {
       lines.push('PRIOR PHASE HEALTH ' + decision.health.toUpperCase() + ': ' + decision.warnings[0]);
     }
@@ -199,7 +460,64 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §5  PREREQ CHECKER
+     §8  PIPELINE SUMMARY  (v2 — new)
+     Written into S.runtime.lastPipelineRun after all phases complete
+     or explicitly after STR. No external side effects.
+  ═══════════════════════════════════════════════════════════════════ */
+  function finalizePipelineRun() {
+    if (!window.S || !S.runtime) return;
+    var rt = S.runtime;
+
+    var completedNums = Object.keys(rt.phaseResults).map(Number).filter(function (k) {
+      return rt.phaseResults[k] && rt.phaseResults[k].status === 'completed';
+    });
+
+    if (!completedNums.length) return;
+
+    // Overall confidence = arithmetic mean of completed phase confidences
+    var sum = completedNums.reduce(function (acc, ph) {
+      return acc + (rt.phaseResults[ph].validation.confidence || 0);
+    }, 0);
+    var overallConfidence = Math.round((sum / completedNums.length) * 100) / 100;
+
+    // Go/No-Go from STR artifact if present
+    var goNoGo = null;
+    if (rt.phaseResults[4] && rt.phaseResults[4].artifact) {
+      goNoGo = rt.phaseResults[4].artifact.goNoGo || null;
+    }
+
+    // Critical-only warnings for the summary
+    var keyWarnings = rt.warnings
+      .filter(function (w) { return w.health === 'low' || w.health === 'degraded'; })
+      .map(function (w) { return '[' + (PHASE_NAMES[w.phase] || w.phase) + '] ' + w.message; })
+      .slice(0, 5);
+
+    var keyFlags = rt.flags.map(function (f) {
+      return f.type + (f.value ? ':' + f.value : '') + '@' + (f.phase || '?');
+    });
+
+    rt.lastPipelineRun = {
+      completedAt:       new Date().toISOString(),
+      completedPhases:   completedNums.map(function (ph) { return PHASE_NAMES[ph]; }),
+      degradedPhases:    rt.degradedPhases.map(function (ph) { return PHASE_NAMES[ph]; }),
+      overallConfidence: overallConfidence,
+      goNoGo:            goNoGo,
+      keyFlags:          keyFlags,
+      keyWarnings:       keyWarnings,
+      totalWarnings:     rt.warnings.length,
+    };
+
+    logEvent(0, 'pipeline_summary', {
+      completedPhases:    rt.lastPipelineRun.completedPhases.join(' → '),
+      overallConfidence:  Math.round(overallConfidence * 100) + '%',
+      goNoGo:             goNoGo || '—',
+      degradedCount:      rt.degradedPhases.length,
+    });
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════════
+     §9  PREREQ CHECKER  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function checkPrerequisites(phaseId) {
     if (!window.S) return null;
@@ -211,8 +529,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §6  WARNING SURFACE
-     Injects visible warnings above the output card content.
+     §10  WARNING SURFACE  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function clearWarnings() {
     var bar = document.getElementById('agent-warning-bar');
@@ -224,7 +541,7 @@
     if (!bar) return;
 
     var colorMap = { error: '#f43f5e', warn: '#f59e0b', info: '#06b6d4' };
-    var color = colorMap[level] || colorMap.warn;
+    var color    = colorMap[level] || colorMap.warn;
     var phaseName = PHASE_NAMES[phaseId] || ('P' + phaseId);
 
     var item = document.createElement('div');
@@ -238,8 +555,11 @@
       'animation:agent-fade-in .2s ease both',
     ].join(';');
     item.innerHTML =
-      '<span style="color:' + color + ';font-size:9px;font-weight:700;font-family:JetBrains Mono,monospace;letter-spacing:1px;flex-shrink:0;padding-top:1px">' + phaseName + '</span>' +
-      '<span style="font-size:11px;color:var(--text);line-height:1.45">' + escHtml(message) + '</span>';
+      '<span style="color:' + color + ';font-size:9px;font-weight:700;' +
+      'font-family:JetBrains Mono,monospace;letter-spacing:1px;flex-shrink:0;padding-top:1px">' +
+      phaseName + '</span>' +
+      '<span style="font-size:11px;color:var(--text);line-height:1.45">' +
+      escHtml(message) + '</span>';
 
     bar.appendChild(item);
     bar.style.display = 'block';
@@ -251,7 +571,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §7  PHASE HEALTH BADGE (on phase tabs)
+     §11  PHASE HEALTH BADGE  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function applyTabHealth(phaseId, health) {
     var tab = document.querySelector('.ph-tab[data-phase="' + phaseId + '"]');
@@ -262,9 +582,13 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §8  RUNTIME WRAP OF runGen
-     This is the primary integration point. Adds pre/post orchestration
-     around the real phase execution without changing internal logic.
+     §12  RUNTIME WRAP OF runGen  (v2 — extended)
+     Keeps all v1 logic. Adds:
+       • resetRuntimeForNewPipeline on phaseId=1
+       • buildPhaseContext() snapshot before _orig()
+       • buildPhaseResult() after _orig() completes
+       • updateRuntimeState() after decision
+       • finalizePipelineRun() after STR
   ═══════════════════════════════════════════════════════════════════ */
   function patchRunGen() {
     var _orig = typeof runGen === 'function' ? runGen : null;
@@ -276,14 +600,19 @@
     window.runGen = async function (phaseId) {
       if (!window.S) { return _orig(phaseId); }
 
-      // Ensure state is initialised (safe to re-call)
       initRuntimeState();
 
       var phaseName = PHASE_NAMES[phaseId] || ('P' + phaseId);
       var t0 = Date.now();
 
-      // ── Pre-flight ───────────────────────────────────────────────
+      // ── New pipeline start: reset runtime state (keep lastPipelineRun) ──
+      if (phaseId === 1) {
+        resetRuntimeForNewPipeline();
+      }
+
+      // ── Pre-flight ──────────────────────────────────────────────────
       clearWarnings();
+      if (S.runtime) S.runtime.currentPhase = phaseId;
 
       var prereq = checkPrerequisites(phaseId);
       if (prereq) {
@@ -299,30 +628,41 @@
         });
       }
 
+      // ── Context snapshot BEFORE execution ───────────────────────────
+      var ctxSnapshot = buildPhaseContext(phaseId);
+
       logEvent(phaseId, 'start', { phaseName: phaseName });
 
-      // ── Execute original runGen (all streaming, showOut, etc.) ───
-      // agents.js hooks (buildPrompt, getContext, showOut) fire inside here.
+      // ── Execute: all streaming / showOut / agents.js hooks fire here ─
       await _orig(phaseId);
 
       var elapsed = ((Date.now() - t0) / 1000).toFixed(1) + 's';
 
-      // ── Post-execution ───────────────────────────────────────────
-      var artifact = (S.artifacts && S.artifacts[phaseId]) ? S.artifacts[phaseId] : null;
+      // ── Post-execution ──────────────────────────────────────────────
+      var artifact  = (S.artifacts && S.artifacts[phaseId]) ? S.artifacts[phaseId] : null;
       var succeeded = S.status[phaseId] === 'done';
 
       if (!succeeded) {
-        // Error or user-abort — log and exit cleanly
-        if (S.status[phaseId] === 'error') {
-          logEvent(phaseId, 'error', { elapsed: elapsed, note: 'Generation failed — see output for details' });
-        } else {
-          logEvent(phaseId, 'complete', { elapsed: elapsed, note: 'Stopped by user' });
-        }
+        logEvent(phaseId,
+          S.status[phaseId] === 'error' ? 'error' : 'complete',
+          { elapsed: elapsed, note: S.status[phaseId] === 'error' ? 'Generation failed' : 'Stopped by user' }
+        );
         return;
       }
 
+      // ── Decision engine ─────────────────────────────────────────────
+      var decision = computeDecision(phaseId, artifact);
+      S.phaseHealth[phaseId] = decision;
+      applyTabHealth(phaseId, decision.health);
+
+      // ── Phase result contract ───────────────────────────────────────
+      var phaseResult = buildPhaseResult(phaseId, artifact, decision, ctxSnapshot, elapsed);
+
+      // ── Update S.runtime ────────────────────────────────────────────
+      updateRuntimeState(phaseId, phaseResult, decision);
+
+      // ── Surface warnings ────────────────────────────────────────────
       if (artifact) {
-        // ── Artifact extracted successfully ──────────────────────
         logEvent(phaseId, 'artifact_extracted', {
           phaseName:       phaseName,
           confidenceScore: artifact.confidenceScore,
@@ -331,13 +671,8 @@
           elapsed:         elapsed,
         });
 
-        // ── Decision engine ──────────────────────────────────────
-        var decision = computeDecision(phaseId, artifact);
-        S.phaseHealth[phaseId] = decision;
-        applyTabHealth(phaseId, decision.health);
-
         decision.warnings.forEach(function (w) {
-          var level = decision.health === 'low' || decision.health === 'degraded' ? 'error' : 'warn';
+          var level = (decision.health === 'low' || decision.health === 'degraded') ? 'error' : 'warn';
           surfaceWarning(phaseId, w, level);
           logEvent(phaseId, 'decision', {
             health:     decision.health,
@@ -354,31 +689,29 @@
           });
         }
 
-        // ── Next-phase context annotation ────────────────────────
-        if (phaseId < 4) {
-          buildAnnotations(phaseId, artifact, decision);
-        }
+        // Next-phase annotations
+        if (phaseId < 4) buildAnnotations(phaseId, artifact, decision);
 
-        // ── Memory update log (STR only, fired by agents.js already) ─
+        // Memory update log (agents.js fires the actual update in showOut)
         if (phaseId === 4 && S.memory && S.memory.productName) {
           logEvent(phaseId, 'memory_updated', {
             productName: S.memory.productName,
-            passRate:    S.memory.previousPassRate != null
-                           ? Math.round(S.memory.previousPassRate * 100) + '%'
-                           : '—',
+            passRate: S.memory.previousPassRate != null
+              ? Math.round(S.memory.previousPassRate * 100) + '%' : '—',
           });
         }
 
       } else if (S.data[phaseId]) {
-        // ── Output exists but JSON artifact not found ────────────
         logEvent(phaseId, 'artifact_failed', {
           elapsed: elapsed,
           note:    'No JSON artifact block — fallback to raw text context active',
         });
-        var degraded = { health: 'degraded', confidence: 0, warnings: ['JSON artifact not extracted — next phase uses raw text (graceful fallback)'] };
-        S.phaseHealth[phaseId] = degraded;
-        applyTabHealth(phaseId, 'degraded');
-        surfaceWarning(phaseId, degraded.warnings[0], 'warn');
+        surfaceWarning(phaseId, 'JSON artifact not extracted — next phase uses raw text (graceful fallback)', 'warn');
+      }
+
+      // ── Pipeline summary after STR ──────────────────────────────────
+      if (phaseId === 4) {
+        finalizePipelineRun();
       }
 
       logEvent(phaseId, 'complete', { elapsed: elapsed, status: S.status[phaseId] });
@@ -388,9 +721,7 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §9  CONTEXT ENRICHMENT
-     Wraps the getContext already overridden by agents.js to inject
-     runtime annotations from prior phases.
+     §13  CONTEXT ENRICHMENT  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function patchGetContext() {
     var _prev = typeof window.getContext === 'function' ? window.getContext : null;
@@ -418,14 +749,13 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §10  LOG PANEL UI
+     §14  LOG PANEL UI  (v1 — unchanged except pipeline_summary row)
   ═══════════════════════════════════════════════════════════════════ */
   var _logPanelInjected = false;
 
   function injectRuntimeUI() {
     if (_logPanelInjected) return;
 
-    // ── Warning bar (inserted inside out-card, above out-content) ──
     var outCard    = document.getElementById('out-card');
     var outContent = document.getElementById('out-content');
     var confBar    = document.getElementById('agent-confidence-bar');
@@ -438,7 +768,6 @@
       outCard.insertBefore(warningBar, insertRef);
     }
 
-    // ── Log panel (appended to out-scroll) ──────────────────────────
     var outScroll = document.getElementById('out-scroll');
     if (outScroll) {
       var logPanel = document.createElement('div');
@@ -446,11 +775,16 @@
       logPanel.className = 'agent-log-panel';
       logPanel.style.display = 'none';
       logPanel.innerHTML =
-        '<div class="alp-header" onclick="var b=document.getElementById(\'alp-body\');b.classList.toggle(\'alp-collapsed\');this.querySelector(\'.alp-toggle\').textContent=b.classList.contains(\'alp-collapsed\')?\'▸\':\'▾\'">' +
+        '<div class="alp-header" onclick="var b=document.getElementById(\'alp-body\');' +
+        'b.classList.toggle(\'alp-collapsed\');' +
+        'this.querySelector(\'.alp-toggle\').textContent=' +
+        'b.classList.contains(\'alp-collapsed\')?\'▸\':\'▾\'">' +
           '<span class="alp-title">◉ AGENT RUNTIME LOG</span>' +
           '<span class="alp-toggle">▾</span>' +
         '</div>' +
-        '<div class="alp-body alp-collapsed" id="alp-body"><div class="alp-empty">No events yet.</div></div>';
+        '<div class="alp-body alp-collapsed" id="alp-body">' +
+          '<div class="alp-empty">No events yet.</div>' +
+        '</div>';
       outScroll.appendChild(logPanel);
     }
 
@@ -465,31 +799,36 @@
     panel.style.display = 'block';
 
     var html = '';
-    S.agentLogs.slice(0, 25).forEach(function (e) {
+    S.agentLogs.slice(0, 30).forEach(function (e) {
       var icon  = LOG_ICONS[e.event]  || '·';
       var color = LOG_COLORS[e.event] || '#7a9abf';
       var time  = e.ts ? e.ts.split('T')[1].slice(0, 8) : '';
 
       var detail = '';
-      if (e.elapsed)         detail = e.elapsed;
-      if (e.message)         detail = e.message.slice(0, 90);
-      if (e.note)            detail = e.note.slice(0, 90);
-      if (e.error)           detail = e.error.slice(0, 90);
-      if (e.warning)         detail = e.warning.slice(0, 90);
-      if (e.preview)         detail = e.preview;
+      if (e.elapsed)   detail = e.elapsed;
+      if (e.message)   detail = String(e.message).slice(0, 90);
+      if (e.note)      detail = String(e.note).slice(0, 90);
+      if (e.error)     detail = String(e.error).slice(0, 90);
+      if (e.warning)   detail = String(e.warning).slice(0, 90);
+      if (e.preview)   detail = String(e.preview).slice(0, 90);
+
       if (e.event === 'artifact_extracted') {
         detail = 'confidence ' + Math.round((e.confidenceScore || 0) * 100) + '%' +
                  (e.totalItems != null ? ' · ' + e.totalItems + ' items' : '') +
-                 ' · ' + (e.elapsed || '');
+                 (e.elapsed ? ' · ' + e.elapsed : '');
       }
       if (e.event === 'decision') {
-        detail = e.health + ' · ' + (e.confidence || '—') + (e.note ? ' · ' + e.note : '');
+        detail = (e.health || '') + ' · ' + (e.confidence || '—') + (e.note ? ' · ' + e.note : '');
       }
       if (e.event === 'memory_injected') {
         detail = (e.productName || '—') + ' · ' + (e.lessonsLearned || 0) + ' lessons';
       }
       if (e.event === 'memory_updated') {
         detail = (e.productName || '—') + ' pass ' + (e.passRate || '—');
+      }
+      if (e.event === 'pipeline_summary') {
+        detail = (e.completedPhases || '') + ' · ' + (e.overallConfidence || '—') +
+                 ' · ' + (e.goNoGo || '—');
       }
 
       html +=
@@ -507,18 +846,17 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     §11  INIT
+     §15  INIT  (v1 — unchanged)
   ═══════════════════════════════════════════════════════════════════ */
   function init() {
     var attempts = 0;
     var poll = setInterval(function () {
       attempts++;
-
       if (!window.S && attempts < 60) return;
       clearInterval(poll);
 
       if (!window.S) {
-        console.warn('[runtime] S state object not found — aborting runtime init');
+        console.warn('[runtime] S state object not found — aborting');
         return;
       }
 
@@ -526,7 +864,6 @@
       patchRunGen();
       patchGetContext();
 
-      // Inject UI as soon as the output card exists
       (function tryUI() {
         if (document.getElementById('out-card') && document.getElementById('out-scroll')) {
           injectRuntimeUI();
@@ -534,7 +871,6 @@
           setTimeout(tryUI, 300);
         }
       })();
-
     }, 80);
   }
 
