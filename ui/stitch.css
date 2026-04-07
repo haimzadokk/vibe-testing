@@ -720,7 +720,148 @@ body.light-mode .logo-text .logo-sub { color: rgba(71,85,105,.55); }
 body.light-mode .chat-wrap { background: #ffffff; border-color: #e2e8f0; }
 
 
-/* ─── §21  MOBILE ────────────────────────────────────────────────── */
+/* ─── §21  AUTH PAGE (auth.html) ────────────────────────────────── */
+
+/* auth.html uses its own class names — upgrade them to match design system */
+
+.auth-wrap {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.auth-card {
+  border-radius: 12px;
+  border: 1px solid rgba(59,73,75,.28);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+  box-shadow: 0 0 60px rgba(0,219,233,.04), 0 32px 64px rgba(0,0,0,.4);
+}
+
+.auth-card::before {
+  background: linear-gradient(90deg, var(--green), var(--brand), #7000ff);
+}
+
+.auth-logo-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: .28em;
+  color: var(--brand);
+}
+
+.auth-logo-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+
+.auth-logo-dot { color: var(--brand); }
+
+.auth-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.auth-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.field label {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .1em;
+  font-weight: 700;
+}
+
+.field input {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  background: rgba(10,12,16,.85);
+  border: 1px solid rgba(59,73,75,.3);
+  border-radius: 8px;
+}
+
+.field input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(0,219,233,.07);
+  outline: none;
+}
+
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  border-radius: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--green), #00c48a);
+  box-shadow: 0 4px 16px rgba(0,229,160,.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 6px 24px rgba(0,229,160,.32);
+}
+
+.btn-google {
+  background: rgba(17,19,24,.8);
+  border: 1px solid rgba(59,73,75,.3);
+}
+
+.btn-secondary {
+  border: 1px solid rgba(59,73,75,.28);
+  color: rgba(185,202,203,.6);
+}
+
+.auth-links p,
+.auth-links a,
+.resend-note {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
+
+.divider {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+}
+
+.pass-hint {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+}
+
+/* Light mode companions for auth */
+body.light-mode .auth-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 32px rgba(0,0,0,.08);
+}
+
+body.light-mode .field input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body.light-mode .field input:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5,150,105,.07);
+}
+
+body.light-mode .btn-google {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body.light-mode .btn-secondary {
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+/* ─── §22  MOBILE ────────────────────────────────────────────────── */
 
 @media (max-width: 700px) {
   html, body { font-size: 13px; }
