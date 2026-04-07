@@ -1,0 +1,374 @@
+/**
+ * agents.css — VIBE.TESTING Multi-Agent Intelligence Layer Styles
+ * Companion to agents.js. WRAP principle: no existing selectors modified.
+ * Covers: evidence tags, confidence bar, assumptions panel.
+ */
+
+/* ─── §1  KEYFRAMES ─────────────────────────────────────────────────── */
+@keyframes agent-fade-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes agent-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50%       { box-shadow: 0 0 10px 2px var(--agent-pulse-color, #00e5a020); }
+}
+@keyframes acb-fill-grow {
+  from { width: 0; }
+}
+
+
+/* ─── §2  EVIDENCE TAGS ─────────────────────────────────────────────── */
+.vibe-evidence-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  vertical-align: middle;
+  cursor: default;
+  border: 1px solid transparent;
+  transition: transform .12s, box-shadow .15s;
+  white-space: nowrap;
+}
+.vibe-evidence-tag:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px currentColor20;
+}
+
+/* Observed — green */
+.vibe-et-observed {
+  color: #00e5a0;
+  background: #00e5a010;
+  border-color: #00e5a030;
+}
+.vibe-et-observed::before { content: '●'; font-size: 6px; }
+
+/* Inferred — cyan */
+.vibe-et-inferred {
+  color: #06b6d4;
+  background: #06b6d410;
+  border-color: #06b6d430;
+}
+.vibe-et-inferred::before { content: '◆'; font-size: 6px; }
+
+/* Assumed — amber */
+.vibe-et-assumed {
+  color: #f59e0b;
+  background: #f59e0b10;
+  border-color: #f59e0b30;
+}
+.vibe-et-assumed::before { content: '▲'; font-size: 6px; }
+
+/* Validated — purple */
+.vibe-et-validated {
+  color: #8b5cf6;
+  background: #8b5cf610;
+  border-color: #8b5cf630;
+}
+.vibe-et-validated::before { content: '✓'; font-size: 7px; }
+
+/* Rejected — red */
+.vibe-et-rejected {
+  color: #f43f5e;
+  background: #f43f5e10;
+  border-color: #f43f5e30;
+  text-decoration: line-through;
+  text-decoration-color: #f43f5e80;
+}
+.vibe-et-rejected::before { content: '✕'; font-size: 7px; }
+
+
+/* ─── §3  CONFIDENCE BAR ─────────────────────────────────────────────── */
+.agent-confidence-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+  margin: 0 0 10px 0;
+  background: var(--surface, #0d1117);
+  border: 1px solid var(--border, rgba(59,73,75,.18));
+  border-radius: 8px;
+  animation: agent-fade-in .22s ease both;
+  flex-wrap: wrap;
+}
+
+/* Left side — label + agent chips */
+.acb-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.acb-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted, #7a9abf);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.acb-agents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.acb-agent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  border: 1px solid;
+  font-size: 9px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .5px;
+  transition: opacity .2s;
+  animation: agent-fade-in .2s ease both;
+}
+
+/* Right side — score + track */
+.acb-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.acb-score-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted, #7a9abf);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.acb-track {
+  width: 120px;
+  height: 6px;
+  background: var(--border, rgba(59,73,75,.18));
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.acb-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #00e5a0;
+  transition: width .5s cubic-bezier(.4,0,.2,1), background .3s;
+  animation: acb-fill-grow .5s cubic-bezier(.4,0,.2,1) both;
+}
+
+.acb-score-num {
+  font-size: 16px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 38px;
+  text-align: right;
+  transition: color .3s;
+  line-height: 1;
+}
+
+
+/* ─── §4  ASSUMPTIONS PANEL ─────────────────────────────────────────── */
+.agent-assumptions-panel {
+  margin: 16px 0 0 0;
+  border: 1px solid var(--border, rgba(59,73,75,.18));
+  border-radius: 8px;
+  overflow: hidden;
+  animation: agent-fade-in .24s ease both;
+  background: var(--surface, #0d1117);
+}
+
+/* Header row */
+.aap-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg2, rgba(10,20,28,.6));
+  border-bottom: 1px solid var(--border, rgba(59,73,75,.14));
+  transition: background .18s;
+}
+.aap-header:hover { background: var(--bg2, rgba(10,20,28,.8)); }
+
+.aap-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted, #7a9abf);
+  font-family: 'JetBrains Mono', monospace;
+  flex: 1;
+}
+
+.aap-counts {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.aap-toggle {
+  font-size: 11px;
+  color: var(--muted, #7a9abf);
+  transition: transform .2s;
+}
+.aap-body.aap-collapsed ~ .aap-header .aap-toggle,
+.aap-header:has(+ .aap-body.aap-collapsed) .aap-toggle {
+  transform: rotate(-90deg);
+}
+
+/* Count chips */
+.aap-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 8px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .5px;
+  border: 1px solid transparent;
+}
+.aap-chip-total    { color: var(--muted, #7a9abf); border-color: var(--border, rgba(59,73,75,.2)); }
+.aap-chip-critical { color: #f59e0b; background: #f59e0b10; border-color: #f59e0b30; }
+.aap-chip-validated{ color: #8b5cf6; background: #8b5cf610; border-color: #8b5cf630; }
+.aap-chip-rejected { color: #f43f5e; background: #f43f5e10; border-color: #f43f5e30; }
+
+/* Body / list */
+.aap-body {
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: max-height .25s ease, padding .25s ease, opacity .2s;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, rgba(59,73,75,.3)) transparent;
+}
+.aap-body.aap-collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* Phase group */
+.aap-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aap-phase-label {
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted, #7a9abf);
+  font-family: 'JetBrains Mono', monospace;
+  opacity: .6;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--border, rgba(59,73,75,.12));
+}
+
+.aap-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Individual assumption row */
+.aap-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  background: transparent;
+  transition: background .15s;
+}
+.aap-item:hover { background: var(--bg2, rgba(10,20,28,.4)); }
+.aap-item.aap-critical {
+  background: #f59e0b06;
+  border-inline-start: 2px solid #f59e0b40;
+}
+
+.aap-item-tag {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 7px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid;
+  margin-top: 1px;
+}
+
+.aap-item-text {
+  font-size: 11px;
+  color: var(--text, #c8d8e4);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.aap-empty {
+  font-size: 11px;
+  color: var(--muted, #7a9abf);
+  font-style: italic;
+  padding: 8px 4px;
+  opacity: .6;
+}
+
+
+/* ─── §5  LIGHT MODE ADJUSTMENTS ─────────────────────────────────────── */
+body.light-mode .agent-confidence-bar,
+body.light-mode .agent-assumptions-panel {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+body.light-mode .aap-header {
+  background: #f8fafc;
+  border-bottom-color: #e2e8f0;
+}
+body.light-mode .aap-header:hover { background: #f1f5f9; }
+
+body.light-mode .aap-item:hover { background: #f1f5f9; }
+body.light-mode .aap-item.aap-critical { background: #fef9eb; }
+
+body.light-mode .acb-track { background: #e2e8f0; }
+
+body.light-mode .vibe-et-observed  { background: #00e5a015; }
+body.light-mode .vibe-et-inferred  { background: #06b6d415; }
+body.light-mode .vibe-et-assumed   { background: #f59e0b15; }
+body.light-mode .vibe-et-validated { background: #8b5cf615; }
+body.light-mode .vibe-et-rejected  { background: #f43f5e15; }
+
+
+/* ─── §6  RTL SUPPORT ────────────────────────────────────────────────── */
+[dir="rtl"] .aap-item.aap-critical {
+  border-inline-start: none;
+  border-inline-end: 2px solid #f59e0b40;
+}
