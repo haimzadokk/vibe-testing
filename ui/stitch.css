@@ -628,29 +628,29 @@ body.light-mode .gen-btn.on {
 }
 
 /* Viewport-height-relative type scale — grows/shrinks with screen */
-.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: clamp(36px, 7vh, 64px); font-weight: 900; letter-spacing: 5px; line-height: 1; }
-.wlc-version { font-family: 'Inter', sans-serif; font-size: clamp(10px, 1.5vh, 15px); letter-spacing: 4px; margin-top: 2px; }
-.wlc-tagline { font-family: 'Inter', sans-serif; font-size: clamp(14px, 2.4vh, 22px); line-height: 1.4; max-width: 900px !important; white-space: nowrap; }
+.wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: clamp(42px, 9vh, 72px); font-weight: 900; letter-spacing: 5px; line-height: 1; }
+.wlc-version { font-family: 'Inter', sans-serif; font-size: clamp(11px, 1.9vh, 16px); letter-spacing: 4px; margin-top: 2px; }
+.wlc-tagline { font-family: 'Inter', sans-serif; font-size: clamp(16px, 3vh, 26px); line-height: 1.4; max-width: 900px !important; white-space: nowrap; }
 
-.wlc-icon { width: clamp(56px, 9vh, 82px) !important; height: clamp(56px, 9vh, 82px) !important; font-size: clamp(18px, 3vh, 28px) !important; }
+.wlc-icon { width: clamp(62px, 11vh, 90px) !important; height: clamp(62px, 11vh, 90px) !important; font-size: clamp(20px, 3.5vh, 30px) !important; }
 
-.wlc-phase     { padding: clamp(8px, 1.5vh, 18px) clamp(10px, 1.5vw, 18px) !important; gap: clamp(4px, 0.8vh, 8px) !important; }
-.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: clamp(13px, 2.2vh, 20px); font-weight: 700; letter-spacing: 2px; }
-.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: clamp(11px, 1.6vh, 15px); }
-.wlc-phase-icon { font-size: clamp(14px, 2.5vh, 22px) !important; }
+.wlc-phase     { padding: clamp(12px, 2.2vh, 22px) clamp(12px, 1.8vw, 20px) !important; gap: clamp(6px, 1vh, 10px) !important; }
+.wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: clamp(15px, 2.8vh, 22px); font-weight: 700; letter-spacing: 2px; }
+.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: clamp(12px, 2vh, 17px); }
+.wlc-phase-icon { font-size: clamp(16px, 3vh, 26px) !important; }
 
 .wlc-features {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
-  gap: clamp(5px, 0.8vh, 10px) !important;
-  max-width: 680px !important;
+  gap: clamp(6px, 1vh, 12px) !important;
+  max-width: 760px !important;
   width: 100%;
 }
 
 .wlc-feature {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(12px, 1.8vh, 16px);
-  padding: clamp(5px, 0.9vh, 9px) 14px;
+  font-size: clamp(13px, 2.2vh, 18px);
+  padding: clamp(7px, 1.2vh, 12px) 16px;
   border: 1px solid rgba(59,73,75,.18);
   border-radius: 8px;
   background: rgba(17,19,24,.7);
@@ -660,15 +660,15 @@ body.light-mode .gen-btn.on {
 
 .wlc-btn {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(15px, 2.5vh, 22px);
+  font-size: clamp(17px, 3vh, 24px);
   font-weight: 700;
   letter-spacing: 3px;
   border-radius: 12px;
-  padding: clamp(10px, 1.8vh, 18px) clamp(36px, 5vw, 60px);
+  padding: clamp(13px, 2.2vh, 20px) clamp(44px, 6vw, 70px);
   margin-top: 0;
 }
 
-.wlc-footer { font-family: 'Inter', sans-serif; font-size: clamp(10px, 1.4vh, 14px); letter-spacing: 0; }
+.wlc-footer { font-family: 'Inter', sans-serif; font-size: clamp(11px, 1.7vh, 15px); letter-spacing: 0; }
 
 
 /* ─── §15  TOAST ─────────────────────────────────────────────────── */
