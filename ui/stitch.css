@@ -611,12 +611,26 @@ body.light-mode .gen-btn.on {
 
 /* ─── §14  WELCOME SCREEN ────────────────────────────────────────── */
 
+/* Tighten layout so all content fits in one viewport without scrolling */
+.welcome-screen {
+  align-items: center;
+  justify-content: center;
+}
+
+.wlc-wrap {
+  gap: 18px;
+  padding: 16px 32px 16px;
+}
+
 .wlc-title   { font-family: 'Space Grotesk', sans-serif; font-size: 58px; font-weight: 900; letter-spacing: 6px; }
 .wlc-version { font-family: 'Inter', sans-serif; font-size: 14px; letter-spacing: 4px; }
-.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 26px; line-height: 1.7; }
+.wlc-tagline { font-family: 'Inter', sans-serif; font-size: 22px; line-height: 1.5; max-width: 700px; }
 
+.wlc-phase { padding: 14px 14px; }
 .wlc-phase-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; }
-.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 16px; }
+.wlc-phase-desc { font-family: 'Inter', sans-serif; font-size: 14px; }
+.wlc-features  { gap: 8px; }
+.wlc-feature   { padding: 6px 12px; }
 
 .wlc-feature {
   font-family: 'Inter', sans-serif;
@@ -628,14 +642,15 @@ body.light-mode .gen-btn.on {
 
 .wlc-btn {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 21px;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: 3px;
   border-radius: 12px;
-  padding: 18px 56px;
+  padding: 14px 52px;
+  margin-top: 0;
 }
 
-.wlc-footer { font-family: 'Inter', sans-serif; font-size: 15px; }
+.wlc-footer { font-family: 'Inter', sans-serif; font-size: 13px; letter-spacing: 0; }
 
 
 /* ─── §15  TOAST ─────────────────────────────────────────────────── */
