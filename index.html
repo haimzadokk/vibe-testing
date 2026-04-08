@@ -839,7 +839,7 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 
       <!-- Tagline -->
       <div class="wlc-tagline">
-        <span class="wlc-hi">מאפיון</span> <span class="wlc-hi">לדוח בדיקות מלא</span> <span style="color:#d0e8ff">— בדיקות, עם Claude AI</span>
+        <span class="wlc-hi" data-en="From spec" data-he="מאפיון">מאפיון</span> <span class="wlc-hi" data-en="to full QA report" data-he="לדוח בדיקות מלא">לדוח בדיקות מלא</span> <span style="color:#d0e8ff" data-en="— powered by Claude AI" data-he="— בדיקות, עם Claude AI">— בדיקות, עם Claude AI</span>
       </div>
 
       <!-- 4 Phase cards -->
@@ -847,50 +847,50 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
         <div class="wlc-phase" style="--pc:#00e5a0">
           <div class="wlc-phase-icon">◈</div>
           <div class="wlc-phase-name">STP</div>
-          <div class="wlc-phase-desc">עץ בדיקות</div>
+          <div class="wlc-phase-desc" data-en="Test Tree" data-he="עץ בדיקות">עץ בדיקות</div>
         </div>
         <div class="wlc-arrow">→</div>
         <div class="wlc-phase" style="--pc:#8b5cf6">
           <div class="wlc-phase-icon">◉</div>
           <div class="wlc-phase-name">STD</div>
-          <div class="wlc-phase-desc">תסריטים</div>
+          <div class="wlc-phase-desc" data-en="Scripts" data-he="תסריטים">תסריטים</div>
         </div>
         <div class="wlc-arrow">→</div>
         <div class="wlc-phase" style="--pc:#f59e0b">
           <div class="wlc-phase-icon">▶</div>
           <div class="wlc-phase-name">RUN</div>
-          <div class="wlc-phase-desc">הרצה</div>
+          <div class="wlc-phase-desc" data-en="Execution" data-he="הרצה">הרצה</div>
         </div>
         <div class="wlc-arrow">→</div>
         <div class="wlc-phase" style="--pc:#f43f5e">
           <div class="wlc-phase-icon">◆</div>
           <div class="wlc-phase-name">STR</div>
-          <div class="wlc-phase-desc">דוח סיכום</div>
+          <div class="wlc-phase-desc" data-en="Summary Report" data-he="דוח סיכום">דוח סיכום</div>
         </div>
         <div class="wlc-arrow">→</div>
         <div class="wlc-phase" style="--pc:#06b6d4">
           <div class="wlc-phase-icon">◈</div>
-          <div class="wlc-phase-name">דוחות</div>
-          <div class="wlc-phase-desc">היסטוריה</div>
+          <div class="wlc-phase-name" data-en="Reports" data-he="דוחות">דוחות</div>
+          <div class="wlc-phase-desc" data-en="History" data-he="היסטוריה">היסטוריה</div>
         </div>
       </div>
 
       <!-- Features -->
       <div class="wlc-features">
-        <div class="wlc-feature"><span class="wlc-feat-icon">📎</span><span>תמיכה ב-DOCX, PDF, Excel ו-30+ פורמטים</span></div>
-        <div class="wlc-feature"><span class="wlc-feat-icon">💬</span><span>צ'אט חכם — שאל שאלות על התוצאות</span></div>
-        <div class="wlc-feature"><span class="wlc-feat-icon">⚡</span><span>Streaming בזמן אמת עם Claude Sonnet</span></div>
-        <div class="wlc-feature"><span class="wlc-feat-icon">📄</span><span>ייצוא PDF מקצועי לכל שלב</span></div>
+        <div class="wlc-feature"><span class="wlc-feat-icon">📎</span><span data-en="DOCX, PDF, Excel and 30+ file formats" data-he="תמיכה ב-DOCX, PDF, Excel ו-30+ פורמטים">תמיכה ב-DOCX, PDF, Excel ו-30+ פורמטים</span></div>
+        <div class="wlc-feature"><span class="wlc-feat-icon">💬</span><span data-en="Smart chat — ask questions about results" data-he="צ'אט חכם — שאל שאלות על התוצאות">צ'אט חכם — שאל שאלות על התוצאות</span></div>
+        <div class="wlc-feature"><span class="wlc-feat-icon">⚡</span><span data-en="Real-time streaming with Claude Sonnet" data-he="Streaming בזמן אמת עם Claude Sonnet">Streaming בזמן אמת עם Claude Sonnet</span></div>
+        <div class="wlc-feature"><span class="wlc-feat-icon">📄</span><span data-en="Professional PDF export for every phase" data-he="ייצוא PDF מקצועי לכל שלב">ייצוא PDF מקצועי לכל שלב</span></div>
       </div>
 
-      <button class="wlc-btn" id="wlc-start-btn" onclick="document.getElementById('modal').classList.add('hidden');updateUI();showToast('✓ ברוך הבא!','ok')">
-        <span>התחל עכשיו</span>
+      <button class="wlc-btn" id="wlc-start-btn" onclick="document.getElementById('modal').classList.add('hidden');updateUI();showToast((window.S_disp&&S_disp.lang)==='he'?'✓ ברוך הבא!':'✓ Welcome!','ok')">
+        <span data-en="Get Started" data-he="התחל עכשיו">התחל עכשיו</span>
         <span class="wlc-btn-arrow">→</span>
       </button>
 
       <div class="wlc-footer">
         Made by Haim Zadok © 2026 · All Rights Reserved
-        <div style="font-size:12px;color:var(--dim);margin-top:6px;letter-spacing:1px">הנתונים לא נשמרים על שום שרת</div>
+        <div style="font-size:12px;color:var(--dim);margin-top:6px;letter-spacing:1px" data-en="No data stored on any server" data-he="הנתונים לא נשמרים על שום שרת">הנתונים לא נשמרים על שום שרת</div>
       </div>
     </div>
   </div>
@@ -901,19 +901,19 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       <div class="modal-icon">VT</div>
       <div>
         <div class="modal-title">VIBE<span>.</span>TESTING</div>
-        <div class="modal-subtitle">חיבור ל-Claude AI</div>
+        <div class="modal-subtitle" data-en="Connect to Claude AI" data-he="חיבור ל-Claude AI">חיבור ל-Claude AI</div>
       </div>
     </div>
-    <div class="modal-desc">
+    <div class="modal-desc" id="key-modal-desc">
       נדרש <strong style="color:#8090a8">Anthropic API Key</strong> אישי להפעלת הכלי.<br/>
       ה-Key נשמר בזיכרון הטאב <strong style="color:#8090a8">בלבד</strong> — לא נשמר בשרת, לא מועבר לאף צד שלישי.
     </div>
     <div class="modal-input-wrap">
       <div class="modal-label">ANTHROPIC API KEY</div>
       <input class="modal-input" id="key-input" type="password" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false"/>
-      <div class="modal-err" id="key-err">⚠ Key לא תקין — חייב להתחיל ב-sk-ant</div>
+      <div class="modal-err" id="key-err" data-en="⚠ Invalid Key — must start with sk-ant" data-he="⚠ Key לא תקין — חייב להתחיל ב-sk-ant">⚠ Key לא תקין — חייב להתחיל ב-sk-ant</div>
     </div>
-    <button class="modal-btn" id="key-submit">▶ &nbsp;&nbsp;הפעל את VIBE.TESTING</button>
+    <button class="modal-btn" id="key-submit" data-en="▶  Launch VIBE.TESTING" data-he="▶  הפעל את VIBE.TESTING">▶ &nbsp;&nbsp;הפעל את VIBE.TESTING</button>
     <div class="modal-note">
       אין לך Key עדיין?
       <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
@@ -921,7 +921,7 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       <span style="color:var(--dim)">עלות שימוש: ~$0.01–0.05 להרצת שלב מלא.</span>
     </div>
     <div style="text-align:center;margin-top:-8px">
-      <button onclick="showWelcome()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;letter-spacing:1px">← חזור</button>
+      <button onclick="showWelcome()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;letter-spacing:1px" data-en="← Back" data-he="← חזור">← חזור</button>
     </div>
   </div>
 
@@ -954,32 +954,32 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       <button class="vts-item active" data-vt-phase="1" onclick="setPhase(1)">
         <span class="vts-num">01</span>
         <span class="vts-lbl">STP</span>
-        <span class="vts-sub">עץ בדיקות</span>
+        <span class="vts-sub" data-en="Test Tree" data-he="עץ בדיקות">עץ בדיקות</span>
         <span class="vts-done" id="vtd-1"></span>
       </button>
       <button class="vts-item" data-vt-phase="2" onclick="setPhase(2)">
         <span class="vts-num">02</span>
         <span class="vts-lbl">STD</span>
-        <span class="vts-sub">תסריטים</span>
+        <span class="vts-sub" data-en="Scripts" data-he="תסריטים">תסריטים</span>
         <span class="vts-done" id="vtd-2"></span>
       </button>
       <button class="vts-item" data-vt-phase="3" onclick="setPhase(3)">
         <span class="vts-num">03</span>
         <span class="vts-lbl">RUN</span>
-        <span class="vts-sub">הרצה</span>
+        <span class="vts-sub" data-en="Execution" data-he="הרצה">הרצה</span>
         <span class="vts-done" id="vtd-3"></span>
       </button>
       <button class="vts-item" data-vt-phase="4" onclick="setPhase(4)">
         <span class="vts-num">04</span>
         <span class="vts-lbl">STR</span>
-        <span class="vts-sub">דוח סיכום</span>
+        <span class="vts-sub" data-en="Summary Report" data-he="דוח סיכום">דוח סיכום</span>
         <span class="vts-done" id="vtd-4"></span>
       </button>
       <div class="vts-sep"></div>
       <button class="vts-item" data-vt-phase="5" onclick="setPhase(5)">
         <span class="vts-num">05</span>
-        <span class="vts-lbl">דוחות</span>
-        <span class="vts-sub">היסטוריה</span>
+        <span class="vts-lbl" data-en="Reports" data-he="דוחות">דוחות</span>
+        <span class="vts-sub" data-en="History" data-he="היסטוריה">היסטוריה</span>
         <span class="vts-done" id="vtd-5"></span>
       </button>
     </nav>
@@ -987,11 +987,10 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
     <div class="vts-footer">
       <div class="vts-user">
         <div class="vts-avatar" id="vts-avatar-lbl">U</div>
-        <span class="vts-email" id="vts-email-lbl">משתמש</span>
+        <span class="vts-email" id="vts-email-lbl" data-en="User" data-he="משתמש">משתמש</span>
       </div>
       <div class="vts-controls">
         <button class="vts-ctl-btn" id="vts-lang-btn" onclick="vtToggleLang()" title="שפה / Language"><span id="vts-lang-lbl">EN</span></button>
-        <button class="vts-ctl-btn" id="vts-theme-btn" onclick="applyTheme(S_disp.theme==='dark'?'light':'dark')" title="ערכת נושא / Theme"><span id="vts-theme-icon">☀</span></button>
       </div>
     </div>
 
@@ -1014,35 +1013,35 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       </div>
     </div>
     <div class="hdr-center">
-      <div class="stream-ind" id="stream-ind"><div class="pulse-dot" id="pulse-dot"></div><span id="stream-lbl">GENERATING...</span><button id="stop-btn" onclick="stopGeneration()" style="margin-right:10px;background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.4);border-radius:5px;padding:3px 10px;font-size:12px;color:#f43f5e;cursor:pointer;font-family:inherit;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background='rgba(244,63,94,.3)'" onmouseout="this.style.background='rgba(244,63,94,.15)'">■ עצור</button></div>
+      <div class="stream-ind" id="stream-ind"><div class="pulse-dot" id="pulse-dot"></div><span id="stream-lbl">GENERATING...</span><button id="stop-btn" onclick="stopGeneration()" style="margin-right:10px;background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.4);border-radius:5px;padding:3px 10px;font-size:12px;color:#f43f5e;cursor:pointer;font-family:inherit;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background='rgba(244,63,94,.3)'" onmouseout="this.style.background='rgba(244,63,94,.15)'" data-en="■ STOP" data-he="■ עצור">■ עצור</button></div>
     </div>
     <div class="hdr-right">
       <div class="srv-badge" id="srv-badge" title="vibe-runner.py local server"><div class="srv-dot" id="srv-dot"></div><span id="srv-lbl">LOCAL</span></div>
       <span class="hdr-badge" id="b-phase" style="border-color:#2a3a50;color:#3a5070">PHASE 1/4</span>
       <span class="hdr-badge" id="b-status" style="border-color:#2a3a50;color:#3a5070">READY</span>
       <div class="export-wrap" id="export-wrap">
-        <button class="export-btn" id="export-btn" title="ייצוא תוצרים">⬇ EXPORT</button>
+        <button class="export-btn" id="export-btn" title="Export">⬇ EXPORT</button>
         <div class="export-menu" id="export-menu">
-          <div class="export-menu-item" onclick="exportPhase('pdf')">📄 PDF — שלב נוכחי</div>
-          <div class="export-menu-item" onclick="exportPhase('xlsx')">📊 Excel (.xlsx) — שלב נוכחי</div>
+          <div class="export-menu-item" onclick="exportPhase('pdf')" data-en="📄 PDF — Current Phase" data-he="📄 PDF — שלב נוכחי">📄 PDF — שלב נוכחי</div>
+          <div class="export-menu-item" onclick="exportPhase('xlsx')" data-en="📊 Excel (.xlsx) — Current Phase" data-he="📊 Excel (.xlsx) — שלב נוכחי">📊 Excel (.xlsx) — שלב נוכחי</div>
           <div class="export-menu-item" onclick="exportPhase('md')">📝 Markdown (.md)</div>
           <div class="export-menu-item" onclick="exportPhase('txt')">📃 Plain Text (.txt)</div>
-          <div class="export-menu-item" onclick="exportAll()">📦 כל השלבים — PDF</div>
-          <div class="export-menu-item" onclick="showDashboard()">📊 דשבורד סיכום מנהלים</div>
+          <div class="export-menu-item" onclick="exportAll()" data-en="📦 All Phases — PDF" data-he="📦 כל השלבים — PDF">📦 כל השלבים — PDF</div>
+          <div class="export-menu-item" onclick="showDashboard()" data-en="📊 Executive Dashboard" data-he="📊 דשבורד סיכום מנהלים">📊 דשבורד סיכום מנהלים</div>
         </div>
       </div>
       <button class="key-btn" id="change-key-btn" style="display:none">🔑 KEY</button>
       <div id="user-menu-wrap" style="position:relative;display:inline-block">
         <button id="user-menu-btn" onclick="toggleUserMenu()" style="background:rgba(255,255,255,.07);border:1px solid var(--border2);border-radius:7px;padding:5px 12px;font-size:12px;color:var(--dim);cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">👤 <span id="user-email-lbl">משתמש</span></button>
         <div id="user-menu-drop" style="display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:160px;background:var(--card);border:1px solid var(--border2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:1000;padding:6px 0">
-          <div onclick="logout()" style="padding:9px 16px;font-size:13px;color:#f43f5e;cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(244,63,94,.1)'" onmouseout="this.style.background=''">⎋ התנתק</div>
+          <div onclick="logout()" style="padding:9px 16px;font-size:13px;color:#f43f5e;cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(244,63,94,.1)'" onmouseout="this.style.background=''" data-en="⎋ Log Out" data-he="⎋ התנתק">⎋ התנתק</div>
         </div>
       </div>
       <div class="settings-wrap" id="settings-wrap">
         <button class="settings-btn" id="settings-btn" onclick="toggleSettingsDrop()">⚙ SETTINGS</button>
         <div class="settings-drop" id="settings-drop">
-          <div class="settings-drop-item" onclick="openSettings('info');closeSettingsDrop()">ℹ️ INFO — מדריך המערכת</div>
-          <div class="settings-drop-item" onclick="openSettings('display');closeSettingsDrop()">🖥 הגדרות תצוגה</div>
+          <div class="settings-drop-item" onclick="openSettings('info');closeSettingsDrop()" data-en="ℹ️ INFO — User Guide" data-he="ℹ️ INFO — מדריך המערכת">ℹ️ INFO — מדריך המערכת</div>
+          <div class="settings-drop-item" onclick="openSettings('display');closeSettingsDrop()" data-en="🖥 Display Settings" data-he="🖥 הגדרות תצוגה">🖥 הגדרות תצוגה</div>
         </div>
       </div>
     </div>
@@ -1053,40 +1052,40 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
     <button class="ph-tab active" data-phase="1" style="--tc:#00e5a0">
       <div class="ph-done-dot"></div>
       <div class="ph-tab-num">1</div>
-      <div class="ph-tab-info"><span class="ph-tab-lbl">STP</span><span class="ph-tab-sub">עץ בדיקות</span></div>
+      <div class="ph-tab-info"><span class="ph-tab-lbl">STP</span><span class="ph-tab-sub" data-en="Test Tree" data-he="עץ בדיקות">עץ בדיקות</span></div>
     </button>
     <div class="ph-sep"></div>
     <button class="ph-tab" data-phase="2" style="--tc:#8b5cf6">
       <div class="ph-done-dot"></div>
       <div class="ph-tab-num">2</div>
-      <div class="ph-tab-info"><span class="ph-tab-lbl">STD</span><span class="ph-tab-sub">תסריטי בדיקה</span></div>
+      <div class="ph-tab-info"><span class="ph-tab-lbl">STD</span><span class="ph-tab-sub" data-en="Test Scripts" data-he="תסריטי בדיקה">תסריטי בדיקה</span></div>
     </button>
     <div class="ph-sep"></div>
     <button class="ph-tab" data-phase="3" style="--tc:#f59e0b">
       <div class="ph-done-dot"></div>
       <div class="ph-tab-num">3</div>
-      <div class="ph-tab-info"><span class="ph-tab-lbl">RUN</span><span class="ph-tab-sub">הרצת בדיקות</span></div>
+      <div class="ph-tab-info"><span class="ph-tab-lbl">RUN</span><span class="ph-tab-sub" data-en="Test Execution" data-he="הרצת בדיקות">הרצת בדיקות</span></div>
     </button>
     <div class="ph-sep"></div>
     <button class="ph-tab" data-phase="4" style="--tc:#f43f5e">
       <div class="ph-done-dot"></div>
       <div class="ph-tab-num">4</div>
-      <div class="ph-tab-info"><span class="ph-tab-lbl">STR</span><span class="ph-tab-sub">דוח סיכום</span></div>
+      <div class="ph-tab-info"><span class="ph-tab-lbl">STR</span><span class="ph-tab-sub" data-en="Summary Report" data-he="דוח סיכום">דוח סיכום</span></div>
     </button>
     <div class="ph-sep"></div>
     <button class="ph-tab" data-phase="5" style="--tc:#06b6d4">
       <div class="ph-done-dot"></div>
       <div class="ph-tab-num">5</div>
-      <div class="ph-tab-info"><span class="ph-tab-lbl">דוחות</span><span class="ph-tab-sub">היסטוריה</span></div>
+      <div class="ph-tab-info"><span class="ph-tab-lbl" data-en="Reports" data-he="דוחות">דוחות</span><span class="ph-tab-sub" data-en="History" data-he="היסטוריה">היסטוריה</span></div>
     </button>
     <div class="ph-spacer"></div>
     <div class="upload-zone" style="flex-direction:column;align-items:flex-end;gap:4px">
       <div style="display:flex;align-items:center;gap:6px">
         <button class="upload-btn" id="upload-btn">
           <span id="up-icon">⊕</span>
-          <span id="up-lbl">העלה מסמכי אפיון</span>
+          <span id="up-lbl" data-en="Upload spec docs" data-he="העלה מסמכי אפיון">העלה מסמכי אפיון</span>
         </button>
-        <button class="upload-btn" id="clear-all-btn" style="display:none;border-color:rgba(244,63,94,.3);color:#f43f5e;font-size:8px;padding:5px 10px">✕ נקה הכל</button>
+        <button class="upload-btn" id="clear-all-btn" style="display:none;border-color:rgba(244,63,94,.3);color:#f43f5e;font-size:8px;padding:5px 10px" data-en="✕ Clear All" data-he="✕ נקה הכל">✕ נקה הכל</button>
       </div>
       <div class="files-pills" id="files-pills"></div>
     </div>
@@ -1099,56 +1098,57 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
     <!-- OUTPUT -->
     <div class="out-area">
       <div class="out-scroll" id="out-scroll" onscroll="toggleScrollTop(this)">
-<button id="scroll-top-btn" onclick="document.getElementById('out-scroll').scrollTop=0" style="display:none;position:fixed;bottom:140px;left:20px;z-index:50;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:12px;font-family:inherit;color:var(--muted);transition:all .2s;letter-spacing:1px;display:none;align-items:center;gap:6px;white-space:nowrap" onmouseover="this.style.color='var(--green)';this.style.borderColor='var(--green)';this.style.background='rgba(0,229,160,.08)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)';this.style.background='var(--surface2)'">↑ חזרה לראש</button>
+<button id="scroll-top-btn" onclick="document.getElementById('out-scroll').scrollTop=0" style="display:none;position:fixed;bottom:140px;left:20px;z-index:50;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:12px;font-family:inherit;color:var(--muted);transition:all .2s;letter-spacing:1px;display:none;align-items:center;gap:6px;white-space:nowrap" onmouseover="this.style.color='var(--green)';this.style.borderColor='var(--green)';this.style.background='rgba(0,229,160,.08)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)';this.style.background='var(--surface2)'" data-en="↑ Back to top" data-he="↑ חזרה לראש">↑ חזרה לראש</button>
 
         <!-- RUN STATUS BAR (Phase 3 only) -->
         <div class="run-status-bar" id="run-status-bar">
           <div class="run-status-items">
             <div class="run-status-item ok" id="rsi-api">
-              <div class="rsi-dot"></div><span>Claude API מחובר</span>
+              <div class="rsi-dot"></div><span data-en="Claude API connected" data-he="Claude API מחובר">Claude API מחובר</span>
             </div>
             <div class="run-status-item" id="rsi-runner">
-              <div class="rsi-dot"></div><span id="rsi-runner-txt">בודק Runner...</span>
+              <div class="rsi-dot"></div><span id="rsi-runner-txt" data-en="Checking Runner..." data-he="בודק Runner...">בודק Runner...</span>
             </div>
           </div>
-          <button class="run-status-help" onclick="showRunOnboard()">? מה זה Runner</button>
+          <button class="run-status-help" onclick="showRunOnboard()" data-en="? What is Runner" data-he="? מה זה Runner">? מה זה Runner</button>
         </div>
 
         <!-- STP Source Panel (Phase 1) -->
         <div class="stp-src-panel" id="stp-url-zone">
-          <div class="stp-src-title">📥 מקור לניתוח — בחר כיצד לספק מידע על המערכת הנבדקת</div>
+          <div class="stp-src-title" data-en="📥 Analysis source — choose how to provide info about the system under test" data-he="📥 מקור לניתוח — בחר כיצד לספק מידע על המערכת הנבדקת">📥 מקור לניתוח — בחר כיצד לספק מידע על המערכת הנבדקת</div>
           <div class="stp-src-tabs">
-            <button class="stp-src-tab active" id="stp-tab-doc" onclick="setSTPTab('doc')">📎 מסמך אפיון</button>
-            <button class="stp-src-tab" id="stp-tab-url" onclick="setSTPTab('url')">🌐 URL אתר</button>
-            <button class="stp-src-tab" id="stp-tab-path" onclick="setSTPTab('path')">📁 נתיב מקומי</button>
+            <button class="stp-src-tab active" id="stp-tab-doc" onclick="setSTPTab('doc')" data-en="📎 Spec Document" data-he="📎 מסמך אפיון">📎 מסמך אפיון</button>
+            <button class="stp-src-tab" id="stp-tab-url" onclick="setSTPTab('url')" data-en="🌐 Website URL" data-he="🌐 URL אתר">🌐 URL אתר</button>
+            <button class="stp-src-tab" id="stp-tab-path" onclick="setSTPTab('path')" data-en="📁 Local Path" data-he="📁 נתיב מקומי">📁 נתיב מקומי</button>
           </div>
           <!-- Doc sub-panel -->
           <div class="stp-src-sub show" id="stp-sub-doc">
-            <div class="stp-path-hint">העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">ATTACH</strong> בשורת הצ'ט, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span></div>
+            <div class="stp-path-hint" id="stp-doc-hint">העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">ATTACH</strong> בשורת הצ'ט, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span></div>
+            <!-- stp-doc-hint translated in applyLang -->
           </div>
           <!-- URL sub-panel -->
           <div class="stp-src-sub" id="stp-sub-url">
             <div class="url-row">
               <input class="url-input" id="stp-url-input" type="url" placeholder="https://your-website.com" dir="ltr"/>
-              <button class="url-connect-btn" style="background:var(--green);color:#04080f;font-weight:700" onclick="runSTPFromURL()">🔍 נתח ויצר STP</button>
+              <button class="url-connect-btn" style="background:var(--green);color:#04080f;font-weight:700" onclick="runSTPFromURL()" data-en="🔍 Analyze & Create STP" data-he="🔍 נתח ויצר STP">🔍 נתח ויצר STP</button>
             </div>
             <div class="url-status" id="stp-url-status"></div>
-            <div class="stp-path-hint">הכנס URL של אתר או אפליקציה — המערכת תנתח את הממשק ותייצר STP מותאם אוטומטית.</div>
+            <div class="stp-path-hint" id="stp-url-hint" data-en="Enter a website or app URL — the system will analyze the interface and generate an STP automatically." data-he="הכנס URL של אתר או אפליקציה — המערכת תנתח את הממשק ותייצר STP מותאם אוטומטית.">הכנס URL של אתר או אפליקציה — המערכת תנתח את הממשק ותייצר STP מותאם אוטומטית.</div>
           </div>
           <!-- Local Path sub-panel -->
           <div class="stp-src-sub" id="stp-sub-path">
             <div class="url-row">
-              <input class="url-input" id="stp-path-input" type="text" placeholder="C:\MyApp\app.exe  או  C:\Projects\myapp" dir="ltr"/>
-              <button class="url-connect-btn" style="background:var(--purple2);font-weight:700" onclick="runSTPFromPath()">🔎 נתח ויצר STP</button>
+              <input class="url-input" id="stp-path-input" type="text" placeholder="C:\MyApp\app.exe  or  C:\Projects\myapp" dir="ltr"/>
+              <button class="url-connect-btn" style="background:var(--purple2);font-weight:700" onclick="runSTPFromPath()" data-en="🔎 Analyze & Create STP" data-he="🔎 נתח ויצר STP">🔎 נתח ויצר STP</button>
             </div>
             <div class="url-status" id="stp-path-status"></div>
-            <div class="stp-path-hint">הכנס נתיב לקובץ ה-EXE, תיקיית הפרויקט, או קובץ הגדרות של האפליקציה.<br>אם שרת ה-Runner פעיל — המערכת תסרוק את הנתיב ותייצר STP מדויק. אחרת תבצע ניתוח חכם לפי שם/מבנה.</div>
+            <div class="stp-path-hint" id="stp-path-hint" data-en="Enter path to an EXE file, project folder, or app config file.<br>If the Runner server is active — the system will scan the path and generate a precise STP. Otherwise performs smart analysis by name/structure." data-he="הכנס נתיב לקובץ ה-EXE, תיקיית הפרויקט, או קובץ הגדרות של האפליקציה.<br>אם שרת ה-Runner פעיל — המערכת תסרוק את הנתיב ותייצר STP מדויק. אחרת תבצע ניתוח חכם לפי שם/מבנה.">הכנס נתיב לקובץ ה-EXE, תיקיית הפרויקט, או קובץ הגדרות של האפליקציה.<br>אם שרת ה-Runner פעיל — המערכת תסרוק את הנתיב ותייצר STP מדויק. אחרת תבצע ניתוח חכם לפי שם/מבנה.</div>
           </div>
         </div>
 
         <!-- Connection Panel (Phase 3) -->
         <div class="url-connect" id="url-connect">
-          <div class="url-connect-title">⚡ חיבור למערכת הנבדקת — נדרש לפני הרצת בדיקות</div>
+          <div class="url-connect-title" data-en="⚡ Connect to the system under test — required before running tests" data-he="⚡ חיבור למערכת הנבדקת — נדרש לפני הרצת בדיקות">⚡ חיבור למערכת הנבדקת — נדרש לפני הרצת בדיקות</div>
           <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap" dir="ltr">
             <button class="conn-tab active" id="ct-url" onclick="setConnTab('url')">🌐 URL</button>
             <button class="conn-tab" id="ct-api" onclick="setConnTab('api')">🔑 API Token</button>
@@ -1158,14 +1158,14 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
           <div id="conn-url-panel">
             <div class="url-row">
               <input class="url-input" id="url-input" type="url" placeholder="https://your-app.com" dir="ltr"/>
-              <button class="url-connect-btn" id="url-connect-btn" onclick="saveConnection()">שמור</button>
+              <button class="url-connect-btn" id="url-connect-btn" onclick="saveConnection()" data-en="Save" data-he="שמור">שמור</button>
             </div>
           </div>
           <div id="conn-api-panel" style="display:none">
             <div class="url-row">
               <input class="url-input" id="conn-base-url" type="url" placeholder="https://api.your-app.com" dir="ltr" style="flex:1.2"/>
               <input class="url-input" id="conn-token" type="password" placeholder="Bearer token / API Key" dir="ltr" style="flex:1.5"/>
-              <button class="url-connect-btn" onclick="saveConnection()">שמור</button>
+              <button class="url-connect-btn" onclick="saveConnection()" data-en="Save" data-he="שמור">שמור</button>
             </div>
           </div>
           <div id="conn-basic-panel" style="display:none">
@@ -1173,14 +1173,14 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
               <input class="url-input" id="conn-basic-url" type="url" placeholder="https://your-app.com" dir="ltr"/>
               <input class="url-input" id="conn-user" placeholder="Username" dir="ltr" style="width:120px;flex:none"/>
               <input class="url-input" id="conn-pass" type="password" placeholder="Password" dir="ltr" style="width:120px;flex:none"/>
-              <button class="url-connect-btn" onclick="saveConnection()">שמור</button>
+              <button class="url-connect-btn" onclick="saveConnection()" data-en="Save" data-he="שמור">שמור</button>
             </div>
           </div>
           <div id="conn-custom-panel" style="display:none">
             <div class="url-row">
               <input class="url-input" id="conn-custom-url" type="url" placeholder="https://your-app.com" dir="ltr"/>
               <textarea id="conn-headers" placeholder='{"Authorization":"Bearer xxx","X-API-Key":"yyy"}' dir="ltr" style="flex:2;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:12px;resize:none;height:38px;outline:none"></textarea>
-              <button class="url-connect-btn" onclick="saveConnection()">שמור</button>
+              <button class="url-connect-btn" onclick="saveConnection()" data-en="Save" data-he="שמור">שמור</button>
             </div>
           </div>
           <div class="url-status" id="url-status"></div>
@@ -1195,9 +1195,9 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
             <span style="font-size:9px">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span>
           </div>
           <div class="empty-hints" id="empty-hints">
-            <div class="empty-hint"><span class="empty-hint-icon">📎</span><span>גרור קובץ לכל מקום בחלון</span></div>
-            <div class="empty-hint"><span class="empty-hint-icon">💬</span><span>כתוב בתיבת הצ'ט ללא הגבלת תווים</span></div>
-            <div class="empty-hint"><span class="empty-hint-icon">⚡</span><span>לחץ על Chips לשיפור מהיר של כל שלב</span></div>
+            <div class="empty-hint"><span class="empty-hint-icon">📎</span><span data-en="Drag a file anywhere in the window" data-he="גרור קובץ לכל מקום בחלון">גרור קובץ לכל מקום בחלון</span></div>
+            <div class="empty-hint"><span class="empty-hint-icon">💬</span><span data-en="Type in the chat without character limits" data-he="כתוב בתיבת הצ'ט ללא הגבלת תווים">כתוב בתיבת הצ'ט ללא הגבלת תווים</span></div>
+            <div class="empty-hint"><span class="empty-hint-icon">⚡</span><span data-en="Click Chips for quick phase improvements" data-he="לחץ על Chips לשיפור מהיר של כל שלב">לחץ על Chips לשיפור מהיר של כל שלב</span></div>
           </div>
         </div>
 
@@ -1221,10 +1221,10 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 
         <!-- EMAIL PANEL (appears after real automation run) -->
         <div class="email-panel" id="email-panel">
-          <div class="email-panel-title">📧 שלח דוח הרצה במייל</div>
+          <div class="email-panel-title" data-en="📧 Send Run Report by Email" data-he="📧 שלח דוח הרצה במייל">📧 שלח דוח הרצה במייל</div>
           <div class="email-row">
             <input class="email-input" id="email-input" type="email" placeholder="your@email.com" dir="ltr"/>
-            <button class="email-send-btn" id="email-send-btn" onclick="sendEmailReport()">שלח דוח</button>
+            <button class="email-send-btn" id="email-send-btn" onclick="sendEmailReport()" data-en="Send Report" data-he="שלח דוח">שלח דוח</button>
           </div>
           <div class="target-status-msg" id="email-status"></div>
         </div>
@@ -1236,13 +1236,13 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
               <div class="reports-title">◈ REPORTS DASHBOARD</div>
               <div class="reports-count" id="reports-count">—</div>
             </div>
-            <button class="reports-refresh-btn" onclick="loadReports()">↺ רענן</button>
+            <button class="reports-refresh-btn" onclick="loadReports()" data-en="↺ Refresh" data-he="↺ רענן">↺ רענן</button>
           </div>
-          <div class="server-offline-banner" id="server-offline-banner">
+          <div class="server-offline-banner" id="server-offline-banner" data-en="⚠ Runner server is offline — run: python vibe-runner.py — reports are saved only during real runs" data-he="⚠ שרת ה-Runner אינו פעיל — הפעל: python vibe-runner.py — דוחות נשמרים רק בהרצה אמיתית">
             ⚠ שרת ה-Runner אינו פעיל — הפעל: <code>python vibe-runner.py</code> — דוחות נשמרים רק בהרצה אמיתית
           </div>
           <div class="reports-list" id="reports-list">
-            <div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>הרץ בדיקות אמיתיות בשלב RUN כדי לראות דוחות</span></div>
+            <div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span data-en="Run real tests in the RUN phase to see reports" data-he="הרץ בדיקות אמיתיות בשלב RUN כדי לראות דוחות">הרץ בדיקות אמיתיות בשלב RUN כדי לראות דוחות</span></div>
           </div>
         </div>
 
@@ -1250,12 +1250,12 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 
       <!-- REFINE BAR -->
       <div class="refine">
-        <div class="refine-lbl">💬 CHAT — שאל שאלות, בקש ניתוחים, כווין את התוצאות (Shift+Enter = שורה חדשה · לשיפור מחדש השתמש ב-Chips)</div>
+        <div class="refine-lbl" id="refine-lbl" data-en="💬 CHAT — ask questions, request analyses, refine results (Shift+Enter = new line · use Chips to improve)" data-he="💬 CHAT — שאל שאלות, בקש ניתוחים, כווין את התוצאות (Shift+Enter = שורה חדשה · לשיפור מחדש השתמש ב-Chips)">💬 CHAT — שאל שאלות, בקש ניתוחים, כווין את התוצאות (Shift+Enter = שורה חדשה · לשיפור מחדש השתמש ב-Chips)</div>
         <div class="chips" id="chips"></div>
         <div class="chat-row">
           <div class="chat-wrap" id="chat-wrap">
             <span class="chat-pfx" id="chat-pfx">›</span>
-            <textarea id="chat-ta" rows="1" placeholder="שאל שאלה על התוצאות, בקש ניתוח, הוסף דרישה... (לא יגנרט מחדש)"></textarea>
+            <textarea id="chat-ta" rows="1" placeholder="שאל שאלה על התוצאות, בקש ניתוח, הוסף דרישה... (לא יגנרט מחדש)" data-en-ph="Ask a question about the results, request analysis, add a requirement... (won't regenerate)" data-he-ph="שאל שאלה על התוצאות, בקש ניתוח, הוסף דרישה... (לא יגנרט מחדש)"></textarea>
             <button class="send-btn" id="send-btn" disabled>↑</button>
           </div>
         </div>
@@ -1278,28 +1278,28 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
         <div class="prog-item">
           <div class="prog-item-left">
             <div class="prog-num" id="pn1">1</div>
-            <span class="prog-label">STP · עץ בדיקות</span>
+            <span class="prog-label" data-en="STP · Test Tree" data-he="STP · עץ בדיקות">STP · עץ בדיקות</span>
           </div>
           <span class="prog-badge" id="p1">—</span>
         </div>
         <div class="prog-item">
           <div class="prog-item-left">
             <div class="prog-num" id="pn2">2</div>
-            <span class="prog-label">STD · תסריטים</span>
+            <span class="prog-label" data-en="STD · Scripts" data-he="STD · תסריטים">STD · תסריטים</span>
           </div>
           <span class="prog-badge" id="p2">—</span>
         </div>
         <div class="prog-item">
           <div class="prog-item-left">
             <div class="prog-num" id="pn3">3</div>
-            <span class="prog-label">RUN · הרצה</span>
+            <span class="prog-label" data-en="RUN · Execution" data-he="RUN · הרצה">RUN · הרצה</span>
           </div>
           <span class="prog-badge" id="p3">—</span>
         </div>
         <div class="prog-item">
           <div class="prog-item-left">
             <div class="prog-num" id="pn4">4</div>
-            <span class="prog-label">STR · סיכום</span>
+            <span class="prog-label" data-en="STR · Report" data-he="STR · סיכום">STR · סיכום</span>
           </div>
           <span class="prog-badge" id="p4">—</span>
         </div>
@@ -1328,11 +1328,11 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 <!-- DASHBOARD OVERLAY -->
 <div class="dash-overlay" id="dash-overlay">
   <div class="dash-header">
-    <div class="dash-title">VIBE<span>.</span>TESTING <span style="font-size:13px;color:var(--muted);font-weight:400;letter-spacing:1px">— דשבורד מנהלים</span></div>
-    <button class="dash-close" onclick="closeDashboard()">✕ סגור</button>
+    <div class="dash-title">VIBE<span>.</span>TESTING <span style="font-size:13px;color:var(--muted);font-weight:400;letter-spacing:1px" data-en="— Executive Dashboard" data-he="— דשבורד מנהלים">— דשבורד מנהלים</span></div>
+    <button class="dash-close" onclick="closeDashboard()" data-en="✕ Close" data-he="✕ סגור">✕ סגור</button>
   </div>
   <div class="dash-body" id="dash-body">
-    <div style="text-align:center;color:var(--muted);padding:60px">אין נתונים — הרץ לפחות שלב אחד תחילה</div>
+    <div style="text-align:center;color:var(--muted);padding:60px" data-en="No data — run at least one phase first" data-he="אין נתונים — הרץ לפחות שלב אחד תחילה">אין נתונים — הרץ לפחות שלב אחד תחילה</div>
   </div>
 </div>
 
@@ -1343,10 +1343,10 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       <div class="stg-title">⚙ SETTINGS</div>
       <div class="stg-tabs">
         <button class="stg-tab active" id="stab-info" onclick="switchSettingsTab('info')">ℹ️ INFO</button>
-        <button class="stg-tab" id="stab-display" onclick="switchSettingsTab('display')">🖥 תצוגה</button>
+        <button class="stg-tab" id="stab-display" onclick="switchSettingsTab('display')" data-en="🖥 Display" data-he="🖥 תצוגה">🖥 תצוגה</button>
       </div>
     </div>
-    <button class="stg-close" onclick="closeSettings()">✕ סגור</button>
+    <button class="stg-close" onclick="closeSettings()" data-en="✕ Close" data-he="✕ סגור">✕ סגור</button>
   </div>
   <div class="stg-body">
 
@@ -1355,15 +1355,15 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       <div class="info-hero">
         <div class="info-hero-title">VIBE<span>.</span>TESTING</div>
         <div class="info-hero-sub">AI-POWERED QA PIPELINE · v3</div>
-        <div class="info-hero-desc">מערכת אוטומטית לניהול מחזור חיי בדיקות מלא — מאפיון ועד דוח סיכום, מונעת על-ידי Claude AI. מתאימה לצוותי QA, מנהלי מוצר ומפתחים.</div>
+        <div class="info-hero-desc" data-en="Automated QA lifecycle management — from spec to summary report, powered by Claude AI. Built for QA teams, product managers, and developers." data-he="מערכת אוטומטית לניהול מחזור חיי בדיקות מלא — מאפיון ועד דוח סיכום, מונעת על-ידי Claude AI. מתאימה לצוותי QA, מנהלי מוצר ומפתחים.">מערכת אוטומטית לניהול מחזור חיי בדיקות מלא — מאפיון ועד דוח סיכום, מונעת על-ידי Claude AI. מתאימה לצוותי QA, מנהלי מוצר ומפתחים.</div>
       </div>
 
       <div class="info-section">
-        <div class="info-section-title">🔄 שלבי הצינור (Pipeline Phases)</div>
+        <div class="info-section-title" data-en="🔄 Pipeline Phases" data-he="🔄 שלבי הצינור (Pipeline Phases)">🔄 שלבי הצינור (Pipeline Phases)</div>
         <div class="info-phases">
           <div class="info-phase-card" style="--pc:#00e5a0">
-            <div class="info-phase-title">◈ שלב 1 — STP · עץ בדיקות</div>
-            <div class="info-phase-desc">
+            <div class="info-phase-title" data-en="◈ Phase 1 — STP · Test Tree" data-he="◈ שלב 1 — STP · עץ בדיקות">◈ שלב 1 — STP · עץ בדיקות</div>
+            <div class="info-phase-desc" id="ipd-1">
               <strong>Test Planning</strong> — בניית תוכנית הבדיקות המלאה:<br>
               • ניתוח מסמך האפיון שהועלה<br>
               • <strong>מקורות קלט:</strong> מסמך (PDF/DOCX/TXT), URL אתר, נתיב אפליקציה מקומית<br>
@@ -1373,8 +1373,8 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
             </div>
           </div>
           <div class="info-phase-card" style="--pc:#8b5cf6">
-            <div class="info-phase-title">◉ שלב 2 — STD · תסריטי בדיקה</div>
-            <div class="info-phase-desc">
+            <div class="info-phase-title" data-en="◉ Phase 2 — STD · Test Scripts" data-he="◉ שלב 2 — STD · תסריטי בדיקה">◉ שלב 2 — STD · תסריטי בדיקה</div>
+            <div class="info-phase-desc" id="ipd-2">
               <strong>Test Script Design</strong> — כתיבת 30+ תסריטים מפורטים:<br>
               • כל תסריט כולל: צעדים, נתוני בדיקה, תוצאה צפויה, קריטריוני PASS/FAIL<br>
               • חלוקה: functional, negative, integration, security, performance<br>
@@ -1382,8 +1382,8 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
             </div>
           </div>
           <div class="info-phase-card" style="--pc:#f59e0b">
-            <div class="info-phase-title">▶ שלב 3 — RUN · הרצת בדיקות</div>
-            <div class="info-phase-desc">
+            <div class="info-phase-title" data-en="▶ Phase 3 — RUN · Test Execution" data-he="▶ שלב 3 — RUN · הרצת בדיקות">▶ שלב 3 — RUN · הרצת בדיקות</div>
+            <div class="info-phase-desc" id="ipd-3">
               <strong>Test Execution</strong> — הרצת הבדיקות:<br>
               • <strong>מצב AI:</strong> סימולציה חכמה עם תוצאות ריאליסטיות<br>
               • <strong>מצב אמיתי:</strong> אוטומציה ממשית עם Playwright (web) או pywinauto (desktop)<br>
@@ -1392,8 +1392,8 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
             </div>
           </div>
           <div class="info-phase-card" style="--pc:#f43f5e">
-            <div class="info-phase-title">◆ שלב 4 — STR · סיכום הרצה</div>
-            <div class="info-phase-desc">
+            <div class="info-phase-title" data-en="◆ Phase 4 — STR · Summary Report" data-he="◆ שלב 4 — STR · סיכום הרצה">◆ שלב 4 — STR · סיכום הרצה</div>
+            <div class="info-phase-desc" id="ipd-4">
               <strong>Test Summary Report</strong> — דוח מנהלים:<br>
               • תקציר לרמת C-Level (250 מילה)<br>
               • Quality Scorecard ו-KPIs<br>
@@ -1403,8 +1403,8 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
             </div>
           </div>
           <div class="info-phase-card" style="--pc:#06b6d4">
-            <div class="info-phase-title">◈ שלב 5 — דוחות היסטוריה</div>
-            <div class="info-phase-desc">
+            <div class="info-phase-title" data-en="◈ Phase 5 — Reports History" data-he="◈ שלב 5 — דוחות היסטוריה">◈ שלב 5 — דוחות היסטוריה</div>
+            <div class="info-phase-desc" id="ipd-5">
               <strong>Reports Dashboard</strong> — ארכיון הרצות (כמו Jenkins):<br>
               • רשימת כל הרצות האוטומציה שבוצעו<br>
               • PASS/FAIL/SKIP לכל הרצה<br>
@@ -1417,54 +1417,54 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
       </div>
 
       <div class="info-section">
-        <div class="info-section-title">🔘 מדריך כפתורים</div>
+        <div class="info-section-title" data-en="🔘 Button Guide" data-he="🔘 מדריך כפתורים">🔘 מדריך כפתורים</div>
         <div class="info-btn-grid">
           <div class="info-btn-item">
             <div class="info-btn-icon">▶</div>
-            <div><div class="info-btn-name">GENERATE</div><div class="info-btn-desc">מייצר את תוצרי השלב הנוכחי עם Claude AI. מתאפשר רק לאחר שהשלב הקודם הושלם.</div></div>
+            <div><div class="info-btn-name">GENERATE</div><div class="info-btn-desc" data-en="Generates the current phase output with Claude AI. Enabled only after the previous phase is complete." data-he="מייצר את תוצרי השלב הנוכחי עם Claude AI. מתאפשר רק לאחר שהשלב הקודם הושלם.">מייצר את תוצרי השלב הנוכחי עם Claude AI. מתאפשר רק לאחר שהשלב הקודם הושלם.</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">↺</div>
-            <div><div class="info-btn-name">REGENERATE</div><div class="info-btn-desc">מייצר מחדש את תוצרי השלב הנוכחי. מחליף את הפלט הקיים.</div></div>
+            <div><div class="info-btn-name">REGENERATE</div><div class="info-btn-desc" data-en="Re-generates the current phase output. Replaces existing output." data-he="מייצר מחדש את תוצרי השלב הנוכחי. מחליף את הפלט הקיים.">מייצר מחדש את תוצרי השלב הנוכחי. מחליף את הפלט הקיים.</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">📎</div>
-            <div><div class="info-btn-name">ATTACH</div><div class="info-btn-desc">מעלה קובץ אפיון (PDF, DOCX, TXT, MD, JSON...). ניתן גם לגרור קובץ לחלון.</div></div>
+            <div><div class="info-btn-name">ATTACH</div><div class="info-btn-desc" data-en="Upload a spec file (PDF, DOCX, TXT, MD, JSON...). You can also drag a file into the window." data-he="מעלה קובץ אפיון (PDF, DOCX, TXT, MD, JSON...). ניתן גם לגרור קובץ לחלון.">מעלה קובץ אפיון (PDF, DOCX, TXT, MD, JSON...). ניתן גם לגרור קובץ לחלון.</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">⬇</div>
-            <div><div class="info-btn-name">EXPORT</div><div class="info-btn-desc">מייצא תוצרים: PDF, Excel, Markdown, Plain Text, או כל השלבים יחד.</div></div>
+            <div><div class="info-btn-name">EXPORT</div><div class="info-btn-desc" data-en="Export outputs: PDF, Excel, Markdown, Plain Text, or all phases together." data-he="מייצא תוצרים: PDF, Excel, Markdown, Plain Text, או כל השלבים יחד.">מייצא תוצרים: PDF, Excel, Markdown, Plain Text, או כל השלבים יחד.</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">⎘</div>
-            <div><div class="info-btn-name">COPY</div><div class="info-btn-desc">מעתיק את תוכן השלב הנוכחי ללוח (Clipboard).</div></div>
+            <div><div class="info-btn-name">COPY</div><div class="info-btn-desc" data-en="Copies the current phase content to clipboard." data-he="מעתיק את תוכן השלב הנוכחי ללוח (Clipboard).">מעתיק את תוכן השלב הנוכחי ללוח (Clipboard).</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">💬</div>
-            <div><div class="info-btn-name">CHAT</div><div class="info-btn-desc">שאל שאלות על התוצאות, בקש הבהרות, הוסף דרישות. לא מייצר מחדש אלא משלים בצ'אט.</div></div>
+            <div><div class="info-btn-name">CHAT</div><div class="info-btn-desc" data-en="Ask questions about results, request clarifications, add requirements. Does not regenerate — supplements via chat." data-he="שאל שאלות על התוצאות, בקש הבהרות, הוסף דרישות. לא מייצר מחדש אלא משלים בצ'אט.">שאל שאלות על התוצאות, בקש הבהרות, הוסף דרישות. לא מייצר מחדש אלא משלים בצ'אט.</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">⚡</div>
-            <div><div class="info-btn-name">CHIPS</div><div class="info-btn-desc">Chips צבעוניים לשיפור מהיר: הוספת תסריטים, שיפור עדיפויות, מיקוד בנושא ספציפי.</div></div>
+            <div><div class="info-btn-name">CHIPS</div><div class="info-btn-desc" data-en="Colored chips for quick improvements: add scripts, improve priorities, focus on a specific topic." data-he="Chips צבעוניים לשיפור מהיר: הוספת תסריטים, שיפור עדיפויות, מיקוד בנושא ספציפי.">Chips צבעוניים לשיפור מהיר: הוספת תסריטים, שיפור עדיפויות, מיקוד בנושא ספציפי.</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">📊</div>
-            <div><div class="info-btn-name">דשבורד מנהלים</div><div class="info-btn-desc">מוצג אחרי שלב STR — סיכום גרפי עם KPIs, Go/No-Go, ומצב כל השלבים.</div></div>
+            <div><div class="info-btn-name" data-en="Executive Dashboard" data-he="דשבורד מנהלים">דשבורד מנהלים</div><div class="info-btn-desc" data-en="Shown after STR phase — graphical summary with KPIs, Go/No-Go, and all phase statuses." data-he="מוצג אחרי שלב STR — סיכום גרפי עם KPIs, Go/No-Go, ומצב כל השלבים.">מוצג אחרי שלב STR — סיכום גרפי עם KPIs, Go/No-Go, ומצב כל השלבים.</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">🔑</div>
-            <div><div class="info-btn-name">KEY</div><div class="info-btn-desc">עדכון Anthropic API Key. מוצג לאחר ההגדרה הראשונית.</div></div>
+            <div><div class="info-btn-name">KEY</div><div class="info-btn-desc" data-en="Update Anthropic API Key. Shown after initial setup." data-he="עדכון Anthropic API Key. מוצג לאחר ההגדרה הראשונית.">עדכון Anthropic API Key. מוצג לאחר ההגדרה הראשונית.</div></div>
           </div>
           <div class="info-btn-item">
             <div class="info-btn-icon">🟢</div>
-            <div><div class="info-btn-name">LOCAL / RUNNER</div><div class="info-btn-desc">מצב שרת ה-Runner המקומי. ירוק = vibe-runner.py פועל ומאפשר אוטומציה אמיתית.</div></div>
+            <div><div class="info-btn-name">LOCAL / RUNNER</div><div class="info-btn-desc" data-en="Local Runner server status. Green = vibe-runner.py is running and enables real automation." data-he="מצב שרת ה-Runner המקומי. ירוק = vibe-runner.py פועל ומאפשר אוטומציה אמיתית.">מצב שרת ה-Runner המקומי. ירוק = vibe-runner.py פועל ומאפשר אוטומציה אמיתית.</div></div>
           </div>
         </div>
       </div>
 
       <div class="info-section">
-        <div class="info-section-title">🚀 איך מתחילים</div>
-        <div style="font-size:13px;color:var(--muted);line-height:2;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px">
+        <div class="info-section-title" data-en="🚀 Getting Started" data-he="🚀 איך מתחילים">🚀 איך מתחילים</div>
+        <div id="info-howto" style="font-size:13px;color:var(--muted);line-height:2;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px">
           <strong style="color:var(--text)">מצב AI (ללא התקנה):</strong><br>
           1. לחץ ▶ START בחלון הפתיחה והכנס את ה-API Key שלך<br>
           2. העלה מסמך אפיון (ATTACH) או הכנס URL בשלב STP<br>
@@ -1499,16 +1499,6 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
         </div>
       </div>
 
-      <div class="disp-section">
-        <div class="disp-section-title">🌓 מצב תצוגה</div>
-        <div class="disp-row">
-          <div><div class="disp-label">ערכת צבעים</div><div class="disp-sub">בהיר / כהה</div></div>
-          <div class="disp-toggle-wrap">
-            <button class="disp-toggle" id="theme-light" onclick="applyTheme('light')">☀ בהיר</button>
-            <button class="disp-toggle active" id="theme-dark" onclick="applyTheme('dark')">🌙 כהה</button>
-          </div>
-        </div>
-      </div>
 
       <div class="disp-section">
         <div class="disp-section-title">📐 פריסה ומרווחים</div>
@@ -1550,52 +1540,52 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 
     <div class="run-ob-modes">
       <div class="run-ob-mode mode-ai">
-        <div class="run-ob-badge always">תמיד זמין</div>
+        <div class="run-ob-badge always" data-en="Always available" data-he="תמיד זמין">תמיד זמין</div>
         <div class="run-ob-mode-icon">🤖</div>
-        <div class="run-ob-mode-title">סימולציה AI</div>
-        <div class="run-ob-mode-desc">Claude מנתח את תסריטי ה-STD ומייצר תוצאות הרצה ריאליסטיות (PASS/FAIL/SKIP) עם ניתוח כשלים מפורט.<br><br>לא דורש שום התקנה.</div>
+        <div class="run-ob-mode-title" data-en="AI Simulation" data-he="סימולציה AI">סימולציה AI</div>
+        <div class="run-ob-mode-desc" data-en="Claude analyzes the STD scripts and generates realistic run results (PASS/FAIL/SKIP) with detailed failure analysis.<br><br>No installation required." data-he="Claude מנתח את תסריטי ה-STD ומייצר תוצאות הרצה ריאליסטיות (PASS/FAIL/SKIP) עם ניתוח כשלים מפורט.<br><br>לא דורש שום התקנה.">Claude מנתח את תסריטי ה-STD ומייצר תוצאות הרצה ריאליסטיות (PASS/FAIL/SKIP) עם ניתוח כשלים מפורט.<br><br>לא דורש שום התקנה.</div>
       </div>
       <div class="run-ob-mode mode-real">
-        <div class="run-ob-badge requires">דורש הגדרה</div>
+        <div class="run-ob-badge requires" data-en="Requires setup" data-he="דורש הגדרה">דורש הגדרה</div>
         <div class="run-ob-mode-icon">⚡</div>
-        <div class="run-ob-mode-title">אוטומציה אמיתית</div>
-        <div class="run-ob-mode-desc">הרצה ממשית על האפליקציה שלך עם <strong>Playwright</strong> (אתרים) או <strong>pywinauto</strong> (אפליקציות Windows).<br><br>דורש הפעלת שרת מקומי.</div>
+        <div class="run-ob-mode-title" data-en="Real Automation" data-he="אוטומציה אמיתית">אוטומציה אמיתית</div>
+        <div class="run-ob-mode-desc" data-en="Real run on your app with <strong>Playwright</strong> (web) or <strong>pywinauto</strong> (Windows apps).<br><br>Requires a local server." data-he="הרצה ממשית על האפליקציה שלך עם <strong>Playwright</strong> (אתרים) או <strong>pywinauto</strong> (אפליקציות Windows).<br><br>דורש הפעלת שרת מקומי.">הרצה ממשית על האפליקציה שלך עם <strong>Playwright</strong> (אתרים) או <strong>pywinauto</strong> (אפליקציות Windows).<br><br>דורש הפעלת שרת מקומי.</div>
       </div>
     </div>
 
     <div class="run-ob-status" id="run-ob-status-line">
       <div class="run-ob-status-dot"></div>
-      <span id="run-ob-status-text">בודק סטטוס Runner...</span>
+      <span id="run-ob-status-text" data-en="Checking Runner status..." data-he="בודק סטטוס Runner...">בודק סטטוס Runner...</span>
     </div>
 
     <div class="run-ob-steps">
-      <div class="run-ob-steps-title">⚡ כדי להפעיל אוטומציה אמיתית</div>
+      <div class="run-ob-steps-title" data-en="⚡ To enable real automation" data-he="⚡ כדי להפעיל אוטומציה אמיתית">⚡ כדי להפעיל אוטומציה אמיתית</div>
       <div class="run-ob-step">
         <div class="run-ob-step-num">1</div>
-        <div class="run-ob-step-text">התקן את הדרישות מהטרמינל או CMD (פעם אחת בלבד):<br>
+        <div class="run-ob-step-text" id="rob-step1">התקן את הדרישות מהטרמינל או CMD (פעם אחת בלבד):<br>
           <code>pip install pywinauto playwright anthropic python-dotenv</code><br>
           <code>playwright install chromium</code>
         </div>
       </div>
       <div class="run-ob-step">
         <div class="run-ob-step-num">2</div>
-        <div class="run-ob-step-text">הפעל את שרת ה-Runner בטרמינל נפרד:<br>
+        <div class="run-ob-step-text" id="rob-step2">הפעל את שרת ה-Runner בטרמינל נפרד:<br>
           <code>python vibe-runner.py</code>
         </div>
       </div>
       <div class="run-ob-step">
         <div class="run-ob-step-num">3</div>
-        <div class="run-ob-step-text">כשהנקודה בכותרת תהפוך <strong style="color:var(--green)">ירוקה (RUNNER ✓)</strong> — השרת פעיל ומוכן.</div>
+        <div class="run-ob-step-text" data-en='When the dot in the header turns <strong style="color:var(--green)">green (RUNNER ✓)</strong> — the server is active and ready.' data-he="כשהנקודה בכותרת תהפוך <strong style=\"color:var(--green)\">ירוקה (RUNNER ✓)</strong> — השרת פעיל ומוכן.">כשהנקודה בכותרת תהפוך <strong style="color:var(--green)">ירוקה (RUNNER ✓)</strong> — השרת פעיל ומוכן.</div>
       </div>
       <div class="run-ob-step">
         <div class="run-ob-step-num">4</div>
-        <div class="run-ob-step-text">לחץ <strong>GENERATE</strong> בשלב RUN, בחר <strong>אוטומציה אמיתית</strong> ובחר את היעד.</div>
+        <div class="run-ob-step-text" data-en="Click <strong>GENERATE</strong> in the RUN phase, select <strong>Real Automation</strong> and choose your target." data-he="לחץ <strong>GENERATE</strong> בשלב RUN, בחר <strong>אוטומציה אמיתית</strong> ובחר את היעד.">לחץ <strong>GENERATE</strong> בשלב RUN, בחר <strong>אוטומציה אמיתית</strong> ובחר את היעד.</div>
       </div>
     </div>
 
     <div class="run-ob-actions">
-      <button class="run-ob-skip" onclick="dismissRunOnboard(true)">אל תציג שוב</button>
-      <button class="run-ob-got-it" onclick="dismissRunOnboard(false)">הבנתי — המשך ▶</button>
+      <button class="run-ob-skip" onclick="dismissRunOnboard(true)" data-en="Don't show again" data-he="אל תציג שוב">אל תציג שוב</button>
+      <button class="run-ob-got-it" onclick="dismissRunOnboard(false)" data-en="Got it — Continue ▶" data-he="הבנתי — המשך ▶">הבנתי — המשך ▶</button>
     </div>
   </div>
 </div>
@@ -1796,11 +1786,11 @@ var S = {
 };
 
 var PHASES = {
-  1:{l:'STP', t:'Test Planning',       s:'עץ בדיקות',    i:'◈', c:'#00e5a0', d:'ייצור עץ בדיקות מפורט לפי מסמך האפיון, כולל קטגוריות, עדיפויות, סיכונים ומדדי הצלחה.'},
-  2:{l:'STD', t:'Test Design',         s:'תסריטי בדיקה', i:'◉', c:'#8b5cf6', d:'ייצור תסריטי בדיקה מפורטים עם צעדים, נתוני בדיקה, תוצאות צפויות וקריטריוני הצלחה.'},
-  3:{l:'RUN', t:'Test Execution',      s:'הרצת בדיקות',  i:'▶', c:'#f59e0b', d:'הרצת בדיקות אמיתיות (Playwright/pywinauto) או סימולציה AI. בחר יעד למעלה ולחץ GENERATE.'},
-  4:{l:'STR', t:'Test Report',         s:'דוח סיכום',    i:'◆', c:'#f43f5e', d:'דוח STR מפורט עם Quality Scorecard, Risk Register, Go/No-Go ותכנית להמשך.'},
-  5:{l:'דוחות', t:'Reports Dashboard', s:'היסטוריה',     i:'◈', c:'#06b6d4', d:'היסטוריה של הרצות בדיקות אמיתיות — Jenkins-like dashboard עם פירוט pass/fail/skip.'},
+  1:{l:'STP',     l_en:'STP',     t:'Test Planning',       s:'עץ בדיקות',    s_en:'Test Tree',       i:'◈', c:'#00e5a0', d:'ייצור עץ בדיקות מפורט לפי מסמך האפיון, כולל קטגוריות, עדיפויות, סיכונים ומדדי הצלחה.', d_en:'Generate a detailed test tree from the spec document, including categories, priorities, risks and success metrics.'},
+  2:{l:'STD',     l_en:'STD',     t:'Test Design',         s:'תסריטי בדיקה', s_en:'Test Scripts',    i:'◉', c:'#8b5cf6', d:'ייצור תסריטי בדיקה מפורטים עם צעדים, נתוני בדיקה, תוצאות צפויות וקריטריוני הצלחה.', d_en:'Generate detailed test scripts with steps, test data, expected results and success criteria.'},
+  3:{l:'RUN',     l_en:'RUN',     t:'Test Execution',      s:'הרצת בדיקות',  s_en:'Test Execution',  i:'▶', c:'#f59e0b', d:'הרצת בדיקות אמיתיות (Playwright/pywinauto) או סימולציה AI. בחר יעד למעלה ולחץ GENERATE.', d_en:'Run real tests (Playwright/pywinauto) or AI simulation. Select a target above and click GENERATE.'},
+  4:{l:'STR',     l_en:'STR',     t:'Test Report',         s:'דוח סיכום',    s_en:'Summary Report',  i:'◆', c:'#f43f5e', d:'דוח STR מפורט עם Quality Scorecard, Risk Register, Go/No-Go ותכנית להמשך.', d_en:'Detailed STR report with Quality Scorecard, Risk Register, Go/No-Go and next steps.'},
+  5:{l:'דוחות', l_en:'Reports', t:'Reports Dashboard', s:'היסטוריה',       s_en:'History',          i:'◈', c:'#06b6d4', d:'היסטוריה של הרצות בדיקות אמיתיות — Jenkins-like dashboard עם פירוט pass/fail/skip.', d_en:'History of real test runs — Jenkins-like dashboard with pass/fail/skip details.'},
 };
 
 // ── CHIPS ───────────────────────────────────────────────
@@ -2490,19 +2480,19 @@ function renderFilePills() {
   if (S.files.length === 0) {
     btn.classList.remove('loaded');
     document.getElementById('up-icon').textContent = '⊕';
-    document.getElementById('up-lbl').textContent = 'העלה מסמכי אפיון';
+    var _upl0=(window.S_disp&&S_disp.lang)||'en'; document.getElementById('up-lbl').textContent = _upl0==='he' ? 'העלה מסמכי אפיון' : 'Upload spec docs';
     clearBtn.style.display = 'none';
     return;
   }
   btn.classList.add('loaded');
   document.getElementById('up-icon').textContent = '📎';
-  document.getElementById('up-lbl').textContent = S.files.length === 1 ? '+ קובץ נוסף' : '+ עוד קבצים';
+  var _upl=(window.S_disp&&S_disp.lang)||'en'; document.getElementById('up-lbl').textContent = _upl==='he' ? (S.files.length===1?'+ קובץ נוסף':'+ עוד קבצים') : '+ Add more';
   clearBtn.style.display = 'inline-flex';
   S.files.forEach(function(f, idx) {
     var pill = document.createElement('div');
     pill.className = 'file-pill';
     var short = f.name.length > 18 ? f.name.slice(0,18)+'…' : f.name;
-    pill.innerHTML = '<span>'+esc(short)+'</span><span class="file-pill-x" data-idx="'+idx+'" title="הסר">✕</span>';
+    pill.innerHTML = '<span>'+esc(short)+'</span><span class="file-pill-x" data-idx="'+idx+'" title="Remove">✕</span>';
     container.appendChild(pill);
   });
   container.querySelectorAll('.file-pill-x').forEach(function(x){
@@ -2533,7 +2523,7 @@ async function handleFiles(fileList) {
   if (!fileList || fileList.length === 0) return;
   var arr = Array.from(fileList);
   document.getElementById('up-icon').textContent = '⟳';
-  document.getElementById('up-lbl').textContent = 'מעבד '+arr.length+' קבצים...';
+  var _upl2=(window.S_disp&&S_disp.lang)||'en'; document.getElementById('up-lbl').textContent = _upl2==='he' ? 'מעבד '+arr.length+' קבצים...' : 'Processing '+arr.length+' file(s)...';
   var loaded = 0, errors = [];
   for (var i = 0; i < arr.length; i++) {
     var file = arr[i];
@@ -2629,6 +2619,7 @@ async function streamClaude(messages, onChunk) {
   }
   clearTimeout(timeoutId);
   currentAbort = null;
+  if (!full) throw new Error('לא התקבל תוכן מהמודל — נסה שוב');
   return full;
 }
 
@@ -2942,8 +2933,9 @@ function updateUI() {
   document.getElementById('sb-icon').textContent = ph.i;
   document.getElementById('sb-icon').style.color = ph.c;
   document.getElementById('sb-title').textContent = ph.t;
-  document.getElementById('sb-sub').textContent = ph.s;
-  document.getElementById('sb-desc').textContent = ph.d;
+  var _ulang = (window.S_disp && S_disp.lang) || 'en';
+  document.getElementById('sb-sub').textContent = ph['s_'+_ulang] || ph.s;
+  document.getElementById('sb-desc').textContent = ph['d_'+_ulang] || ph.d;
 
   // Progress
   [1,2,3,4].forEach(function(i){
@@ -2970,7 +2962,7 @@ function updateUI() {
   var ms = document.getElementById('mob-phase-status');
   if (mb) { mb.disabled = !ok; mb.className = 'gen-btn'+(ok?' on':'')+(S.streaming?' running':''); mb.style.width='auto'; mb.style.padding='12px 24px'; mb.textContent = gb.textContent; }
   if (ml) ml.textContent = 'PHASE '+p+'/4';
-  if (ms) { ms.textContent = ph.l+' · '+ph.s; ms.style.color = ph.c; }
+  if (ms) { var _ml = (window.S_disp && S_disp.lang)||'en'; ms.textContent = (ph['l_'+_ml]||ph.l)+' · '+(ph['s_'+_ml]||ph.s); ms.style.color = ph.c; }
 
   // Chat
   document.getElementById('chat-pfx').style.color = ph.c;
@@ -3017,15 +3009,22 @@ function updateUI() {
     document.getElementById('empty-icon').textContent = ph.i;
     document.getElementById('empty-icon').style.color = ph.c;
     document.getElementById('empty-title').textContent = ph.l+' — READY';
+    var _el = (window.S_disp && S_disp.lang) || 'en';
     document.getElementById('empty-sub').innerHTML = p===1
       ? (S.files && S.files.length > 0
-          ? '📎 '+S.files.length+' קובץ/ים נטענו ✓<br><span style="font-size:0.75em">לחץ GENERATE ליצירת עץ הבדיקות</span>'
-          : 'העלה מסמך אפיון או הכנס URL של האתר למעלה ⬆<br><span style="font-size:0.75em">PDF · DOCX · TXT · MD · JSON · YAML · HTML ועוד</span>')
+          ? (_el==='he'
+              ? '📎 '+S.files.length+' קובץ/ים נטענו ✓<br><span style="font-size:0.75em">לחץ GENERATE ליצירת עץ הבדיקות</span>'
+              : '📎 '+S.files.length+' file(s) loaded ✓<br><span style="font-size:0.75em">Click GENERATE to create the test tree</span>')
+          : (_el==='he'
+              ? 'העלה מסמך אפיון או הכנס URL של האתר למעלה ⬆<br><span style="font-size:0.75em">PDF · DOCX · TXT · MD · JSON · YAML · HTML ועוד</span>'
+              : 'Upload a spec document or enter a URL above ⬆<br><span style="font-size:0.75em">PDF · DOCX · TXT · MD · JSON · YAML · HTML and more</span>'))
       : !canRun(p)
-          ? 'השלם שלב '+(p-1)+' תחילה'
+          ? (_el==='he' ? 'השלם שלב '+(p-1)+' תחילה' : 'Complete phase '+(p-1)+' first')
           : p===3 && !S_conn.url
-            ? '⚠ יש להתחבר למערכת הנבדקת לפני הרצת הבדיקות<br><span style="font-size:0.75em;color:var(--amber)">השתמש בפאנל החיבור למעלה ⬆</span>'
-            : 'לחץ GENERATE להתחיל שלב '+p;
+            ? (_el==='he'
+                ? '⚠ יש להתחבר למערכת הנבדקת לפני הרצת הבדיקות<br><span style="font-size:0.75em;color:var(--amber)">השתמש בפאנל החיבור למעלה ⬆</span>'
+                : '⚠ Connect to the system under test before running tests<br><span style="font-size:0.75em;color:var(--amber)">Use the connection panel above ⬆</span>')
+            : (_el==='he' ? 'לחץ GENERATE להתחיל שלב '+p : 'Click GENERATE to start phase '+p);
     // Show hints only on phase 1 with no files
     document.getElementById('empty-hints').style.display = p===1 && !(S.files && S.files.length) ? 'flex' : 'none';
   } else if (S.data[p]) {
@@ -3375,12 +3374,17 @@ function updateRunStatusBar() {
   var rsiRunner = document.getElementById('rsi-runner');
   var rsiTxt = document.getElementById('rsi-runner-txt');
   if (rsiRunner) rsiRunner.className = 'run-status-item ' + (S.serverOnline ? 'ok' : 'bad');
-  if (rsiTxt) rsiTxt.textContent = S.serverOnline ? 'Runner פעיל ✓' : 'Runner לא פעיל';
+  var _rl = (window.S_disp && S_disp.lang) || 'en';
+  if (rsiTxt) rsiTxt.textContent = S.serverOnline
+    ? 'Runner active ✓'
+    : (_rl==='he' ? 'Runner לא פעיל' : 'Runner offline');
   // Update onboarding modal status line if open
   var obStatusLine = document.getElementById('run-ob-status-line');
   var obStatusTxt = document.getElementById('run-ob-status-text');
   if (obStatusLine) obStatusLine.className = 'run-ob-status ' + (S.serverOnline ? 'online' : 'offline');
-  if (obStatusTxt) obStatusTxt.textContent = S.serverOnline ? '✓ Runner פעיל ומחובר' : '⚠ Runner לא פעיל — AI Simulation בלבד זמין כרגע';
+  if (obStatusTxt) obStatusTxt.textContent = S.serverOnline
+    ? '✓ Runner active and connected'
+    : (_rl==='he' ? '⚠ Runner לא פעיל — AI Simulation בלבד זמין כרגע' : '⚠ Runner offline — AI Simulation only available');
 }
 
 function showRunOnboard() {
@@ -4043,12 +4047,17 @@ var _pendingRunMode = 'sim';
 function showRunModePicker() {
   var realOpt = document.getElementById('rmo-real');
   var realDesc = document.getElementById('rmo-real-desc');
+  var _rml = (window.S_disp && S_disp.lang) || 'en';
   if (!S.serverOnline) {
     if (realOpt) realOpt.style.opacity = '0.45';
-    if (realDesc) realDesc.innerHTML = 'Playwright / pywinauto — <strong style="color:var(--red)">שרת לא זמין</strong><br>הפעל: <code>python vibe-runner.py</code>';
+    if (realDesc) realDesc.innerHTML = _rml==='he'
+      ? 'Playwright / pywinauto — <strong style="color:var(--red)">שרת לא זמין</strong><br>הפעל: <code>python vibe-runner.py</code>'
+      : 'Playwright / pywinauto — <strong style="color:var(--red)">server offline</strong><br>Run: <code>python vibe-runner.py</code>';
   } else {
     if (realOpt) realOpt.style.opacity = '';
-    if (realDesc) realDesc.innerHTML = 'Playwright (web) או pywinauto (desktop) — הרצה ממשית על האפליקציה.<br>שרת פעיל ✓';
+    if (realDesc) realDesc.innerHTML = _rml==='he'
+      ? 'Playwright (web) או pywinauto (desktop) — הרצה ממשית על האפליקציה.<br>שרת פעיל ✓'
+      : 'Playwright (web) or pywinauto (desktop) — real run on the app.<br>Server active ✓';
   }
   selectRunMode('sim');
   document.getElementById('runmode-overlay').classList.remove('hidden');
@@ -4204,7 +4213,26 @@ function buildSimReport(runText) {
     S_disp.lang = lang;
     document.documentElement.dir  = lang === 'he' ? 'rtl' : 'ltr';
     document.documentElement.lang = lang === 'he' ? 'he'  : 'en';
-    // Update sidebar sublabels
+    // ── Translate all data-en / data-he text elements ──
+    document.querySelectorAll('[data-en]').forEach(function(el) {
+      var txt = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-he');
+      if (txt !== null) {
+        // Use innerHTML when value contains HTML tags (e.g. <br>, <strong>)
+        if (txt.indexOf('<') !== -1) el.innerHTML = txt;
+        else el.textContent = txt;
+      }
+    });
+    // ── Translate innerHTML elements ──
+    document.querySelectorAll('[data-en-html]').forEach(function(el) {
+      var html = lang === 'en' ? el.getAttribute('data-en-html') : el.getAttribute('data-he-html');
+      if (html !== null) el.innerHTML = html;
+    });
+    // ── Translate placeholder attributes ──
+    document.querySelectorAll('[data-en-ph]').forEach(function(el) {
+      var ph = lang === 'en' ? el.getAttribute('data-en-ph') : el.getAttribute('data-he-ph');
+      if (ph !== null) el.placeholder = ph;
+    });
+    // ── Update sidebar sublabels ──
     document.querySelectorAll('.vts-item[data-vt-phase]').forEach(function(btn){
       var i = +btn.dataset.vtPhase;
       var subEl = btn.querySelector('.vts-sub');
@@ -4212,9 +4240,46 @@ function buildSimReport(runText) {
       if(subEl) subEl.textContent = VTS_SUB[lang][i-1] || '';
       if(lblEl && i === 5) lblEl.textContent = VTS_LBL5[lang];
     });
-    // Update toggle button label
+    // ── Update toggle button label ──
     var lbl = document.getElementById('vts-lang-lbl');
     if(lbl) lbl.textContent = lang === 'he' ? 'EN' : 'עב';
+    // ── Complex HTML blocks translated by ID ──
+    var _blocks = {
+      'ipd-1': {
+        he: '<strong>Test Planning</strong> — בניית תוכנית הבדיקות המלאה:<br>• ניתוח מסמך האפיון שהועלה<br>• <strong>מקורות קלט:</strong> מסמך (PDF/DOCX/TXT), URL אתר, נתיב אפליקציה מקומית<br>• עץ בדיקות 60+ פריטים לפי ISTQB<br>• מטריצת סיכונים, Traceability Matrix, הערכת מאמץ<br>• Entry/Exit criteria ו-KPIs',
+        en: '<strong>Test Planning</strong> — building the full test plan:<br>• Analyzing the uploaded spec document<br>• <strong>Input sources:</strong> document (PDF/DOCX/TXT), website URL, local app path<br>• 60+ test tree items per ISTQB<br>• Risk matrix, Traceability Matrix, effort estimation<br>• Entry/Exit criteria and KPIs'
+      },
+      'ipd-2': {
+        he: '<strong>Test Script Design</strong> — כתיבת 30+ תסריטים מפורטים:<br>• כל תסריט כולל: צעדים, נתוני בדיקה, תוצאה צפויה, קריטריוני PASS/FAIL<br>• חלוקה: functional, negative, integration, security, performance<br>• מבוסס על STP שנוצר בשלב 1',
+        en: '<strong>Test Script Design</strong> — writing 30+ detailed scripts:<br>• Each script includes: steps, test data, expected result, PASS/FAIL criteria<br>• Coverage: functional, negative, integration, security, performance<br>• Based on the STP generated in phase 1'
+      },
+      'ipd-3': {
+        he: '<strong>Test Execution</strong> — הרצת הבדיקות:<br>• <strong>מצב AI:</strong> סימולציה חכמה עם תוצאות ריאליסטיות<br>• <strong>מצב אמיתי:</strong> אוטומציה ממשית עם Playwright (web) או pywinauto (desktop)<br>• דוח הרצה עם PASS/FAIL/SKIP, שגיאות מפורטות, Root Cause Analysis<br>• שליחת דוח במייל',
+        en: '<strong>Test Execution</strong> — running the tests:<br>• <strong>AI mode:</strong> smart simulation with realistic results<br>• <strong>Real mode:</strong> actual automation with Playwright (web) or pywinauto (desktop)<br>• Run report with PASS/FAIL/SKIP, detailed errors, Root Cause Analysis<br>• Send report by email'
+      },
+      'ipd-4': {
+        he: '<strong>Test Summary Report</strong> — דוח מנהלים:<br>• תקציר לרמת C-Level (250 מילה)<br>• Quality Scorecard ו-KPIs<br>• Risk Register, פנקס באגים קריטיים<br>• המלצה סופית: Go / No-Go לשחרור<br>• Lessons Learned ו-Automation Roadmap',
+        en: '<strong>Test Summary Report</strong> — executive report:<br>• C-Level summary (250 words)<br>• Quality Scorecard and KPIs<br>• Risk Register, critical bug log<br>• Final recommendation: Go / No-Go for release<br>• Lessons Learned and Automation Roadmap'
+      },
+      'ipd-5': {
+        he: '<strong>Reports Dashboard</strong> — ארכיון הרצות (כמו Jenkins):<br>• רשימת כל הרצות האוטומציה שבוצעו<br>• PASS/FAIL/SKIP לכל הרצה<br>• פתיחת פרטי כל תסריט שנפל<br>• ייצוא דוח ל-PDF · שליחה במייל<br>• <em>דורש הפעלת vibe-runner.py</em>',
+        en: '<strong>Reports Dashboard</strong> — run history (Jenkins-like):<br>• List of all automation runs performed<br>• PASS/FAIL/SKIP per run<br>• Open details of each failed script<br>• Export report to PDF · Send by email<br>• <em>Requires vibe-runner.py to be running</em>'
+      },
+      'info-howto': {
+        he: '<strong style="color:var(--text)">מצב AI (ללא התקנה):</strong><br>1. לחץ ▶ START בחלון הפתיחה והכנס את ה-API Key שלך<br>2. העלה מסמך אפיון (ATTACH) או הכנס URL בשלב STP<br>3. לחץ GENERATE בכל שלב לפי הסדר (STP → STD → RUN → STR)<br><br><strong style="color:var(--text)">מצב אוטומציה אמיתית (דורש Python):</strong><br>1. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">pip install playwright pywinauto anthropic python-dotenv</code><br>2. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">python vibe-runner.py</code><br>3. הדות הירוק "RUNNER ✓" יופיע בכותרת<br>4. בשלב RUN בחר "אוטומציה אמיתית" ובחר את האפליקציה/URL',
+        en: '<strong style="color:var(--text)">AI mode (no install):</strong><br>1. Click ▶ START on the welcome screen and log in<br>2. Upload a spec document (ATTACH) or enter a URL in the STP phase<br>3. Click GENERATE at each phase in order (STP → STD → RUN → STR)<br><br><strong style="color:var(--text)">Real automation mode (requires Python):</strong><br>1. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">pip install playwright pywinauto anthropic python-dotenv</code><br>2. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">python vibe-runner.py</code><br>3. The green dot "RUNNER ✓" will appear in the header<br>4. In the RUN phase, select "Real Automation" and choose your target'
+      },
+      'stp-doc-hint': {
+        he: 'העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">ATTACH</strong> בשורת הצ\'ט, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span>',
+        en: 'Upload a spec document using the <strong style="color:var(--green)">ATTACH</strong> button in the chat bar, or drag a file directly into the window.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML and more</span>'
+      }
+    };
+    Object.keys(_blocks).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = _blocks[id][lang] || _blocks[id]['he'];
+    });
+    // ── Re-run updateUI so dynamic content (sb-sub, sb-desc, mob-status) updates ──
+    if (typeof updateUI === 'function') updateUI();
     vtSyncThemeIcon();
     if(!silent) saveDisplay();
   }
@@ -4245,7 +4310,7 @@ function buildSimReport(runText) {
   // Load saved lang (reads from same vibe_display key — S_disp.lang set below)
   var _savedDisp = {};
   try { _savedDisp = JSON.parse(localStorage.getItem('vibe_display')||'{}'); } catch(e){}
-  var _initLang = _savedDisp.lang || 'he';
+  var _initLang = _savedDisp.lang || 'en';
   S_disp.lang = _initLang;
   applyLang(_initLang, true);   // silent=true, already persisted
   vtSyncThemeIcon();             // sync icon after theme was loaded by existing code
