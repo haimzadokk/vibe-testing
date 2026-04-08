@@ -2664,15 +2664,37 @@ function canRun(p) {
 }
 
 function buildPrompt(phase, context, ft, targetUrl) {
-  var fh = ft ? ' [קובץ '+ft+']' : '';
-  var urlCtx = getConnectionContext();
-  if (phase===1) return 'אתה אדריכל QA בכיר עם 20 שנות ניסיון בחברות HighTech מובילות. משתמש מנוסה ב-ISTQB, IEEE 829 ו-Agile QA methodologies.\n\nנתח את מסמך הדרישות'+fh+' וצור STP מקיף ומפורט לחלוטין בעברית. כל פריט חייב להיות ספציפי לחלוטין למוצר הנבדק — אין מקום לפריטים גנריים.\n\n**פורמט חובה:**\n\n# תוכנית בדיקות (STP) — [שם המוצר]\n\n## 1. מטרות, KPIs ו-Entry/Exit Criteria\n- מטרות הבדיקה, KPIs מדידים, entry criteria, exit criteria, suspension criteria\n\n## 2. היקף הבדיקה\n### בהיקף (In Scope)\n### מחוץ להיקף (Out of Scope)\n### הנחות וסייגים\n\n## 3. עץ בדיקות מפורט\nלכל פריט: [BT-XXX] | עדיפות P1/P2/P3 | מורכבות H/M/L | Manual/Auto | זמן משוער\n\n### 3.1 בדיקות פונקציונליות (לפחות 20 פריטים)\n### 3.2 בדיקות UI/UX ונגישות (לפחות 10 פריטים)\n### 3.3 בדיקות API ואינטגרציה (לפחות 12 פריטים)\n### 3.4 בדיקות ביצועים ו-Scalability (לפחות 8 פריטים)\n### 3.5 בדיקות אבטחה — OWASP (לפחות 10 פריטים)\n### 3.6 Regression, Smoke ו-Sanity Suites\n### 3.7 בדיקות Compatibility (OS/Browser/Mobile)\n\n## 4. אסטרטגיית בדיקה\n- כלים מומלצים, סדר הרצה, סביבות, Test Data Strategy\n\n## 5. מטריצת סיכונים\n| סיכון | חומרה | הסתברות | ציון | מיטיגציה |\n\n## 6. Traceability Matrix\n| דרישה | מזהה BT | קטגוריה | עדיפות |\n\n## 7. הערכת מאמץ ולוח זמנים\n| קטגוריה | # מקרים | שעות הכנה | שעות הרצה | סה"כ |\n\n## 8. המלצות ממוקדות לשלב STD\n\n**חשוב: כתוב הכל בעברית. כל פריט ספציפי למוצר!**';
+  var lang = (window.S_disp && S_disp.lang) || 'en';
+  var fh = ft ? (lang==='he' ? ' [קובץ '+ft+']' : ' [file: '+ft+']') : '';
 
-  if (phase===2) return 'אתה מהנדס QA בכיר עם התמחות ב-Test Design. בקיא ב-Black Box, White Box, Equivalence Partitioning, Boundary Value Analysis, Decision Table, State Transition.\n\nצור STD מקיף לחלוטין בעברית. לפחות 30 תסריטים מפורטים. חלוקה: 35% functional, 25% negative/edge, 15% integration, 10% security, 10% performance, 5% accessibility.\n\n**פורמט חובה לכל תסריט:**\n---\n### TC-[NNN] | [קטגוריה] | [שם תסריט]\n\n| שדה | ערך |\n|-----|-----|\n| עדיפות | P1/P2/P3 |\n| סוג | Functional/Negative/Integration/Security/Performance/Accessibility |\n| מודול | |\n| אוטומציה | Yes/No/Partial |\n\n**תיאור:** [מה הבדיקה בודקת ולמה זה קריטי]\n\n**תנאים מוקדמים:**\n1.\n\n**נתוני בדיקה:**\n- [שדה]: [ערך ספציפי]\n\n**צעדי הבדיקה:**\n1. [צעד מפורט עם קלטים]\n\n**תוצאה צפויה:** [תיאור מדויק ומדיד]\n**קריטריון PASS:** [מה נחשב הצלחה]\n**קריטריון FAIL:** [מה נחשב כשל]\n**Risk Level:** High/Medium/Low\n---\n\nSTP:\n'+context;
+  // ── PHASE 1: STP ─────────────────────────────────────────
+  if (phase===1) {
+    if (lang==='he') return 'אתה אדריכל QA בכיר עם 20 שנות ניסיון בחברות HighTech מובילות. משתמש מנוסה ב-ISTQB, IEEE 829 ו-Agile QA methodologies.\n\nנתח את מסמך הדרישות'+fh+' וצור STP מקיף ומפורט לחלוטין בעברית. כל פריט חייב להיות ספציפי לחלוטין למוצר הנבדק — אין מקום לפריטים גנריים.\n\n**פורמט חובה:**\n\n# תוכנית בדיקות (STP) — [שם המוצר]\n\n## 1. מטרות, KPIs ו-Entry/Exit Criteria\n## 2. היקף הבדיקה (In Scope / Out of Scope / הנחות)\n## 3. עץ בדיקות מפורט\nלכל פריט: [BT-XXX] | עדיפות P1/P2/P3 | מורכבות H/M/L | Manual/Auto | זמן משוער\n### 3.1 פונקציונלי (20+ פריטים)\n### 3.2 UI/UX ונגישות (10+ פריטים)\n### 3.3 API ואינטגרציה (12+ פריטים)\n### 3.4 ביצועים ו-Scalability (8+ פריטים)\n### 3.5 אבטחה OWASP (10+ פריטים)\n### 3.6 Regression, Smoke & Sanity\n### 3.7 Compatibility (OS/Browser/Mobile)\n## 4. אסטרטגיית בדיקה (כלים, סדר, סביבות, Test Data Strategy)\n## 5. מטריצת סיכונים | 6. Traceability Matrix | 7. הערכת מאמץ | 8. המלצות לSTD\n\n**חשוב: כתוב הכל בעברית. כל פריט ספציפי למוצר!**';
 
-  if (phase===3) return 'אתה מהנדס QA עם ניסיון בהרצת בדיקות על מערכות Production. בקיא בניתוח כשלים, Root Cause Analysis ו-Defect Management.\n\nהפק Execution Report ריאליסטי ומפורט בעברית.'+(getConnectionContext())+'\n\n**חלוקה ריאליסטית: 68-75% PASS ✅, 18-25% FAIL ❌, 5-8% SKIP ⚠️**\n\n# דוח הרצת בדיקות\n\n## מידע כללי\n| פרמטר | ערך |\n|--------|-----|\n| תאריך הרצה | |\n| גרסה | |\n| סביבה | |\n| זמן כולל | |\n| מריץ | |\n\n## סיכום מהיר\n| סטטוס | מספר | אחוז |\n\n## לוג הרצה מלא\nלכל תסריט: status, duration, error מדויק (לכשלים), BUG-ID, severity\n\n## ניתוח כשלים מפורט\n### כשלים קריטיים (Blockers)\n### Root Cause Analysis (5 Whys)\n### Defect Summary לפי מודול\n### Defect Density\n\n## מדדי איכות\n| מדד | ערך | יעד | סטטוס |\n\n## Retesting Plan\n- אילו תסריטים דורשים הרצה חוזרת לאחר תיקון\n\n## המלצות\n\n**הכשלים חייבים להיות ריאליסטיים, ספציפיים וניתנים לשחזור!**\n\nתסריטים:\n'+context;
+    return 'You are a senior QA architect with 20 years of experience at leading high-tech companies. Expert in ISTQB, IEEE 829, and Agile QA methodologies.\n\nAnalyze the requirements document'+fh+' and create a comprehensive, fully detailed STP in English. Every item must be 100% specific to the product under test — no generic items.\n\n**Required format:**\n\n# Test Plan (STP) — [Product Name]\n\n## 1. Objectives, KPIs & Entry/Exit Criteria\n## 2. Test Scope (In Scope / Out of Scope / Assumptions)\n## 3. Detailed Test Tree\nFor each item: [BT-XXX] | Priority P1/P2/P3 | Complexity H/M/L | Manual/Auto | Est. Time\n### 3.1 Functional Tests (20+ items)\n### 3.2 UI/UX & Accessibility Tests (10+ items)\n### 3.3 API & Integration Tests (12+ items)\n### 3.4 Performance & Scalability Tests (8+ items)\n### 3.5 Security Tests — OWASP (10+ items)\n### 3.6 Regression, Smoke & Sanity Suites\n### 3.7 Compatibility Tests (OS/Browser/Mobile)\n## 4. Test Strategy (tools, execution order, environments, Test Data Strategy)\n## 5. Risk Matrix | 6. Traceability Matrix | 7. Effort Estimation | 8. Recommendations for STD\n\n**Important: Write everything in English. Every item must be specific to the product!**';
+  }
 
-  if (phase===4) return 'אתה QA Manager בכיר עם ניסיון בכתיבת STR ל-Fortune 500 companies. בקיא ב-Quality Engineering, Risk Management ו-Release Management.\n\nצור STR מקיף ומנהלים בעברית.\n\n# דוח סיכום בדיקות (STR)\n\n## 1. תקציר מנהלים\n[250 מילה בדיוק, ל-C-Level, non-technical]\n\n## 2. KPIs ומדדים\n| מדד | ערך | יעד | סטטוס | Trend |\n\n## 3. Quality Scorecard\n| קטגוריה | ציון 1-10 | Trend | Action Required |\n\n## 4. ניתוח כשלים\n### לפי חומרה | לפי מודול | Pareto Chart (טקסט)\n\n## 5. Risk Register פתוח\n| Risk ID | תיאור | L | I | Score | Mitigation | Owner | Target |\n\n## 6. פנקס באגים קריטיים\n| Bug ID | תיאור | חומרה | סטטוס | ETA |\n\n## 7. המלצה סופית — Go / No-Go\n[Entry criteria, הצהרה ברורה, תנאים]\n\n## 8. Lessons Learned\n[10 נקודות קונקרטיות]\n\n## 9. המלצות לצוות הפיתוח\n## 10. תוכנית לסבב הבא\n## 11. Automation Roadmap (Top 5 + ROI)\n\nנתוני הרצה:\n'+context;
+  // ── PHASE 2: STD ─────────────────────────────────────────
+  if (phase===2) {
+    if (lang==='he') return 'אתה מהנדס QA בכיר עם התמחות ב-Test Design. בקיא ב-Black Box, White Box, Equivalence Partitioning, Boundary Value Analysis, Decision Table, State Transition.\n\nצור STD מקיף לחלוטין בעברית. לפחות 30 תסריטים מפורטים. חלוקה: 35% functional, 25% negative/edge, 15% integration, 10% security, 10% performance, 5% accessibility.\n\n**פורמט חובה לכל תסריט:**\n---\n### TC-[NNN] | [קטגוריה] | [שם תסריט]\n| שדה | ערך |\n|-----|-----|\n| עדיפות | P1/P2/P3 |\n| סוג | Functional/Negative/Integration/Security/Performance/Accessibility |\n| מודול | |\n| אוטומציה | Yes/No/Partial |\n\n**תיאור:** [מה הבדיקה בודקת ולמה זה קריטי]\n**תנאים מוקדמים:** 1.\n**נתוני בדיקה:** - [שדה]: [ערך ספציפי]\n**צעדי הבדיקה:** 1. [צעד מפורט עם קלטים]\n**תוצאה צפויה:** [תיאור מדויק ומדיד]\n**קריטריון PASS:** | **קריטריון FAIL:** | **Risk Level:** High/Medium/Low\n---\n\nSTP:\n'+context;
+
+    return 'You are a senior QA engineer specializing in Test Design. Expert in Black Box, White Box, Equivalence Partitioning, Boundary Value Analysis, Decision Table, State Transition.\n\nCreate a comprehensive STD in English. At least 30 detailed test scripts. Distribution: 35% functional, 25% negative/edge, 15% integration, 10% security, 10% performance, 5% accessibility.\n\n**Required format for each script:**\n---\n### TC-[NNN] | [Category] | [Test Name]\n| Field | Value |\n|-------|-------|\n| Priority | P1/P2/P3 |\n| Type | Functional/Negative/Integration/Security/Performance/Accessibility |\n| Module | |\n| Automation | Yes/No/Partial |\n\n**Description:** [What is being tested and why it\'s critical]\n**Preconditions:** 1.\n**Test Data:** - [Field]: [Specific value]\n**Test Steps:** 1. [Detailed step with inputs]\n**Expected Result:** [Exact, measurable description]\n**PASS Criterion:** | **FAIL Criterion:** | **Risk Level:** High/Medium/Low\n---\n\nSTP:\n'+context;
+  }
+
+  // ── PHASE 3: RUN ─────────────────────────────────────────
+  if (phase===3) {
+    var connCtx = getConnectionContext();
+    if (lang==='he') return 'אתה מהנדס QA עם ניסיון בהרצת בדיקות על מערכות Production. בקיא בניתוח כשלים, Root Cause Analysis ו-Defect Management.\n\nהפק Execution Report ריאליסטי ומפורט בעברית.'+connCtx+'\n\n**חלוקה ריאליסטית: 68-75% PASS ✅, 18-25% FAIL ❌, 5-8% SKIP ⚠️**\n\n# דוח הרצת בדיקות\n## מידע כללי | ## סיכום מהיר\n## לוג הרצה מלא\nלכל תסריט: status, duration, error מדויק (לכשלים), BUG-ID, severity\n## ניתוח כשלים מפורט (Blockers, 5 Whys, Defect Summary, Defect Density)\n## מדדי איכות | ## Retesting Plan | ## המלצות\n\n**הכשלים חייבים להיות ריאליסטיים, ספציפיים וניתנים לשחזור!**\n\nתסריטים:\n'+context;
+
+    return 'You are a QA engineer experienced in running tests on Production systems. Expert in failure analysis, Root Cause Analysis, and Defect Management.\n\nProduce a realistic and detailed Execution Report in English.'+connCtx+'\n\n**Realistic distribution: 68-75% PASS ✅, 18-25% FAIL ❌, 5-8% SKIP ⚠️**\n\n# Test Execution Report\n## General Information | ## Quick Summary\n## Full Execution Log\nFor each script: status, duration, exact error (for failures), BUG-ID, severity\n## Detailed Failure Analysis (Blockers, 5 Whys RCA, Defect Summary by Module, Defect Density)\n## Quality Metrics | ## Retesting Plan | ## Recommendations\n\n**Failures must be realistic, specific, and reproducible!**\n\nScripts:\n'+context;
+  }
+
+  // ── PHASE 4: STR ─────────────────────────────────────────
+  if (phase===4) {
+    if (lang==='he') return 'אתה QA Manager בכיר עם ניסיון בכתיבת STR ל-Fortune 500 companies. בקיא ב-Quality Engineering, Risk Management ו-Release Management.\n\nצור STR מקיף ומנהלים בעברית.\n\n# דוח סיכום בדיקות (STR)\n## 1. תקציר מנהלים (250 מילה, C-Level, non-technical)\n## 2. KPIs ומדדים | ## 3. Quality Scorecard\n## 4. ניתוח כשלים (לפי חומרה / מודול / Pareto)\n## 5. Risk Register פתוח | ## 6. פנקס באגים קריטיים\n## 7. המלצה סופית — Go / No-Go\n## 8. Lessons Learned (10 נקודות) | ## 9. המלצות לפיתוח\n## 10. תוכנית לסבב הבא | ## 11. Automation Roadmap (Top 5 + ROI)\n\nנתוני הרצה:\n'+context;
+
+    return 'You are a Senior QA Manager with experience writing STRs for Fortune 500 companies. Expert in Quality Engineering, Risk Management, and Release Management.\n\nCreate a comprehensive executive STR in English.\n\n# Test Summary Report (STR)\n## 1. Executive Summary (exactly 250 words, C-Level, non-technical)\n## 2. KPIs & Metrics | ## 3. Quality Scorecard\n## 4. Failure Analysis (by Severity / Module / Pareto)\n## 5. Open Risk Register | ## 6. Critical Bug Log\n## 7. Final Recommendation — Go / No-Go\n## 8. Lessons Learned (10 concrete points) | ## 9. Recommendations for Dev Team\n## 10. Next Sprint Plan | ## 11. Automation Roadmap (Top 5 + ROI)\n\nRun data:\n'+context;
+  }
 }
 
 // ── CHAT DISPLAY ─────────────────────────────────────────
@@ -2735,14 +2757,19 @@ async function runGen(phaseId) {
   updateUI();
   var ctx = getContext(phaseId);
   var sys = buildPrompt(phaseId, ctx, S.fileType, S.targetUrl);
-  var ins = 'נא לייצר שלב '+phaseId+' בצורה מקיפה, מפורטת ומקצועית לחלוטין.';
+  var _rlang = (window.S_disp && S_disp.lang) || 'en';
+  var ins = _rlang === 'he'
+    ? 'נא לייצר שלב '+phaseId+' בצורה מקיפה, מפורטת ומקצועית לחלוטין.'
+    : 'Please generate phase '+phaseId+' in a comprehensive, detailed, and fully professional manner.';
   var uc;
   if (phaseId===1) {
     uc = S.fileContent
-      ? 'מסמכי האפיון ('+S.fileName+'):\n\n'+S.fileContent.slice(0,25000)+'\n\n---\nהנחיה: '+ins
+      ? (_rlang === 'he'
+          ? 'מסמכי האפיון ('+S.fileName+'):\n\n'+S.fileContent.slice(0,25000)+'\n\n---\nהנחיה: '+ins
+          : 'Specification documents ('+S.fileName+'):\n\n'+S.fileContent.slice(0,25000)+'\n\n---\nInstruction: '+ins)
       : ins;
   } else {
-    uc = '---\nהנחיה: '+ins;
+    uc = _rlang === 'he' ? '---\nהנחיה: '+ins : '---\nInstruction: '+ins;
   }
   S.status[phaseId] = 'generating';
   showOut(phaseId, '', true);
@@ -2812,12 +2839,19 @@ async function runRefine(phaseId, instruction) {
   updateUI();
   var ctx = getContext(phaseId);
   var sys = buildPrompt(phaseId, ctx, S.fileType, S.targetUrl);
+  var _reflang = (window.S_disp && S_disp.lang) || 'en';
   var uc;
   if (phaseId===1) {
-    uc = (S.fileContent ? 'מסמכי האפיון:\n\n'+S.fileContent.slice(0,25000)+'\n\n' : '')+
-      'הפלט הקודם:\n'+( S.data[phaseId]||'').slice(0,8000)+'\n\n---\nהנחיה לשיפור: '+instruction;
+    uc = (S.fileContent
+      ? (_reflang === 'he'
+          ? 'מסמכי האפיון:\n\n'+S.fileContent.slice(0,25000)+'\n\n'
+          : 'Specification documents:\n\n'+S.fileContent.slice(0,25000)+'\n\n')
+      : '') +
+      (_reflang === 'he'
+        ? 'הפלט הקודם:\n'+(S.data[phaseId]||'').slice(0,8000)+'\n\n---\nהנחיה לשיפור: '+instruction
+        : 'Previous output:\n'+(S.data[phaseId]||'').slice(0,8000)+'\n\n---\nImprovement instruction: '+instruction);
   } else {
-    uc = '---\nהנחיה לשיפור: '+instruction;
+    uc = _reflang === 'he' ? '---\nהנחיה לשיפור: '+instruction : '---\nImprovement instruction: '+instruction;
   }
   S.status[phaseId] = 'generating';
   showOut(phaseId, '', true);
@@ -4342,10 +4376,17 @@ async function runGenSim(phaseId) {
   updateUI();
   var ctx = getContext(phaseId);
   var sys = buildPrompt(phaseId, ctx, S.fileType, S.targetUrl);
-  var ins = 'נא לייצר שלב '+phaseId+' בצורה מקיפה, מפורטת ומקצועית לחלוטין.';
+  var _simlang = (window.S_disp && S_disp.lang) || 'en';
+  var ins = _simlang === 'he'
+    ? 'נא לייצר שלב '+phaseId+' בצורה מקיפה, מפורטת ומקצועית לחלוטין.'
+    : 'Please generate phase '+phaseId+' in a comprehensive, detailed, and fully professional manner.';
   var uc = phaseId === 1
-    ? (S.fileContent ? 'מסמכי האפיון ('+S.fileName+'):\n\n'+S.fileContent.slice(0,25000)+'\n\n---\nהנחיה: '+ins : ins)
-    : '---\nהנחיה: '+ins;
+    ? (S.fileContent
+        ? (_simlang === 'he'
+            ? 'מסמכי האפיון ('+S.fileName+'):\n\n'+S.fileContent.slice(0,25000)+'\n\n---\nהנחיה: '+ins
+            : 'Specification documents ('+S.fileName+'):\n\n'+S.fileContent.slice(0,25000)+'\n\n---\nInstruction: '+ins)
+        : ins)
+    : (_simlang === 'he' ? '---\nהנחיה: '+ins : '---\nInstruction: '+ins);
   showOut(phaseId, '', true);
   try {
     var full = await streamClaude(
