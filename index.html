@@ -574,9 +574,10 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .report-status-bar.pass{background:var(--green);box-shadow:0 0 8px rgba(0,229,160,.4)}
 .report-status-bar.fail{background:var(--red);box-shadow:0 0 8px rgba(244,63,94,.4)}
 .report-status-bar.partial{background:var(--amber);box-shadow:0 0 8px rgba(245,158,11,.4)}
-.report-id{font-size:11px;color:var(--dim);letter-spacing:2px;font-weight:700}
+.report-id{font-size:11px;color:var(--dim);letter-spacing:1px;font-weight:700;margin-bottom:3px}
 .report-name{font-size:13px;font-weight:700;color:var(--text)}
-.report-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.report-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.report-row-hdr{padding:16px 18px}
 .report-row-right{display:flex;align-items:center;gap:16px;flex-shrink:0}
 .report-stat{display:flex;flex-direction:column;align-items:center;gap:2px}
 .report-stat-val{font-size:18px;font-weight:900;line-height:1}
@@ -1534,8 +1535,8 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
     <div class="run-ob-header">
       <div class="run-ob-icon">▶</div>
       <div>
-        <div class="run-ob-title">שלב RUN — הרצת בדיקות</div>
-        <div class="run-ob-sub">לפני שמתחילים — הנה מה שחשוב לדעת</div>
+        <div class="run-ob-title" data-en="RUN Phase — Test Execution" data-he="שלב RUN — הרצת בדיקות">שלב RUN — הרצת בדיקות</div>
+        <div class="run-ob-sub" data-en="Before you start — here's what you need to know" data-he="לפני שמתחילים — הנה מה שחשוב לדעת">לפני שמתחילים — הנה מה שחשוב לדעת</div>
       </div>
     </div>
 
@@ -1895,7 +1896,7 @@ function exportToExcel(data, phaseName) {
   a.href = URL.createObjectURL(blob);
   a.download = phaseName + '.csv';
   a.click();
-  showToast('✓ Excel/CSV יוצא — פתח עם Excel', 'ok');
+  var _etl=(window.S_disp&&S_disp.lang)||'en'; showToast(_etl==='he'?'✓ Excel/CSV יוצא — פתח עם Excel':'✓ Excel/CSV exported — open with Excel', 'ok');
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────
@@ -1959,7 +1960,7 @@ function showDashboard() {
   _dashTexts = {};
   document.getElementById('export-menu').classList.remove('open');
   var hasAny = S.data[1] || S.data[2] || S.data[3] || S.data[4];
-  if (!hasAny) { showToast('הרץ לפחות שלב אחד תחילה', 'err'); return; }
+  if (!hasAny) { var _dtl=(window.S_disp&&S_disp.lang)||'en'; showToast(_dtl==='he'?'הרץ לפחות שלב אחד תחילה':'Run at least one phase first', 'err'); return; }
 
   var d = parseDashboardData();
   var body = document.getElementById('dash-body');
@@ -2197,7 +2198,7 @@ async function runSTPFromURL() {
     showOut(1, full, false);
     updateTabDones();
     st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר מ-' + esc(url) + ' — יעד נשמר לשלב RUN</span>';
-    showToast('✓ STP נוצר מניתוח האתר!', 'ok');
+    var _stptl=(window.S_disp&&S_disp.lang)||'en'; showToast(_stptl==='he'?'✓ STP נוצר מניתוח האתר!':'✓ STP created from site analysis!', 'ok');
     _vibeRunSaveOutput('stp', full);
     _vibePhaseStatus(1, 'completed');
   } catch(err) {
@@ -2276,7 +2277,7 @@ async function runSTPFromPath() {
     S.targetType = 'local'; S.targetWindow = path; S.targetWindowTitle = path.split(/[\\/]/).pop();
     showOut(1, full, false); updateTabDones();
     st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר עבור: ' + esc(path) + ' — יעד נשמר לשלב RUN</span>';
-    showToast('✓ STP נוצר מניתוח הנתיב!', 'ok');
+    var _stptl2=(window.S_disp&&S_disp.lang)||'en'; showToast(_stptl2==='he'?'✓ STP נוצר מניתוח הנתיב!':'✓ STP created from path analysis!', 'ok');
     _vibeRunSaveOutput('stp', full);
     _vibePhaseStatus(1, 'completed');
   } catch(err) {
@@ -2305,7 +2306,7 @@ function showDashboardBtn() {
   btn.id = 'dash-cta-btn';
   btn.style.cssText = 'padding:16px 22px 20px;display:flex;justify-content:center';
   var b = document.createElement('button');
-  b.textContent = '📊 פתח דשבורד מנהלים';
+  var _dbtl=(window.S_disp&&S_disp.lang)||'en'; b.textContent = _dbtl==='he'?'📊 פתח דשבורד מנהלים':'📊 Open Admin Dashboard';
   b.style.cssText = 'background:linear-gradient(135deg,#f43f5e,#8b5cf6);border:none;border-radius:12px;padding:14px 36px;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:2px;color:white;cursor:pointer;box-shadow:0 0 30px rgba(244,63,94,.3);transition:all .3s';
   b.onclick = function(){ showDashboard(); };
   b.onmouseover = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 8px 40px rgba(244,63,94,.5)'; };
@@ -2382,7 +2383,6 @@ function initModal() {
   document.getElementById('wlc-start-btn').addEventListener('click', function() {
     document.getElementById('modal').classList.add('hidden');
     updateUI();
-    showToast('✓ ברוך הבא ל-VIBE.TESTING!', 'ok');
   });
 }
 document.getElementById('change-key-btn').addEventListener('click', function() {
@@ -2530,7 +2530,7 @@ async function handleFiles(fileList) {
     var file = arr[i];
     // Skip duplicates
     if (S.files.find(function(f){ return f.name === file.name; })) {
-      showToast('⚠ '+file.name+' כבר נטען', '');
+      var _duptl=(window.S_disp&&S_disp.lang)||'en'; showToast(_duptl==='he'?'⚠ '+file.name+' כבר נטען':'⚠ '+file.name+' already loaded', '');
       continue;
     }
     try {
@@ -2743,7 +2743,8 @@ async function runGen(phaseId) {
     }
     showOut(phaseId, full, false);
     updateTabDones();
-    showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
+    var _tl = (window.S_disp&&S_disp.lang)||'en';
+    showToast(_tl==='he'?'✓ שלב '+PHASES[phaseId].l+' הושלם!':'✓ '+PHASES[phaseId].l+' complete!', 'ok');
     if (phaseId === 4) {
       showDashboardBtn();
       _vibeRunFinish('completed', null);  // STR = terminal phase; mark run complete
@@ -2756,7 +2757,7 @@ async function runGen(phaseId) {
       if (S.data[phaseId]) {
         S.status[phaseId] = 'done';
         showOut(phaseId, S.data[phaseId], false);
-        showToast('⏹ הופסק — הפלט החלקי נשמר', '');
+        var _stl=(window.S_disp&&S_disp.lang)||'en'; showToast(_stl==='he'?'⏹ הופסק — הפלט החלקי נשמר':'⏹ Stopped — partial output saved', '');
       } else {
         S.status[phaseId] = 'idle';
         document.getElementById('empty').style.display = 'flex';
@@ -2812,7 +2813,7 @@ async function runRefine(phaseId, instruction) {
       if (S.data[phaseId]) {
         S.status[phaseId] = 'done';
         showOut(phaseId, S.data[phaseId], false);
-        showToast('⏹ הופסק — הפלט החלקי נשמר', '');
+        var _stl=(window.S_disp&&S_disp.lang)||'en'; showToast(_stl==='he'?'⏹ הופסק — הפלט החלקי נשמר':'⏹ Stopped — partial output saved', '');
       } else {
         S.status[phaseId] = 'idle';
       }
@@ -2875,7 +2876,8 @@ function showOut(phaseId, text, streaming) {
       if (!text) {
         var oc2 = document.getElementById('out-content');
         if (!document.getElementById('out-doc')) oc2.innerHTML = '<div id="out-doc"></div><div id="out-chat"></div>';
-        document.getElementById('out-doc').innerHTML = '<div style="color:var(--muted);font-size:0.85em;padding:8px 0;animation:pulse 1s infinite">◈ מייצר תוכן...</div>';
+        var _gll2=(window.S_disp&&S_disp.lang)||'en';
+        document.getElementById('out-doc').innerHTML = '<div style="color:var(--muted);font-size:0.85em;padding:8px 0;animation:pulse 1s infinite">◈ '+(_gll2==='he'?'מייצר תוכן...':'Generating...')+'</div>';
       }
       return;
     }
@@ -2890,7 +2892,12 @@ function showOut(phaseId, text, streaming) {
     oc.innerHTML = '<div id="out-doc"></div><div id="out-chat"></div>';
   }
   var docEl = document.getElementById('out-doc');
-  docEl.innerHTML = md2html(text);
+  if (!text && streaming) {
+    var _gll=(window.S_disp&&S_disp.lang)||'en';
+    docEl.innerHTML = '<div style="color:var(--muted);font-size:0.85em;padding:8px 0;animation:pulse 1s infinite">◈ '+(_gll==='he'?'מייצר תוכן...':'Generating...')+'</div>';
+  } else {
+    docEl.innerHTML = md2html(text);
+  }
 
   // ── re-render existing chat turns (don't wipe them)
   if (!streaming) renderChatBelow(phaseId);
@@ -2900,7 +2907,6 @@ function showOut(phaseId, text, streaming) {
   cur.style.background = ph.c;
   if (streaming && S_disp.autoScroll){
     var sc=document.getElementById('out-scroll'); sc.scrollTop=sc.scrollHeight;
-    if (!text) docEl.innerHTML = '<div style="color:var(--muted);font-size:0.85em;padding:8px 0;animation:pulse 1s infinite">◈ מייצר תוכן...</div>';
   }
   document.getElementById('export-btn').className = 'export-btn has-data';
 }
@@ -3634,9 +3640,10 @@ async function loadReports() {
         test_cases:   [],
       };
     });
-    if (count) count.textContent = S.runReports.length + ' הרצות';
+    var _rptl=(window.S_disp&&S_disp.lang)||'en';
+    if (count) count.textContent = S.runReports.length + (_rptl==='he'?' הרצות':' runs');
     if (S.runReports.length === 0) {
-      list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>אין דוחות עדיין<br><span style="font-size:11px">הרץ בדיקות בשלב RUN</span></span></div>';
+      list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>'+(_rptl==='he'?'אין דוחות עדיין<br><span style="font-size:11px">הרץ בדיקות בשלב RUN</span>':'No reports yet<br><span style="font-size:11px">Run tests in the RUN phase</span>')+'</span></div>';
     } else {
       renderReportsList();
     }
@@ -3649,24 +3656,24 @@ async function loadReports() {
     // Fall back to localStorage cache
     var cached = loadCachedReports();
     if (banner) banner.classList.add('show');
+    var _rptl3=(window.S_disp&&S_disp.lang)||'en';
     if (cached.length > 0) {
       S.runReports = cached;
-      if (count) count.textContent = cached.length + ' הרצות (מקומי)';
+      if (count) count.textContent = cached.length + (_rptl3==='he'?' הרצות (מקומי)':' runs (local)');
       renderReportsList();
     } else {
-      if (count) count.textContent = 'שרת לא זמין';
+      if (count) count.textContent = _rptl3==='he'?'שרת לא זמין':'Server offline';
       list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span>'
-        + '<span>אין דוחות מקומיים<br>'
-        + '<span style="font-size:11px">הרץ בדיקות בשלב RUN לצבירת היסטוריה<br>'
-        + 'לדוחות מ-Runner האמיתי: <code>python vibe-runner.py</code></span></span></div>';
+        + '<span>'+(_rptl3==='he'?'אין דוחות מקומיים<br><span style="font-size:11px">הרץ בדיקות בשלב RUN לצבירת היסטוריה<br>לדוחות מ-Runner האמיתי: <code>python vibe-runner.py</code></span>':'No local reports<br><span style="font-size:11px">Run tests in the RUN phase to build history<br>For Runner reports: <code>python vibe-runner.py</code></span>')+'</span></div>';
     }
     return;
   }
   if (banner) banner.classList.remove('show');
   S.runReports = data.reports || [];
-  if (count) count.textContent = S.runReports.length + ' הרצות';
+  var _rptl4=(window.S_disp&&S_disp.lang)||'en';
+  if (count) count.textContent = S.runReports.length + (_rptl4==='he'?' הרצות':' runs');
   if (S.runReports.length === 0) {
-    list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>אין דוחות עדיין<br><span style="font-size:11px">הרץ בדיקות בשלב RUN</span></span></div>';
+    list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>'+(_rptl4==='he'?'אין דוחות עדיין<br><span style="font-size:11px">הרץ בדיקות בשלב RUN</span>':'No reports yet<br><span style="font-size:11px">Run tests in the RUN phase</span>')+'</span></div>';
     return;
   }
   renderReportsList();
@@ -3680,26 +3687,30 @@ function renderReportsList() {
     list.innerHTML = '<div class="reports-empty"><span style="font-size:40px;opacity:.15">◆</span><span>אין דוחות עדיין</span></div>';
     return;
   }
-  if (count) count.textContent = S.runReports.length + ' הרצות';
+  var _rptl2=(window.S_disp&&S_disp.lang)||'en';
+  if (count) count.textContent = S.runReports.length + (_rptl2==='he'?' הרצות':' runs');
   var showEmail = window.VIBE_USER && window.VIBE_USER.role === 'admin';
   list.innerHTML = S.runReports.map(function(r, idx) {
     // pending = grey (no result yet); completed/failed = use counts
     var barCls = (r.status === 'pending')
       ? 'partial'   // grey-ish neutral — reuses existing 'partial' style
       : r.fail_count===0 ? 'pass' : r.pass_count===0 ? 'fail' : 'partial';
-    var dt = r.started_at ? new Date(r.started_at).toLocaleString('he-IL') : '—';
-    var src = r.source==='supabase' ? ' · ☁ Supabase'
-            : r.source==='local'    ? ' · 💾 מקומי'
+    var _dtLocale = _rptl2==='he' ? 'he-IL' : 'en-US';
+    var dt = r.started_at ? new Date(r.started_at).toLocaleString(_dtLocale) : '—';
+    var src = r.source==='supabase' ? ' · ☁ Cloud'
+            : r.source==='local'    ? (_rptl2==='he'?' · 💾 מקומי':' · 💾 Local')
             : ' · ⚡ Runner';
-    var statusLabel = r.status === 'pending' ? ' · ⏳ pending' : '';
+    var statusLabel = r.status === 'pending' ? (_rptl2==='he'?' · ⏳ ממתין':' · ⏳ pending') : '';
     var emailLabel  = showEmail && r.user_email ? ' · ' + esc(r.user_email) : '';
+    var _runName = esc(r.target_label||'Run');
     return '<div class="report-row" id="rr-'+r.id+'">'
       + '<div class="report-row-hdr" onclick="toggleReportDetail(\''+r.id+'\')">'
       + '<div class="report-row-left">'
       + '<div class="report-status-bar '+barCls+'"></div>'
-      + '<div><div class="report-id">#'+String(idx+1).padStart(3,'0')+'</div>'
-      + '<div class="report-name">'+esc(r.target_label||'Run')+'</div>'
-      + '<div class="report-meta">'+esc(dt)+' · '+(r.duration_sec||0)+'s'+src+statusLabel+emailLabel+'</div></div>'
+      + '<div style="min-width:0">'
+      + '<div class="report-id">#'+String(idx+1).padStart(3,'0')+' &nbsp;<span style="font-size:12px;font-weight:700;color:var(--text)">'+_runName+'</span></div>'
+      + '<div class="report-meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px">'+esc(dt)+' · '+(r.duration_sec||0)+'s'+src+statusLabel+emailLabel+'</div>'
+      + '</div>'
       + '</div>'
       + '<div class="report-row-right">'
       + '<div class="report-stat"><span class="report-stat-val pv">'+(r.pass_count||0)+'</span><span class="report-stat-lbl">PASS</span></div>'
@@ -3707,7 +3718,7 @@ function renderReportsList() {
       + '<div class="report-stat"><span class="report-stat-val sv">'+(r.skip_count||0)+'</span><span class="report-stat-lbl">SKIP</span></div>'
       + '<div class="report-actions">'
       + '<button class="report-action-btn" onclick="event.stopPropagation();dlReport(\''+r.id+'\')">⬇ PDF</button>'
-      + '<button class="report-action-btn" onclick="event.stopPropagation();emailReportById(\''+r.id+'\')">📧 מייל</button>'
+      + '<button class="report-action-btn" onclick="event.stopPropagation();emailReportById(\''+r.id+'\')">📧</button>'
       + '</div></div></div>'
       + '<div class="report-detail" id="rd-'+r.id+'"></div>'
       + '</div>';
@@ -3766,30 +3777,55 @@ async function toggleReportDetail(id) {
   if (isSupabase) {
     // Supabase run — fetch phase outputs + timeline from the worker
     var data = await workerFetch('GET', '/api/runs/' + id);
-    if (!data) { showToast('✗ לא ניתן לטעון דוח', 'err'); return; }
+    if (!data) {
+      // Backend unavailable (CORS / server error) — show cached summary data
+      var _dtl=(window.S_disp&&S_disp.lang)||'en';
+      html += '<div class="report-tc-row" style="padding:12px 0">';
+      html += '<div style="width:100%">';
+      if (report.summary) {
+        html += '<div style="font-size:12px;color:var(--text);line-height:1.7;margin-bottom:10px">'+esc(report.summary)+'</div>';
+      }
+      var totalTests = (report.pass_count||0)+(report.fail_count||0)+(report.skip_count||0);
+      if (totalTests > 0) {
+        html += '<div style="display:flex;gap:16px;font-size:12px">'
+          + '<span style="color:var(--green)">✓ '+(report.pass_count||0)+' PASS</span>'
+          + '<span style="color:var(--red)">✗ '+(report.fail_count||0)+' FAIL</span>'
+          + '<span style="color:var(--amber)">⚠ '+(report.skip_count||0)+' SKIP</span>'
+          + '</div>';
+      }
+      html += '<div style="font-size:10px;color:var(--dim);margin-top:8px">'+(_dtl==='he'?'פרטים נוספים אינם זמינים (שגיאת חיבור לשרת)':'Detailed data unavailable — server connection error')+'</div>';
+      html += '</div></div>';
+      html += '</div>';
+      detail.innerHTML = html;
+      detail.classList.add('open');
+      return;
+    }
     html = renderPhaseTimeline(data.phase_status || []) + '<div class="report-tc-list">';
     var outputs = data.outputs || [];
     if (outputs.length === 0) {
-      html += '<div class="report-tc-row" style="color:var(--muted);font-size:12px">אין פלטים שמורים לריצה זו</div>';
+      var _dtl2=(window.S_disp&&S_disp.lang)||'en';
+      html += '<div class="report-tc-row" style="color:var(--muted);font-size:12px">'+(_dtl2==='he'?'אין פלטים שמורים לריצה זו':'No saved outputs for this run')+'</div>';
     } else {
       // Show one entry per phase output type (latest of each type)
       var seen = {};
       outputs.slice().reverse().forEach(function(o) {
         if (seen[o.output_type]) return;
         seen[o.output_type] = true;
-        var label = {stp:'STP', std:'STD', raw_text:'RUN', str:'STR', script:'Script'}[o.output_type] || o.output_type;
-        var preview = (o.content || '').slice(0, 120).replace(/\n/g, ' ');
-        html += '<div class="report-tc-row">'
+        var label = {stp:'STP — Test Plan', std:'STD — Test Scripts', raw_text:'RUN — Execution', str:'STR — Summary', script:'Script'}[o.output_type] || o.output_type;
+        var preview = (o.content || '').slice(0, 150).replace(/\n/g, ' ');
+        html += '<div class="report-tc-row" style="padding:10px 0">'
           + '<div class="report-tc-status pass">✓</div>'
-          + '<div class="report-tc-name" style="font-weight:700">' + esc(label) + '</div>'
-          + '<div class="report-tc-dur" style="color:var(--muted);font-size:11px">' + esc(preview) + (o.content.length > 120 ? '…' : '') + '</div>'
+          + '<div style="flex:1;min-width:0">'
+          + '<div class="report-tc-name" style="font-weight:700;margin-bottom:3px">' + esc(label) + '</div>'
+          + '<div style="color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(preview) + (o.content.length > 150 ? '…' : '') + '</div>'
+          + '</div>'
           + '</div>';
       });
     }
   } else {
     // Local runner run — existing behavior
     var data = await serverFetch('GET', '/api/reports/' + id);
-    if (!data || data.error) { showToast('✗ לא ניתן לטעון דוח', 'err'); return; }
+    if (!data || data.error) { var _rltl=(window.S_disp&&S_disp.lang)||'en'; showToast(_rltl==='he'?'✗ לא ניתן לטעון דוח':'✗ Cannot load report', 'err'); return; }
     (data.test_cases || []).forEach(function(tc) {
       var s = tc.status || 'skip';
       html += '<div class="report-tc-row">'
@@ -4086,7 +4122,7 @@ function resetDisplaySettings() {
   applyAutoScroll(true);
   applyHeadingScale('medium');
   saveDisplay();
-  showToast('✓ הגדרות תצוגה אופסו', 'ok');
+  var _rstl=(window.S_disp&&S_disp.lang)||'en'; showToast(_rstl==='he'?'✓ הגדרות תצוגה אופסו':'✓ Display settings reset', 'ok');
 }
 
 // ── RUN MODE PICKER ───────────────────────────────────────
@@ -4130,7 +4166,7 @@ async function confirmRunMode() {
   closeRunModePicker();
   if (_pendingRunMode === 'real') {
     if (!S.serverOnline) {
-      showToast('✗ שרת Runner לא זמין — הפעל: python vibe-runner.py', 'err');
+      var _rntl=(window.S_disp&&S_disp.lang)||'en'; showToast(_rntl==='he'?'✗ שרת Runner לא זמין — הפעל: python vibe-runner.py':'✗ Runner server offline — run: python vibe-runner.py', 'err');
       return;
     }
     await runRealAutomation();
@@ -4170,7 +4206,7 @@ async function runGenSim(phaseId) {
     });
     showOut(phaseId, full, false);
     updateTabDones();
-    showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
+    var _tl2=(window.S_disp&&S_disp.lang)||'en'; showToast(_tl2==='he'?'✓ שלב '+PHASES[phaseId].l+' הושלם!':'✓ '+PHASES[phaseId].l+' complete!', 'ok');
     _vibeRunSaveOutput(_PHASE_OUTPUT_TYPE[phaseId], full);
     _vibePhaseStatus(phaseId, 'completed');
     // Save AI simulation RUN result to local reports cache + finish run
@@ -4333,6 +4369,14 @@ function buildSimReport(runText) {
       'stp-doc-hint': {
         he: 'העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">📎 העלה מסמכי אפיון</strong> בשורת הצ\'ט למטה, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span>',
         en: 'Upload a spec document using the <strong style="color:var(--green)">📎 Upload spec docs</strong> button in the chat bar below, or drag a file directly into the window.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML and more</span>'
+      },
+      'rob-step1': {
+        he: 'התקן את הדרישות מהטרמינל או CMD (פעם אחת בלבד):<br><code>pip install pywinauto playwright anthropic python-dotenv</code><br><code>playwright install chromium</code>',
+        en: 'Install requirements in a terminal or CMD (one time only):<br><code>pip install pywinauto playwright anthropic python-dotenv</code><br><code>playwright install chromium</code>'
+      },
+      'rob-step2': {
+        he: 'פתח טרמינל נפרד <strong>בתיקיית הפרויקט</strong> (היכן שנמצא vibe-runner.py) והפעל:<br><code>python vibe-runner.py</code>',
+        en: 'Open a new terminal <strong>inside the project folder</strong> (where vibe-runner.py is located) and run:<br><code>python vibe-runner.py</code>'
       }
     };
     Object.keys(_blocks).forEach(function(id) {
