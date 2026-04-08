@@ -1123,7 +1123,7 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
           </div>
           <!-- Doc sub-panel -->
           <div class="stp-src-sub show" id="stp-sub-doc">
-            <div class="stp-path-hint" id="stp-doc-hint">העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">ATTACH</strong> בשורת הצ'ט, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span></div>
+            <div class="stp-path-hint" id="stp-doc-hint">העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">📎 העלה מסמכי אפיון</strong> בשורת הצ'ט למטה, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span></div>
             <!-- stp-doc-hint translated in applyLang -->
           </div>
           <!-- URL sub-panel -->
@@ -1593,27 +1593,27 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 <!-- RUN MODE PICKER -->
 <div class="runmode-overlay hidden" id="runmode-overlay">
   <div class="runmode-modal">
-    <div class="runmode-title">▶ בחר מצב הרצה</div>
-    <div class="runmode-sub">שלב RUN · TEST EXECUTION</div>
+    <div class="runmode-title" data-en="▶ Choose Run Mode" data-he="▶ בחר מצב הרצה">▶ Choose Run Mode</div>
+    <div class="runmode-sub">RUN · TEST EXECUTION</div>
     <div class="runmode-options">
       <div class="runmode-opt selected" id="rmo-sim" onclick="selectRunMode('sim')">
         <div class="runmode-opt-icon">🤖</div>
         <div>
-          <div class="runmode-opt-title">סימולציה AI</div>
-          <div class="runmode-opt-desc">Claude מייצר תוצאות הרצה ריאליסטיות (PASS/FAIL/SKIP) מבוססות על תסריטי הSTD.<br>לא נדרש שרת מקומי. תמיד זמין.</div>
+          <div class="runmode-opt-title" data-en="AI Simulation" data-he="סימולציה AI">AI Simulation</div>
+          <div class="runmode-opt-desc" data-en="Claude generates realistic run results (PASS/FAIL/SKIP) based on the STD scripts.<br>No local server required. Always available." data-he="Claude מייצר תוצאות הרצה ריאליסטיות (PASS/FAIL/SKIP) מבוססות על תסריטי הSTD.<br>לא נדרש שרת מקומי. תמיד זמין.">Claude generates realistic run results (PASS/FAIL/SKIP) based on the STD scripts.<br>No local server required. Always available.</div>
         </div>
       </div>
       <div class="runmode-opt" id="rmo-real" onclick="selectRunMode('real')">
         <div class="runmode-opt-icon">⚡</div>
         <div>
-          <div class="runmode-opt-title">אוטומציה אמיתית</div>
-          <div class="runmode-opt-desc" id="rmo-real-desc">Playwright (web) או pywinauto (desktop) — הרצה ממשית על האפליקציה.<br>דורש: python vibe-runner.py פעיל.</div>
+          <div class="runmode-opt-title" data-en="Real Automation" data-he="אוטומציה אמיתית">Real Automation</div>
+          <div class="runmode-opt-desc" id="rmo-real-desc">Playwright (web) or pywinauto (desktop) — real run on the app.<br>Requires: python vibe-runner.py running.</div>
         </div>
       </div>
     </div>
     <div class="runmode-actions">
-      <button class="runmode-cancel" onclick="closeRunModePicker()">ביטול</button>
-      <button class="runmode-run" onclick="confirmRunMode()">▶ הרץ</button>
+      <button class="runmode-cancel" onclick="closeRunModePicker()" data-en="Cancel" data-he="ביטול">Cancel</button>
+      <button class="runmode-run" onclick="confirmRunMode()" data-en="▶ Run" data-he="▶ הרץ">▶ Run</button>
     </div>
   </div>
 </div>
@@ -2655,21 +2655,37 @@ S.chat = {1:[], 2:[], 3:[], 4:[], 5:[]};
 S.chatMode = {1:false, 2:false, 3:false, 4:false, 5:false}; // true = in chat mode
 
 function buildSystemContext(phaseId) {
-  // Full context passed as system to every chat message
+  var _lang = (window.S_disp && S_disp.lang) || 'en';
   var ctx = '';
-  if (S.fileContent) ctx += '=== מסמכי האפיון שהועלו ===\n'+S.fileContent.slice(0,20000)+'\n\n';
+  var specLabel = _lang === 'he' ? '=== מסמכי האפיון שהועלו ===' : '=== Uploaded Spec Documents ===';
+  var curLabel  = _lang === 'he'
+    ? '=== '+PHASES[phaseId].l+' הנוכחי (שנוצר) ==='
+    : '=== Current '+PHASES[phaseId].l+' (generated) ===';
+  if (S.fileContent) ctx += specLabel+'\n'+S.fileContent.slice(0,20000)+'\n\n';
   [1,2,3,4].forEach(function(i){
     if (i !== phaseId && S.data[i]) ctx += '=== '+PHASES[i].l+' — '+PHASES[i].t+' ===\n'+S.data[i].slice(0,12000)+'\n\n';
   });
-  if (S.data[phaseId]) ctx += '=== '+PHASES[phaseId].l+' הנוכחי (שנוצר) ===\n'+S.data[phaseId].slice(0,15000)+'\n\n';
-  return 'אתה עוזר QA מומחה. יש לך גישה מלאה לכל החומרים הבאים:\n\n'+ctx+
-    'ענה על שאלות המשתמש, תן ניתוחים, השלם חסרים, ושפר.\n\n'+
-    '**מגבלות חשובות — חובה לציין למשתמש כשנשאל:**\n'+
-    '- אתה לא יכול לייצא לאקסל ישירות מהצ\'אט (השתמש בכפתור EXPORT)\n'+
-    '- אתה לא יכול להריץ בדיקות אמיתיות על מערכות חיצוניות — אתה מסמלץ הרצה\n'+
-    '- אתה לא יכול לגשת לקבצים חדשים שלא הועלו\n'+
-    '- אתה לא יכול לשמור שינויים בין סשנים\n'+
-    '- אל תחזור על ייצור המסמכים המלאים מחדש אלא אם התבקשת במפורש.';
+  if (S.data[phaseId]) ctx += curLabel+'\n'+S.data[phaseId].slice(0,15000)+'\n\n';
+
+  if (_lang === 'he') {
+    return 'אתה עוזר QA מומחה. יש לך גישה מלאה לכל החומרים הבאים:\n\n'+ctx+
+      'ענה על שאלות המשתמש בעברית, תן ניתוחים, השלם חסרים, ושפר.\n\n'+
+      '**מגבלות חשובות — חובה לציין למשתמש כשנשאל:**\n'+
+      '- אתה לא יכול לייצא לאקסל ישירות מהצ\'אט (השתמש בכפתור EXPORT)\n'+
+      '- אתה לא יכול להריץ בדיקות אמיתיות על מערכות חיצוניות — אתה מסמלץ הרצה\n'+
+      '- אתה לא יכול לגשת לקבצים חדשים שלא הועלו\n'+
+      '- אתה לא יכול לשמור שינויים בין סשנים\n'+
+      '- אל תחזור על ייצור המסמכים המלאים מחדש אלא אם התבקשת במפורש.';
+  } else {
+    return 'You are an expert QA assistant. You have full access to the following materials:\n\n'+ctx+
+      'Answer the user\'s questions in English, provide analyses, fill in gaps, and suggest improvements.\n\n'+
+      '**Important limitations — mention to the user when asked:**\n'+
+      '- You cannot export to Excel directly from chat (use the EXPORT button)\n'+
+      '- You cannot run real tests on external systems — you simulate execution\n'+
+      '- You cannot access new files that have not been uploaded\n'+
+      '- You cannot save changes between sessions\n'+
+      '- Do not regenerate entire documents unless explicitly requested.';
+  }
 }
 
 
@@ -2711,6 +2727,19 @@ async function runGen(phaseId) {
     );
     S.data[phaseId] = full;
     S.status[phaseId] = 'done';
+    // Inject next-step guidance as a chat message (appears below the output)
+    var _gl = (window.S_disp && S_disp.lang) || 'en';
+    var _nextMsgs = {
+      1: { he: '✓ שלב STP הושלם!\n\nתוכנית הבדיקות מוכנה. עבור לשלב הבא — לחץ על לשונית **STD** כדי לעצב את תסריטי הבדיקה המפורטים.',
+           en: '✓ STP complete!\n\nYour test plan is ready. Move to the next step — click the **STD** tab to design the detailed test scripts.' },
+      2: { he: '✓ שלב STD הושלם!\n\nתסריטי הבדיקה מוכנים. עבור לשלב הבא — לחץ על לשונית **RUN** כדי להריץ את הבדיקות.',
+           en: '✓ STD complete!\n\nYour test scripts are ready. Move to the next step — click the **RUN** tab to execute the tests.' },
+      4: { he: '✓ שלב STR הושלם!\n\nכל 4 השלבים הושלמו בהצלחה. לחץ על לשונית **דוחות** לצפייה בהיסטוריית ההרצות המלאה.',
+           en: '✓ STR complete!\n\nAll 4 phases are done. Click the **Reports** tab to view the full run history.' }
+    };
+    if (_nextMsgs[phaseId]) {
+      S.chat[phaseId].push({ role: 'assistant', content: _nextMsgs[phaseId][_gl] || _nextMsgs[phaseId].en });
+    }
     showOut(phaseId, full, false);
     updateTabDones();
     showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
@@ -4063,11 +4092,17 @@ function showRunModePicker() {
   var realOpt = document.getElementById('rmo-real');
   var realDesc = document.getElementById('rmo-real-desc');
   var _rml = (window.S_disp && S_disp.lang) || 'en';
+  var _setupBtn = '<br><button onclick="closeRunModePicker();document.getElementById(\'run-onboard-overlay\').classList.remove(\'hidden\')" '
+    + 'style="margin-top:8px;background:transparent;border:1px solid var(--border2);border-radius:6px;padding:5px 12px;font-size:11px;color:var(--muted);cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:all .2s" '
+    + 'onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" '
+    + 'onmouseout="this.style.borderColor=\'var(--border2)\';this.style.color=\'var(--muted)\'">'
+    + (_rml==='he' ? '⚙ מדריך הגדרה →' : '⚙ Setup guide →')
+    + '</button>';
   if (!S.serverOnline) {
-    if (realOpt) realOpt.style.opacity = '0.45';
+    if (realOpt) realOpt.style.opacity = '0.5';
     if (realDesc) realDesc.innerHTML = _rml==='he'
-      ? 'Playwright / pywinauto — <strong style="color:var(--red)">שרת לא זמין</strong><br>הפעל: <code>python vibe-runner.py</code>'
-      : 'Playwright / pywinauto — <strong style="color:var(--red)">server offline</strong><br>Run: <code>python vibe-runner.py</code>';
+      ? 'Playwright / pywinauto — <strong style="color:var(--red)">שרת לא זמין</strong><br><code>python vibe-runner.py</code>'+_setupBtn
+      : 'Playwright / pywinauto — <strong style="color:var(--red)">server offline</strong><br><code>python vibe-runner.py</code>'+_setupBtn;
   } else {
     if (realOpt) realOpt.style.opacity = '';
     if (realDesc) realDesc.innerHTML = _rml==='he'
@@ -4122,6 +4157,12 @@ async function runGenSim(phaseId) {
     );
     S.data[phaseId] = full;
     S.status[phaseId] = 'done';
+    // Inject next-step guidance for phase 3
+    var _gl3 = (window.S_disp && S_disp.lang) || 'en';
+    S.chat[phaseId].push({ role: 'assistant', content: _gl3 === 'he'
+      ? '✓ שלב RUN הושלם!\n\nדוח ההרצה מוכן. עבור לשלב הבא — לחץ על לשונית **STR** כדי לייצר את דוח הסיכום הסופי.'
+      : '✓ RUN complete!\n\nYour test execution report is ready. Move to the next step — click the **STR** tab to generate the final summary report.'
+    });
     showOut(phaseId, full, false);
     updateTabDones();
     showToast('✓ שלב '+PHASES[phaseId].l+' הושלם!', 'ok');
@@ -4285,8 +4326,8 @@ function buildSimReport(runText) {
         en: '<strong style="color:var(--text)">AI mode (no install):</strong><br>1. Click ▶ START on the welcome screen and log in<br>2. Upload a spec document (ATTACH) or enter a URL in the STP phase<br>3. Click GENERATE at each phase in order (STP → STD → RUN → STR)<br><br><strong style="color:var(--text)">Real automation mode (requires Python):</strong><br>1. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">pip install playwright pywinauto anthropic python-dotenv</code><br>2. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">python vibe-runner.py</code><br>3. The green dot "RUNNER ✓" will appear in the header<br>4. In the RUN phase, select "Real Automation" and choose your target'
       },
       'stp-doc-hint': {
-        he: 'העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">ATTACH</strong> בשורת הצ\'ט, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span>',
-        en: 'Upload a spec document using the <strong style="color:var(--green)">ATTACH</strong> button in the chat bar, or drag a file directly into the window.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML and more</span>'
+        he: 'העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">📎 העלה מסמכי אפיון</strong> בשורת הצ\'ט למטה, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span>',
+        en: 'Upload a spec document using the <strong style="color:var(--green)">📎 Upload spec docs</strong> button in the chat bar below, or drag a file directly into the window.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML and more</span>'
       }
     };
     Object.keys(_blocks).forEach(function(id) {
