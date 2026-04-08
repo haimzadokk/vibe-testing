@@ -626,6 +626,7 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .settings-btn:hover{border-color:var(--cyan);color:var(--cyan)}
 .settings-wrap{position:relative}
 .settings-drop{position:absolute;top:calc(100% + 6px);left:0;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;min-width:200px;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,.5);z-index:100;display:none;animation:fadein .15s ease}
+html[dir="ltr"] .settings-drop{left:auto;right:0}
 .settings-drop.open{display:block}
 .settings-drop-item{padding:11px 16px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:1px;display:flex;align-items:center;gap:8px}
 .settings-drop-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
@@ -1796,44 +1797,44 @@ var PHASES = {
 // ── CHIPS ───────────────────────────────────────────────
 var CHIPS = {
   1:[
-    {l:'כיסוי מלא + Traceability', p:'בדוק שכל דרישה מכוסה. צור Traceability Matrix: דרישה → קטגוריה → עדיפות. סמן פערים. ציין שיטת בדיקה (manual/auto) לכל פריט. כלול Risk Coverage Map.'},
-    {l:'OWASP Top 10 + אבטחה', p:'הוסף פרק אבטחה מלא המכסה OWASP Top 10: SQL Injection, XSS, CSRF, JWT flaws, Broken Auth, IDOR, Rate Limiting bypass, Security Misconfiguration. לכל ווקטור: שיטת בדיקה + כלי מומלץ.'},
-    {l:'API Contract Testing', p:'הרחב בדיקות REST API: כל endpoint, request/response schema, כל קודי שגיאה (400/401/403/404/422/429/500), rate limiting, JWT expiry, CORS headers, pagination, idempotency, versioning.'},
-    {l:'ביצועים ו-Load Testing', p:'צור תוכנית Performance: Load Testing (500 concurrent), Stress (עד שבירה), Soak (8h), Spike (x5 תוך 10s). SLA: P95<200ms, P99<2s, uptime 99.9%. כלים: k6, Locust, JMeter.'},
-    {l:'Edge Cases ו-Boundary', p:'לכל מודול: null/undefined/empty, max/min/±1, special chars, Unicode/RTL/emojis, concurrent requests, network failures, timeout, partial data, race conditions, overflow scenarios.'},
-    {l:'נגישות WCAG 2.1 AA', p:'Accessibility: keyboard-only navigation, screen reader (NVDA/VoiceOver), contrast ratio 4.5:1, ARIA roles, focus management, RTL layout, 320px mobile, font scaling 200%. כלי: axe-core, Lighthouse.'},
-    {l:'CI/CD Regression Suite', p:'Regression plan: Smoke (2min/commit, 15 cases), Sanity (10min/PR), Full Regression (60min/release). CI triggers, parallelization, flaky test policy, test quarantine process.'},
-    {l:'Mobile + Cross-Browser', p:'Matrix: Chrome/Firefox/Safari/Edge (latest+N-1) × Windows/Mac × iOS 15-17/Android 12-14 × רזולוציות 320/375/768/1024/1440/1920px. Touch, orientation, PWA, virtual keyboard.'},
+    {l:'כיסוי מלא + Traceability', l_en:'Full Coverage + Traceability', p:'בדוק שכל דרישה מכוסה. צור Traceability Matrix: דרישה → קטגוריה → עדיפות. סמן פערים. ציין שיטת בדיקה (manual/auto) לכל פריט. כלול Risk Coverage Map.'},
+    {l:'OWASP Top 10 + אבטחה', l_en:'OWASP Top 10 + Security', p:'הוסף פרק אבטחה מלא המכסה OWASP Top 10: SQL Injection, XSS, CSRF, JWT flaws, Broken Auth, IDOR, Rate Limiting bypass, Security Misconfiguration. לכל ווקטור: שיטת בדיקה + כלי מומלץ.'},
+    {l:'API Contract Testing', l_en:'API Contract Testing', p:'הרחב בדיקות REST API: כל endpoint, request/response schema, כל קודי שגיאה (400/401/403/404/422/429/500), rate limiting, JWT expiry, CORS headers, pagination, idempotency, versioning.'},
+    {l:'ביצועים ו-Load Testing', l_en:'Performance & Load Testing', p:'צור תוכנית Performance: Load Testing (500 concurrent), Stress (עד שבירה), Soak (8h), Spike (x5 תוך 10s). SLA: P95<200ms, P99<2s, uptime 99.9%. כלים: k6, Locust, JMeter.'},
+    {l:'Edge Cases ו-Boundary', l_en:'Edge Cases & Boundary', p:'לכל מודול: null/undefined/empty, max/min/±1, special chars, Unicode/RTL/emojis, concurrent requests, network failures, timeout, partial data, race conditions, overflow scenarios.'},
+    {l:'נגישות WCAG 2.1 AA', l_en:'WCAG 2.1 AA Accessibility', p:'Accessibility: keyboard-only navigation, screen reader (NVDA/VoiceOver), contrast ratio 4.5:1, ARIA roles, focus management, RTL layout, 320px mobile, font scaling 200%. כלי: axe-core, Lighthouse.'},
+    {l:'CI/CD Regression Suite', l_en:'CI/CD Regression Suite', p:'Regression plan: Smoke (2min/commit, 15 cases), Sanity (10min/PR), Full Regression (60min/release). CI triggers, parallelization, flaky test policy, test quarantine process.'},
+    {l:'Mobile + Cross-Browser', l_en:'Mobile + Cross-Browser', p:'Matrix: Chrome/Firefox/Safari/Edge (latest+N-1) × Windows/Mac × iOS 15-17/Android 12-14 × רזולוציות 320/375/768/1024/1440/1920px. Touch, orientation, PWA, virtual keyboard.'},
   ],
   2:[
-    {l:'BDD מלא + Gherkin', p:'המר כל תסריטי P1 ל-BDD: Feature files, Scenarios, Background, Scenario Outline, Examples tables. Gherkin syntax נכון. Tags: @smoke @regression @p1 @security @api. כל Given/When/Then ספציפי.'},
-    {l:'Negative Tests מקיפים', p:'לכל תסריט פונקציונלי — גרסת Negative: קלט לא תקין, חסר הרשאות, DB down, service timeout, double submit, session expired, concurrent modification. Expected Error Message מדויק.'},
-    {l:'Test Data מלא', p:'לכל תסריט: Valid data, Invalid data (variants), Boundary values, Special characters, Unicode/RTL, Production-like realistic data, Empty/null. אסטרטגיית Test Data Management + cleanup strategy.'},
-    {l:'E2E מלאים (8 תסריטים)', p:'8 תסריטי End-to-End: Registration→Login→Main Action→Logout, Happy path, Error recovery, Multi-role scenario, Data persistence. כל תסריט: לפחות 15 צעדים עם validation בכל שלב.'},
-    {l:'API מפורטים', p:'API scenarios: כל endpoint עם valid/invalid, כל auth scenario (no token/expired/wrong scope/revoked), rate limit breach, large payload, concurrent calls, idempotency, versioning.'},
-    {l:'Integration Tests', p:'Integration: API↔DB transactions+rollback, Cache hit/miss/invalidation, Redis failover, WebSocket connect/disconnect, third-party timeout, JWT refresh flow, concurrent sessions, message queue.'},
-    {l:'UX + נגישות מפורטים', p:'UX tests: RTL + BiDi rendering, Dark/Light mode, font scaling 200%/400%, keyboard-only, screen reader, Undo/Redo, Autocomplete, LaTeX rendering, history panel, responsive breakpoints 320-1920px.'},
-    {l:'חישובים ו-Edge Math', p:'Math scenarios: precision 10+ decimals, division by 0, sqrt(-1), log(0), infinity, trigonometry deg vs rad, matrix 10x10, symbolic derivatives, complex numbers, statistical calculations.'},
+    {l:'BDD מלא + Gherkin', l_en:'Full BDD + Gherkin', p:'המר כל תסריטי P1 ל-BDD: Feature files, Scenarios, Background, Scenario Outline, Examples tables. Gherkin syntax נכון. Tags: @smoke @regression @p1 @security @api. כל Given/When/Then ספציפי.'},
+    {l:'Negative Tests מקיפים', l_en:'Comprehensive Negative Tests', p:'לכל תסריט פונקציונלי — גרסת Negative: קלט לא תקין, חסר הרשאות, DB down, service timeout, double submit, session expired, concurrent modification. Expected Error Message מדויק.'},
+    {l:'Test Data מלא', l_en:'Full Test Data', p:'לכל תסריט: Valid data, Invalid data (variants), Boundary values, Special characters, Unicode/RTL, Production-like realistic data, Empty/null. אסטרטגיית Test Data Management + cleanup strategy.'},
+    {l:'E2E מלאים (8 תסריטים)', l_en:'Full E2E (8 Scenarios)', p:'8 תסריטי End-to-End: Registration→Login→Main Action→Logout, Happy path, Error recovery, Multi-role scenario, Data persistence. כל תסריט: לפחות 15 צעדים עם validation בכל שלב.'},
+    {l:'API מפורטים', l_en:'Detailed API Tests', p:'API scenarios: כל endpoint עם valid/invalid, כל auth scenario (no token/expired/wrong scope/revoked), rate limit breach, large payload, concurrent calls, idempotency, versioning.'},
+    {l:'Integration Tests', l_en:'Integration Tests', p:'Integration: API↔DB transactions+rollback, Cache hit/miss/invalidation, Redis failover, WebSocket connect/disconnect, third-party timeout, JWT refresh flow, concurrent sessions, message queue.'},
+    {l:'UX + נגישות מפורטים', l_en:'UX + Detailed Accessibility', p:'UX tests: RTL + BiDi rendering, Dark/Light mode, font scaling 200%/400%, keyboard-only, screen reader, Undo/Redo, Autocomplete, LaTeX rendering, history panel, responsive breakpoints 320-1920px.'},
+    {l:'חישובים ו-Edge Math', l_en:'Calculations & Edge Math', p:'Math scenarios: precision 10+ decimals, division by 0, sqrt(-1), log(0), infinity, trigonometry deg vs rad, matrix 10x10, symbolic derivatives, complex numbers, statistical calculations.'},
   ],
   3:[
-    {l:'Smoke P1 בלבד', p:'הרץ אך ורק תסריטי P1/Smoke. לכל כשל: timestamp, duration בms, actual vs expected, full error, stack trace, screenshot description, severity. אם >30% כשלות — RELEASE BLOCKER.'},
-    {l:'Post-Fix Regression', p:'סבב שני לאחר תיקונים: (1) הרץ מחדש כל הכשלים (2) בדוק regressions — תיקונים ששברו משהו? (3) before/after comparison (4) Fix Rate + Regression Introduction Rate (5) Go/No-Go.'},
-    {l:'Defect Report מלא', p:'לכל כשל: DR-ID, Title, Description, Steps to Reproduce, Actual/Expected, Severity, Priority, Environment, Assigned To, Estimated Fix Time, Workaround. לפחות 8 defects מפורטים.'},
-    {l:'Performance Metrics', p:'לכל תסריט: Response Time P50/P95/P99 בms, Memory MB, CPU%, Network count/KB, TTFB, LCP, CLS, FID. סמן חריגות SLA ב-🔴. כלול DB slow queries >100ms.'},
-    {l:'Root Cause Analysis', p:'לכל כשל: 5 Whys analysis, Root Cause Category (Logic/UI/API/DB/Config/Env/Race). Pareto: אילו root causes → 80% כשלות? זהה patterns. הצע preventive measures.'},
-    {l:'Coverage Report', p:'Test Coverage: Requirements Coverage %, Execution %, Pass/Fail/Skip per module, Risk Coverage, Uncovered areas. Delta vs. previous iteration. Confidence level per module.'},
-    {l:'Environment Matrix', p:'Smoke על כל environments: Chrome/Firefox/Safari/Edge × Windows/macOS × Mobile iOS/Android. לכל combo: status, issues, browser-specific bugs. Compatibility Matrix 🔴🟡🟢.'},
-    {l:'Trend Analysis', p:'Trend בין iterations: Pass Rate ASCII graph, Defect density per module, Fixed vs New ratio, Execution time trend, modules שהשתפרו/התדרדרו, Quality Velocity.'},
+    {l:'Smoke P1 בלבד', l_en:'Smoke P1 Only', p:'הרץ אך ורק תסריטי P1/Smoke. לכל כשל: timestamp, duration בms, actual vs expected, full error, stack trace, screenshot description, severity. אם >30% כשלות — RELEASE BLOCKER.'},
+    {l:'Post-Fix Regression', l_en:'Post-Fix Regression', p:'סבב שני לאחר תיקונים: (1) הרץ מחדש כל הכשלים (2) בדוק regressions — תיקונים ששברו משהו? (3) before/after comparison (4) Fix Rate + Regression Introduction Rate (5) Go/No-Go.'},
+    {l:'Defect Report מלא', l_en:'Full Defect Report', p:'לכל כשל: DR-ID, Title, Description, Steps to Reproduce, Actual/Expected, Severity, Priority, Environment, Assigned To, Estimated Fix Time, Workaround. לפחות 8 defects מפורטים.'},
+    {l:'Performance Metrics', l_en:'Performance Metrics', p:'לכל תסריט: Response Time P50/P95/P99 בms, Memory MB, CPU%, Network count/KB, TTFB, LCP, CLS, FID. סמן חריגות SLA ב-🔴. כלול DB slow queries >100ms.'},
+    {l:'Root Cause Analysis', l_en:'Root Cause Analysis', p:'לכל כשל: 5 Whys analysis, Root Cause Category (Logic/UI/API/DB/Config/Env/Race). Pareto: אילו root causes → 80% כשלות? זהה patterns. הצע preventive measures.'},
+    {l:'Coverage Report', l_en:'Coverage Report', p:'Test Coverage: Requirements Coverage %, Execution %, Pass/Fail/Skip per module, Risk Coverage, Uncovered areas. Delta vs. previous iteration. Confidence level per module.'},
+    {l:'Environment Matrix', l_en:'Environment Matrix', p:'Smoke על כל environments: Chrome/Firefox/Safari/Edge × Windows/macOS × Mobile iOS/Android. לכל combo: status, issues, browser-specific bugs. Compatibility Matrix 🔴🟡🟢.'},
+    {l:'Trend Analysis', l_en:'Trend Analysis', p:'Trend בין iterations: Pass Rate ASCII graph, Defect density per module, Fixed vs New ratio, Execution time trend, modules שהשתפרו/התדרדרו, Quality Velocity.'},
   ],
   4:[
-    {l:'Executive Summary', p:'Executive Summary 250 מילה ל-C-Level: (1) מה נבדק (2) pass rate (3) שלוש בעיות קריטיות (4) המלצה: לשחרר/לא/בתנאים (5) סיכון שנותר בשורה אחת. Non-technical language.'},
-    {l:'Quality Scorecard', p:'Scorecard 1-10: Functionality, Performance, Security, UX/Accessibility, Reliability, API Quality, Data Integrity, RTL Support. לכל: ציון, נימוק, Trend ↑↓→, Action Required. Overall weighted score.'},
-    {l:'Risk Register מלא', p:'Risk Register: Risk ID, Description, Category, Likelihood 1-5, Impact 1-5, Score L×I, Mitigation, Contingency, Owner, Target Date. 🔴🟡🟢 לכל סיכון. Top 3 immediate actions.'},
-    {l:'Go/No-Go מנומק', p:'Go/No-Go: Entry Criteria סטטוס Met/Not Met/Partial, Critical Defects (חייב 0), High Defects (max), Coverage threshold (min 80%), Performance SLA, המלצה עם conditions.'},
-    {l:'Automation ROI', p:'ROI לאוטומציה: לכל תסריט — זמן manual, תדירות חודשית, עלות manual, עלות automation, Break-even, 1yr ROI%. Automation Backlog ממוין לפי ROI עם effort + framework מומלץ.'},
-    {l:'Lessons Learned', p:'Lessons Learned: מה עבד טוב, מה לשפר, כלים נדרשים, knowledge gaps, communication issues, 10 Action Items קונקרטיים עם Owner + Due Date. Process improvements לסבב הבא.'},
-    {l:'Production Monitoring', p:'Monitoring Plan: Metrics (error rate, P95/P99, availability, cache hit), Alert thresholds, Known production issues + workarounds, Rollback criteria, Canary recommendations, Feature flags.'},
-    {l:'תוכנית לסבב הבא', p:'Sprint Test Plan: Regression suite מעודכן, Features חדשות, Technical debt, Automation stories, Environment improvements. Estimation: ימי QA עם breakdown per phase.'},
+    {l:'Executive Summary', l_en:'Executive Summary', p:'Executive Summary 250 מילה ל-C-Level: (1) מה נבדק (2) pass rate (3) שלוש בעיות קריטיות (4) המלצה: לשחרר/לא/בתנאים (5) סיכון שנותר בשורה אחת. Non-technical language.'},
+    {l:'Quality Scorecard', l_en:'Quality Scorecard', p:'Scorecard 1-10: Functionality, Performance, Security, UX/Accessibility, Reliability, API Quality, Data Integrity, RTL Support. לכל: ציון, נימוק, Trend ↑↓→, Action Required. Overall weighted score.'},
+    {l:'Risk Register מלא', l_en:'Full Risk Register', p:'Risk Register: Risk ID, Description, Category, Likelihood 1-5, Impact 1-5, Score L×I, Mitigation, Contingency, Owner, Target Date. 🔴🟡🟢 לכל סיכון. Top 3 immediate actions.'},
+    {l:'Go/No-Go מנומק', l_en:'Go/No-Go Decision', p:'Go/No-Go: Entry Criteria סטטוס Met/Not Met/Partial, Critical Defects (חייב 0), High Defects (max), Coverage threshold (min 80%), Performance SLA, המלצה עם conditions.'},
+    {l:'Automation ROI', l_en:'Automation ROI', p:'ROI לאוטומציה: לכל תסריט — זמן manual, תדירות חודשית, עלות manual, עלות automation, Break-even, 1yr ROI%. Automation Backlog ממוין לפי ROI עם effort + framework מומלץ.'},
+    {l:'Lessons Learned', l_en:'Lessons Learned', p:'Lessons Learned: מה עבד טוב, מה לשפר, כלים נדרשים, knowledge gaps, communication issues, 10 Action Items קונקרטיים עם Owner + Due Date. Process improvements לסבב הבא.'},
+    {l:'Production Monitoring', l_en:'Production Monitoring', p:'Monitoring Plan: Metrics (error rate, P95/P99, availability, cache hit), Alert thresholds, Known production issues + workarounds, Rollback criteria, Canary recommendations, Feature flags.'},
+    {l:'תוכנית לסבב הבא', l_en:'Next Sprint Plan', p:'Sprint Test Plan: Regression suite מעודכן, Features חדשות, Technical debt, Automation stories, Environment improvements. Estimation: ימי QA עם breakdown per phase.'},
   ],
 };
 
@@ -2678,7 +2679,7 @@ function buildSystemContext(phaseId) {
       '- אל תחזור על ייצור המסמכים המלאים מחדש אלא אם התבקשת במפורש.';
   } else {
     return 'You are an expert QA assistant. You have full access to the following materials:\n\n'+ctx+
-      'Answer the user\'s questions in English, provide analyses, fill in gaps, and suggest improvements.\n\n'+
+      'Respond in the same language the user writes in. Default to English if the language is unclear.\n\n'+
       '**Important limitations — mention to the user when asked:**\n'+
       '- You cannot export to Excel directly from chat (use the EXPORT button)\n'+
       '- You cannot run real tests on external systems — you simulate execution\n'+
@@ -2716,7 +2717,7 @@ async function runGen(phaseId) {
       ? 'מסמכי האפיון ('+S.fileName+'):\n\n'+S.fileContent.slice(0,25000)+'\n\n---\nהנחיה: '+ins
       : ins;
   } else {
-    uc = ctx + '\n\n---\nהנחיה: '+ins;
+    uc = '---\nהנחיה: '+ins;
   }
   S.status[phaseId] = 'generating';
   showOut(phaseId, '', true);
@@ -2790,7 +2791,7 @@ async function runRefine(phaseId, instruction) {
     uc = (S.fileContent ? 'מסמכי האפיון:\n\n'+S.fileContent.slice(0,25000)+'\n\n' : '')+
       'הפלט הקודם:\n'+( S.data[phaseId]||'').slice(0,8000)+'\n\n---\nהנחיה לשיפור: '+instruction;
   } else {
-    uc = ctx + '\n\n---\nהנחיה לשיפור: '+instruction;
+    uc = '---\nהנחיה לשיפור: '+instruction;
   }
   S.status[phaseId] = 'generating';
   showOut(phaseId, '', true);
@@ -3100,9 +3101,11 @@ function setPhase(id) {
 
 function renderChips() {
   var chips = CHIPS[S.ap]||[];
+  var _cl = (window.S_disp && S_disp.lang) || 'en';
   var el = document.getElementById('chips');
   el.innerHTML = chips.map(function(c,i){
-    return '<button class="chip" data-i="'+i+'"'+(S.streaming?' disabled':'')+'>'+esc(c.l)+'</button>';
+    var label = _cl === 'he' ? c.l : (c.l_en || c.l);
+    return '<button class="chip" data-i="'+i+'"'+(S.streaming?' disabled':'')+'>'+esc(label)+'</button>';
   }).join('');
   el.querySelectorAll('.chip:not([disabled])').forEach(function(btn){
     btn.addEventListener('click', function(){
@@ -4148,7 +4151,9 @@ async function runGenSim(phaseId) {
   var ctx = getContext(phaseId);
   var sys = buildPrompt(phaseId, ctx, S.fileType, S.targetUrl);
   var ins = 'נא לייצר שלב '+phaseId+' בצורה מקיפה, מפורטת ומקצועית לחלוטין.';
-  var uc = ctx + '\n\n---\nהנחיה: '+ins;
+  var uc = phaseId === 1
+    ? (S.fileContent ? 'מסמכי האפיון ('+S.fileName+'):\n\n'+S.fileContent.slice(0,25000)+'\n\n---\nהנחיה: '+ins : ins)
+    : '---\nהנחיה: '+ins;
   showOut(phaseId, '', true);
   try {
     var full = await streamClaude(
