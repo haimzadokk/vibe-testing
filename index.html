@@ -1481,16 +1481,16 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
     <!-- DISPLAY PAGE -->
     <div class="stg-page" id="spage-display">
       <div class="disp-section">
-        <div class="disp-section-title">📝 גודל פונט</div>
+        <div class="disp-section-title" data-en="📝 Font Size" data-he="📝 גודל פונט">📝 Font Size</div>
         <div class="disp-row">
-          <div><div class="disp-label">גודל טקסט תוצאות</div><div class="disp-sub">גודל הפונט באזור הפלט והצ'אט</div></div>
+          <div><div class="disp-label" data-en="Output Text Size" data-he="גודל טקסט תוצאות">Output Text Size</div><div class="disp-sub" data-en="Font size in the output and chat area" data-he="גודל הפונט באזור הפלט והצ'אט">Font size in the output and chat area</div></div>
           <div style="display:flex;align-items:center;gap:12px">
             <input type="range" class="disp-slider" id="font-size-slider" min="12" max="24" step="1" value="16" oninput="applyFontSize(this.value)"/>
             <span class="disp-val" id="font-size-val">16px</span>
           </div>
         </div>
         <div class="disp-row">
-          <div><div class="disp-label">גודל פונט כותרות</div><div class="disp-sub">H1/H2 בפלט</div></div>
+          <div><div class="disp-label" data-en="Heading Font Size" data-he="גודל פונט כותרות">Heading Font Size</div><div class="disp-sub" data-en="H1/H2 in output" data-he="H1/H2 בפלט">H1/H2 in output</div></div>
           <div class="disp-toggle-wrap">
             <button class="disp-toggle" id="hscale-small" onclick="applyHeadingScale('small')">S</button>
             <button class="disp-toggle active" id="hscale-medium" onclick="applyHeadingScale('medium')">M</button>
@@ -1501,26 +1501,26 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 
 
       <div class="disp-section">
-        <div class="disp-section-title">📐 פריסה ומרווחים</div>
+        <div class="disp-section-title" data-en="📐 Layout &amp; Spacing" data-he="📐 פריסה ומרווחים">📐 Layout &amp; Spacing</div>
         <div class="disp-row">
-          <div><div class="disp-label">גובה שורה בפלט</div><div class="disp-sub">מרווח בין שורות בתוצאות</div></div>
+          <div><div class="disp-label" data-en="Line Height in Output" data-he="גובה שורה בפלט">Line Height in Output</div><div class="disp-sub" data-en="Spacing between lines in results" data-he="מרווח בין שורות בתוצאות">Spacing between lines in results</div></div>
           <div class="disp-toggle-wrap">
-            <button class="disp-toggle" id="lh-compact" onclick="applyLineHeight('compact')">צפוף</button>
-            <button class="disp-toggle active" id="lh-normal" onclick="applyLineHeight('normal')">רגיל</button>
-            <button class="disp-toggle" id="lh-spacious" onclick="applyLineHeight('spacious')">מרווח</button>
+            <button class="disp-toggle" id="lh-compact" onclick="applyLineHeight('compact')" data-en="Compact" data-he="צפוף">Compact</button>
+            <button class="disp-toggle active" id="lh-normal" onclick="applyLineHeight('normal')" data-en="Normal" data-he="רגיל">Normal</button>
+            <button class="disp-toggle" id="lh-spacious" onclick="applyLineHeight('spacious')" data-en="Spacious" data-he="מרווח">Spacious</button>
           </div>
         </div>
         <div class="disp-row">
-          <div><div class="disp-label">גלילה אוטומטית בזמן יצירה</div><div class="disp-sub">גלול למטה בכל קטע חדש</div></div>
+          <div><div class="disp-label" data-en="Auto-scroll during generation" data-he="גלילה אוטומטית בזמן יצירה">Auto-scroll during generation</div><div class="disp-sub" data-en="Scroll down on each new section" data-he="גלול למטה בכל קטע חדש">Scroll down on each new section</div></div>
           <div class="disp-toggle-wrap">
-            <button class="disp-toggle active" id="autoscroll-on" onclick="applyAutoScroll(true)">פעיל</button>
-            <button class="disp-toggle" id="autoscroll-off" onclick="applyAutoScroll(false)">כבוי</button>
+            <button class="disp-toggle active" id="autoscroll-on" onclick="applyAutoScroll(true)" data-en="On" data-he="פעיל">On</button>
+            <button class="disp-toggle" id="autoscroll-off" onclick="applyAutoScroll(false)" data-en="Off" data-he="כבוי">Off</button>
           </div>
         </div>
       </div>
 
       <div style="margin-top:16px;text-align:left">
-        <button onclick="resetDisplaySettings()" style="background:transparent;border:1px solid var(--border2);border-radius:8px;padding:8px 18px;font-size:12px;color:var(--dim);cursor:pointer;font-family:inherit;letter-spacing:1px;transition:all .2s" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--dim)';this.style.borderColor='var(--border2)'">↺ איפוס הגדרות ברירת מחדל</button>
+        <button onclick="resetDisplaySettings()" style="background:transparent;border:1px solid var(--border2);border-radius:8px;padding:8px 18px;font-size:12px;color:var(--dim);cursor:pointer;font-family:inherit;letter-spacing:1px;transition:all .2s" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--dim)';this.style.borderColor='var(--border2)'" data-en="↺ Reset to defaults" data-he="↺ איפוס הגדרות ברירת מחדל">↺ Reset to defaults</button>
       </div>
     </div>
 
@@ -1733,7 +1733,7 @@ var _vibeExplicitLogout = false
   if (_emailLbl && window.VIBE_USER) _emailLbl.textContent = window.VIBE_USER.email.split('@')[0]
   initModal()
   updateUI()
-  checkServerStatus()
+  // checkServerStatus fires on-demand when user navigates to phase 3
 })()
 
 function toggleUserMenu() {
@@ -3003,7 +3003,8 @@ function updateUI() {
   }
 
   // Empty state
-  if (!S.data[p] && !S.streaming) {
+  var _hasChatMsgs = S.chat[p] && S.chat[p].length > 0;
+  if (!S.data[p] && !S.streaming && !_hasChatMsgs) {
     document.getElementById('empty').style.display = 'flex';
     document.getElementById('out-card').style.display = 'none';
     document.getElementById('empty-icon').textContent = ph.i;
@@ -3029,6 +3030,19 @@ function updateUI() {
     document.getElementById('empty-hints').style.display = p===1 && !(S.files && S.files.length) ? 'flex' : 'none';
   } else if (S.data[p]) {
     showOut(p, S.data[p], false);
+  } else if (_hasChatMsgs && !S.streaming) {
+    // Chat-only mode: keep card visible, re-render chat history
+    document.getElementById('empty').style.display = 'none';
+    var _cc = document.getElementById('out-card');
+    _cc.style.display = 'block';
+    _cc.style.borderColor = 'color-mix(in srgb,'+ph.c+' 18%,transparent)';
+    document.getElementById('out-dot').style.background = ph.c;
+    document.getElementById('out-dot').style.boxShadow = '0 0 8px '+ph.c;
+    document.getElementById('out-lbl').style.color = ph.c;
+    document.getElementById('out-lbl').textContent = ph.l+' · 💬 CHAT MODE';
+    var _coc = document.getElementById('out-content');
+    if (!document.getElementById('out-doc')) _coc.innerHTML = '<div id="out-doc"></div><div id="out-chat"></div>';
+    renderChatBelow(p);
   }
 
   renderChips();
@@ -3052,6 +3066,7 @@ function setPhase(id) {
     t.classList.toggle('active', +t.dataset.phase===id);
   });
   updateUI();
+  if (id === 3) checkServerStatus(); // trigger immediate check when entering phase 3
 }
 
 function renderChips() {
@@ -3355,12 +3370,12 @@ async function checkServerStatus() {
   updateRunStatusBar();
   return S.serverOnline;
 }
-// Adaptive polling: 10s when online, 30s when offline (reduces console noise)
+// Poll only when on phase 3 (avoids console noise on other phases)
 var _serverPollTimer = null;
 function scheduleServerPoll() {
   if (_serverPollTimer) clearTimeout(_serverPollTimer);
   _serverPollTimer = setTimeout(async function(){
-    await checkServerStatus();
+    if (S.ap === 3) await checkServerStatus();
     scheduleServerPoll();
   }, S.serverOnline ? 10000 : 30000);
 }
