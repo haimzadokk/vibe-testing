@@ -565,7 +565,7 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .reports-count{font-size:11px;color:var(--muted)}
 .reports-refresh-btn{background:transparent;border:1px solid var(--border2);border-radius:6px;padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px}
 .reports-refresh-btn:hover{border-color:var(--cyan);color:var(--cyan)}
-.reports-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1}
+.reports-list{display:flex;flex-direction:column;gap:20px;overflow-y:auto;flex:1}
 .report-row{background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}
 .report-row:hover{border-color:var(--border2)}
 .report-row-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer}
@@ -577,7 +577,7 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .report-id{font-size:11px;color:var(--dim);letter-spacing:1px;font-weight:700;margin-bottom:3px}
 .report-name{font-size:13px;font-weight:700;color:var(--text)}
 .report-meta{font-size:11px;color:var(--muted);margin-top:3px}
-.report-row-hdr{padding:16px 18px}
+.report-row-hdr{padding:20px 22px}
 .report-row-right{display:flex;align-items:center;gap:16px;flex-shrink:0}
 .report-stat{display:flex;flex-direction:column;align-items:center;gap:2px}
 .report-stat-val{font-size:18px;font-weight:900;line-height:1}
@@ -4560,8 +4560,8 @@ function buildSimReport(runText) {
         en: '<strong>Reports Dashboard</strong> — run history (Jenkins-like):<br>• List of all automation runs performed<br>• PASS/FAIL/SKIP per run<br>• Open details of each failed script<br>• Export report to PDF · Send by email<br>• <em>Requires vibe-runner.py to be running</em>'
       },
       'info-howto': {
-        he: '<strong style="color:var(--text)">מצב AI (ללא התקנה):</strong><br>1. לחץ ▶ START בחלון הפתיחה והכנס את ה-API Key שלך<br>2. העלה מסמך אפיון (ATTACH) או הכנס URL בשלב STP<br>3. לחץ GENERATE בכל שלב לפי הסדר (STP → STD → RUN → STR)<br><br><strong style="color:var(--text)">מצב אוטומציה אמיתית (דורש Python):</strong><br>1. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">pip install playwright pywinauto anthropic python-dotenv</code><br>2. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">python vibe-runner.py</code><br>3. הדות הירוק "RUNNER ✓" יופיע בכותרת<br>4. בשלב RUN בחר "אוטומציה אמיתית" ובחר את האפליקציה/URL',
-        en: '<strong style="color:var(--text)">AI mode (no install):</strong><br>1. Click ▶ START on the welcome screen and log in<br>2. Upload a spec document (ATTACH) or enter a URL in the STP phase<br>3. Click GENERATE at each phase in order (STP → STD → RUN → STR)<br><br><strong style="color:var(--text)">Real automation mode (requires Python):</strong><br>1. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">pip install playwright pywinauto anthropic python-dotenv</code><br>2. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">python vibe-runner.py</code><br>3. The green dot "RUNNER ✓" will appear in the header<br>4. In the RUN phase, select "Real Automation" and choose your target'
+        he: '<strong style="color:var(--text)">מצב AI (ללא התקנה):</strong><br>1. לחץ ▶ START בחלון הפתיחה והתחבר<br>2. העלה מסמך אפיון (ATTACH) או הכנס URL בשלב STP<br>3. לחץ GENERATE בכל שלב לפי הסדר (STP → STD → RUN → STR)<br><br><strong style="color:var(--text)">מצב אוטומציה אמיתית (דורש Python):</strong><br>1. הורד <code style="background:var(--faint);padding:2px 6px;border-radius:4px">vibe-runner.py</code> מה-GitHub (קובץ אחד בלבד — לא צריך לשכפל את הפרויקט)<br>2. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">pip install playwright pywinauto anthropic python-dotenv</code><br>3. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">python vibe-runner.py</code><br>4. הנקודה הירוקה "RUNNER ✓" תופיע בכותרת<br>5. בשלב RUN בחר "אוטומציה אמיתית" ובחר את האפליקציה/URL',
+        en: '<strong style="color:var(--text)">AI mode (no install):</strong><br>1. Click ▶ START on the welcome screen and log in<br>2. Upload a spec document (ATTACH) or enter a URL in the STP phase<br>3. Click GENERATE at each phase in order (STP → STD → RUN → STR)<br><br><strong style="color:var(--text)">Real automation mode (requires Python):</strong><br>1. Download <code style="background:var(--faint);padding:2px 6px;border-radius:4px">vibe-runner.py</code> from the GitHub repo (one file — no local clone needed)<br>2. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">pip install playwright pywinauto anthropic python-dotenv</code><br>3. <code style="background:var(--faint);padding:2px 6px;border-radius:4px">python vibe-runner.py</code><br>4. The green dot "RUNNER ✓" will appear in the header<br>5. In the RUN phase, select "Real Automation" and choose your target'
       },
       'stp-doc-hint': {
         he: 'העלה מסמך אפיון באמצעות כפתור <strong style="color:var(--green)">📎 העלה מסמכי אפיון</strong> בשורת הצ\'ט למטה, או גרור קובץ ישירות לחלון.<br><span style="color:var(--dim)">PDF · DOCX · TXT · MD · JSON · YAML · HTML · XML ועוד</span>',
@@ -4572,8 +4572,8 @@ function buildSimReport(runText) {
         en: 'Install requirements in a terminal or CMD (one time only):<br><code>pip install pywinauto playwright anthropic python-dotenv</code><br><code>playwright install chromium</code>'
       },
       'rob-step2': {
-        he: 'הקובץ <code>vibe-runner.py</code> נמצא בתיקיית הפרויקט (שם שמורה גם <code>index.html</code>).<br>פתח טרמינל נפרד <strong>בתיקייה זו</strong> והפעל:<br><code>python vibe-runner.py</code><br><span style="color:var(--dim);font-size:0.9em">לא מוצא את הקובץ? ודא שהורדת את כל תיקיית הפרויקט מ-GitHub.</span>',
-        en: 'The file <code>vibe-runner.py</code> is in the project folder (same folder as <code>index.html</code>).<br>Open a new terminal <strong>in that folder</strong> and run:<br><code>python vibe-runner.py</code><br><span style="color:var(--dim);font-size:0.9em">Can\'t find the file? Make sure you downloaded the full project folder from GitHub.</span>'
+        he: 'הורד את קובץ <code>vibe-runner.py</code> מ-GitHub (קובץ אחד בלבד — לא צריך את כל הפרויקט):<br><code style="font-size:0.85em">https://github.com/haimzadokk/vibe-testing/raw/main/vibe-runner.py</code><br><br>שמור אותו בכל תיקייה שתרצה, פתח טרמינל <strong>באותה תיקייה</strong> והפעל:<br><code>python vibe-runner.py</code><br><span style="color:var(--dim);font-size:0.9em">הנקודה הירוקה RUNNER ✓ בכותרת תאשר שהחיבור פעיל.</span>',
+        en: 'Download <code>vibe-runner.py</code> from GitHub (one file only — you don\'t need the full project):<br><code style="font-size:0.85em">https://github.com/haimzadokk/vibe-testing/raw/main/vibe-runner.py</code><br><br>Save it to any folder, open a terminal <strong>in that folder</strong> and run:<br><code>python vibe-runner.py</code><br><span style="color:var(--dim);font-size:0.9em">The green dot RUNNER ✓ in the header confirms the connection is active.</span>'
       }
     };
     Object.keys(_blocks).forEach(function(id) {
