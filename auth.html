@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>VIBE.TESTING — כניסה</title>
+<title>VIBE.TESTING — Sign In</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <style>
@@ -313,7 +313,7 @@ body{
   <!-- shown while session check runs; hidden once a view is shown -->
   <div id="auth-loading">
     <div class="init-spin"></div>
-    <div id="auth-loading-lbl">טוען...</div>
+    <div id="auth-loading-lbl" data-en="Loading..." data-he="טוען...">Loading...</div>
   </div>
 
   <div class="auth-logo">
@@ -323,29 +323,29 @@ body{
 
   <!-- ── LOGIN ───────────────────────────────── -->
   <div id="v-login" class="view active">
-    <div class="auth-title">ברוך הבא</div>
-    <div class="auth-sub">התחבר לחשבון שלך להמשך</div>
+    <div class="auth-title" data-en="Welcome back" data-he="ברוך הבא">Welcome back</div>
+    <div class="auth-sub" data-en="Sign in to your account to continue" data-he="התחבר לחשבון שלך להמשך">Sign in to your account to continue</div>
     <div id="login-msg" class="msg"></div>
 
     <div class="field">
-      <label>אימייל</label>
+      <label data-en="Email" data-he="אימייל">Email</label>
       <input id="login-email" type="email" placeholder="you@example.com"
              autocomplete="email" inputmode="email"/>
     </div>
     <div class="field">
-      <label>סיסמה</label>
+      <label data-en="Password" data-he="סיסמה">Password</label>
       <div class="pass-wrap">
         <input id="login-pass" type="password" placeholder="••••••••"
                autocomplete="current-password"/>
-        <button type="button" class="pass-eye" onclick="togglePass('login-pass',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+        <button type="button" class="pass-eye" onclick="togglePass('login-pass',this)" tabindex="-1" aria-label="Show/hide password"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
       </div>
     </div>
 
     <button class="btn btn-primary" id="login-btn" onclick="doLogin()">
-      <span class="spin"></span><span class="btn-lbl">כניסה</span>
+      <span class="spin"></span><span class="btn-lbl" data-en="Sign In" data-he="כניסה">Sign In</span>
     </button>
 
-    <div class="divider">או</div>
+    <div class="divider" data-en="or" data-he="או">or</div>
 
     <button class="btn btn-google" id="google-login-btn" onclick="doGoogle()">
       <span class="spin"></span>
@@ -356,50 +356,52 @@ body{
           <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
           <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
         </svg>
-        כניסה עם Google
+        <span data-en="Sign in with Google" data-he="כניסה עם Google">Sign in with Google</span>
       </span>
     </button>
 
     <div class="auth-links">
-      <p><button class="lnk" onclick="goForgot()">שכחת סיסמה?</button></p>
-      <p>אין לך חשבון? <button class="lnk" onclick="showView('v-signup')">הרשמה</button></p>
+      <p><button class="lnk" onclick="goForgot()" data-en="Forgot password?" data-he="שכחת סיסמה?">Forgot password?</button></p>
+      <p><span data-en="Don't have an account?" data-he="אין לך חשבון?">Don't have an account?</span> <button class="lnk" onclick="showView('v-signup')" data-en="Sign up" data-he="הרשמה">Sign up</button></p>
     </div>
   </div>
 
   <!-- ── SIGNUP ──────────────────────────────── -->
   <div id="v-signup" class="view">
-    <div class="auth-title">יצירת חשבון</div>
-    <div class="auth-sub">הצטרף ל-VIBE.TESTING</div>
+    <div class="auth-title" data-en="Create Account" data-he="יצירת חשבון">Create Account</div>
+    <div class="auth-sub" data-en="Join VIBE.TESTING" data-he="הצטרף ל-VIBE.TESTING">Join VIBE.TESTING</div>
     <div id="signup-msg" class="msg"></div>
 
     <div class="field">
-      <label>אימייל</label>
+      <label data-en="Email" data-he="אימייל">Email</label>
       <input id="signup-email" type="email" placeholder="you@example.com"
              autocomplete="email" inputmode="email"/>
     </div>
     <div class="field">
-      <label>סיסמה</label>
+      <label data-en="Password" data-he="סיסמה">Password</label>
       <div class="pass-wrap">
-        <input id="signup-pass" type="password" placeholder="לפחות 8 תווים"
+        <input id="signup-pass" type="password"
+               data-en-ph="At least 8 characters" data-he-ph="לפחות 8 תווים" placeholder="At least 8 characters"
                autocomplete="new-password"/>
-        <button type="button" class="pass-eye" onclick="togglePass('signup-pass',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+        <button type="button" class="pass-eye" onclick="togglePass('signup-pass',this)" tabindex="-1" aria-label="Show/hide password"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
       </div>
-      <div class="pass-hint">לפחות 8 תווים · אות גדולה (A–Z) · מספר (0–9) · תו מיוחד (!@#$%^&*) · אין עברית</div>
+      <div class="pass-hint" data-en="At least 8 chars · uppercase A–Z · digit 0–9 · special char (!@#$%^&*)" data-he="לפחות 8 תווים · אות גדולה (A–Z) · מספר (0–9) · תו מיוחד (!@#$%^&*) · אין עברית">At least 8 chars · uppercase A–Z · digit 0–9 · special char (!@#$%^&*)</div>
     </div>
     <div class="field">
-      <label>אימות סיסמה</label>
+      <label data-en="Confirm Password" data-he="אימות סיסמה">Confirm Password</label>
       <div class="pass-wrap">
-        <input id="signup-pass2" type="password" placeholder="חזור על הסיסמה"
+        <input id="signup-pass2" type="password"
+               data-en-ph="Repeat password" data-he-ph="חזור על הסיסמה" placeholder="Repeat password"
                autocomplete="new-password"/>
-        <button type="button" class="pass-eye" onclick="togglePass('signup-pass2',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+        <button type="button" class="pass-eye" onclick="togglePass('signup-pass2',this)" tabindex="-1" aria-label="Show/hide password"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
       </div>
     </div>
 
     <button class="btn btn-primary" id="signup-btn" onclick="doSignup()">
-      <span class="spin"></span><span class="btn-lbl">יצירת חשבון</span>
+      <span class="spin"></span><span class="btn-lbl" data-en="Create Account" data-he="יצירת חשבון">Create Account</span>
     </button>
 
-    <div class="divider">או</div>
+    <div class="divider" data-en="or" data-he="או">or</div>
 
     <button class="btn btn-google" id="google-signup-btn" onclick="doGoogle()">
       <span class="spin"></span>
@@ -410,81 +412,83 @@ body{
           <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
           <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
         </svg>
-        הרשמה עם Google
+        <span data-en="Sign up with Google" data-he="הרשמה עם Google">Sign up with Google</span>
       </span>
     </button>
 
     <div class="auth-links">
-      <p>יש לך חשבון? <button class="lnk" onclick="showView('v-login')">כניסה</button></p>
+      <p><span data-en="Already have an account?" data-he="יש לך חשבון?">Already have an account?</span> <button class="lnk" onclick="showView('v-login')" data-en="Sign in" data-he="כניסה">Sign in</button></p>
     </div>
   </div>
 
   <!-- ── VERIFY EMAIL ─────────────────────────── -->
   <div id="v-verify" class="view">
     <div class="verify-icon">📧</div>
-    <div class="auth-title" style="text-align:center">בדוק את תיבת הדואר</div>
+    <div class="auth-title" style="text-align:center" data-en="Check your inbox" data-he="בדוק את תיבת הדואר">Check your inbox</div>
     <div class="auth-sub" style="text-align:center">
-      שלחנו קישור אימות אל<br>
+      <span id="verify-sub-text" data-en="We sent a verification link to" data-he="שלחנו קישור אימות אל">We sent a verification link to</span><br>
       <strong id="verify-email-display" style="color:var(--text);word-break:break-all"></strong>
     </div>
     <div id="verify-msg" class="msg"></div>
 
     <button class="btn btn-secondary" id="resend-btn" onclick="doResend()">
-      <span class="spin"></span><span class="btn-lbl">שלח שוב</span>
+      <span class="spin"></span><span class="btn-lbl" data-en="Resend" data-he="שלח שוב">Resend</span>
     </button>
     <div class="resend-note" id="resend-timer"></div>
 
     <div class="auth-links" style="margin-top:16px">
-      <p><button class="lnk" onclick="showView('v-login')">חזרה לכניסה</button></p>
+      <p><button class="lnk" onclick="showView('v-login')" data-en="Back to sign in" data-he="חזרה לכניסה">Back to sign in</button></p>
     </div>
   </div>
 
   <!-- ── FORGOT PASSWORD ──────────────────────── -->
   <div id="v-forgot" class="view">
-    <div class="auth-title">שחזור סיסמה</div>
-    <div class="auth-sub">נשלח לך קישור לאיפוס הסיסמה</div>
+    <div class="auth-title" data-en="Forgot your password?" data-he="שחזור סיסמה">Forgot your password?</div>
+    <div class="auth-sub" data-en="We'll send you a password reset link" data-he="נשלח לך קישור לאיפוס הסיסמה">We'll send you a password reset link</div>
     <div id="forgot-msg" class="msg"></div>
 
     <div class="field">
-      <label>אימייל</label>
+      <label data-en="Email" data-he="אימייל">Email</label>
       <input id="forgot-email" type="email" placeholder="you@example.com"
              autocomplete="email" inputmode="email"/>
     </div>
 
     <button class="btn btn-primary" id="forgot-btn" onclick="doForgot()">
-      <span class="spin"></span><span class="btn-lbl">שלח קישור איפוס</span>
+      <span class="spin"></span><span class="btn-lbl" data-en="Send reset link" data-he="שלח קישור איפוס">Send reset link</span>
     </button>
 
     <div class="auth-links">
-      <p><button class="lnk" onclick="showView('v-login')">חזרה לכניסה</button></p>
+      <p><button class="lnk" onclick="showView('v-login')" data-en="Back to sign in" data-he="חזרה לכניסה">Back to sign in</button></p>
     </div>
   </div>
 
   <!-- ── RESET PASSWORD ───────────────────────── -->
   <div id="v-reset" class="view">
-    <div class="auth-title">סיסמה חדשה</div>
-    <div class="auth-sub">בחר סיסמה חדשה לחשבונך</div>
+    <div class="auth-title" data-en="New Password" data-he="סיסמה חדשה">New Password</div>
+    <div class="auth-sub" data-en="Choose a new password for your account" data-he="בחר סיסמה חדשה לחשבונך">Choose a new password for your account</div>
     <div id="reset-msg" class="msg"></div>
 
     <div class="field">
-      <label>סיסמה חדשה</label>
+      <label data-en="New Password" data-he="סיסמה חדשה">New Password</label>
       <div class="pass-wrap">
-        <input id="reset-pass" type="password" placeholder="לפחות 8 תווים"
+        <input id="reset-pass" type="password"
+               data-en-ph="At least 8 characters" data-he-ph="לפחות 8 תווים" placeholder="At least 8 characters"
                autocomplete="new-password"/>
-        <button type="button" class="pass-eye" onclick="togglePass('reset-pass',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+        <button type="button" class="pass-eye" onclick="togglePass('reset-pass',this)" tabindex="-1" aria-label="Show/hide password"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
       </div>
     </div>
     <div class="field">
-      <label>אימות סיסמה</label>
+      <label data-en="Confirm Password" data-he="אימות סיסמה">Confirm Password</label>
       <div class="pass-wrap">
-        <input id="reset-pass2" type="password" placeholder="חזור על הסיסמה"
+        <input id="reset-pass2" type="password"
+               data-en-ph="Repeat password" data-he-ph="חזור על הסיסמה" placeholder="Repeat password"
                autocomplete="new-password"/>
-        <button type="button" class="pass-eye" onclick="togglePass('reset-pass2',this)" tabindex="-1" aria-label="הצג/הסתר סיסמה"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
+        <button type="button" class="pass-eye" onclick="togglePass('reset-pass2',this)" tabindex="-1" aria-label="Show/hide password"><svg viewBox="0 0 20 14" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7S4.5 1 10 1s9 6 9 6-3.5 6-9 6S1 7 1 7z"/><circle cx="10" cy="7" r="2.5"/></svg></button>
       </div>
     </div>
 
     <button class="btn btn-primary" id="reset-btn" onclick="doReset()">
-      <span class="spin"></span><span class="btn-lbl">עדכון סיסמה</span>
+      <span class="spin"></span><span class="btn-lbl" data-en="Update Password" data-he="עדכון סיסמה">Update Password</span>
     </button>
   </div>
 
@@ -497,6 +501,11 @@ body{
 var SUPABASE_URL      = 'https://wiqghanzcwmzyqzfzkiv.supabase.co'
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpcWdoYW56Y3dtenlxemZ6a2l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODIwNjcsImV4cCI6MjA5MDI1ODA2N30.uXDx_80yBh8DmcLvH77tW1o8GqgTC7eXJIZUtsvpqTw'
 var APP_URL           = 'https://haimzadokk.github.io/vibe-testing'  // no trailing slash
+
+// ── LANGUAGE ─────────────────────────────────────────────────
+var _lang = 'en';
+try { _lang = JSON.parse(localStorage.getItem('vibe_display') || '{}').lang || 'en'; } catch(e){}
+function t(he, en) { return _lang === 'he' ? he : en; }
 
 // ── CLIENT ──────────────────────────────────────────────────
 var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -587,7 +596,7 @@ var _signedInPending  = null   // timer: defer redirect when hasEmailCode, waiti
   // ── OAuth/Supabase errors returned via redirect URL ─────────────────
   var urlError = params.get('error')
   if (urlError) {
-    _deferredMsg = ['login-msg', 'error', 'שגיאה בכניסה עם Google — נסה שוב']
+    _deferredMsg = ['login-msg', 'error', t('שגיאה בכניסה עם Google — נסה שוב', 'Error signing in with Google — please try again')]
     cleanUrl()
     showView('v-login')
     return
@@ -595,9 +604,9 @@ var _signedInPending  = null   // timer: defer redirect when hasEmailCode, waiti
 
   // ── Status messages — stored as deferred, replayed when showView fires ──
   // (showView clears messages before re-applying, so we can't set them before the view is shown)
-  if (msg === 'logged_out')      _deferredMsg = ['login-msg', 'info',    'יצאת מהמערכת בהצלחה']
-  if (msg === 'session_expired') _deferredMsg = ['login-msg', 'error',   'הפעלה פגה — יש להתחבר מחדש']
-  if (msg === 'password_reset')  _deferredMsg = ['login-msg', 'success', 'הסיסמה עודכנה — התחבר עם הסיסמה החדשה']
+  if (msg === 'logged_out')      _deferredMsg = ['login-msg', 'info',    t('יצאת מהמערכת בהצלחה', 'Signed out successfully')]
+  if (msg === 'session_expired') _deferredMsg = ['login-msg', 'error',   t('הפעלה פגה — יש להתחבר מחדש', 'Session expired — please sign in again')]
+  if (msg === 'password_reset')  _deferredMsg = ['login-msg', 'success', t('הסיסמה עודכנה — התחבר עם הסיסמה החדשה', 'Password updated — sign in with your new password')]
 
   // ── Verify redirect from index.html auth guard ──────────────────
   // Guard redirects to: auth.html?msg=verify&email=...
@@ -724,11 +733,11 @@ function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) }
 // Returns error string or '' if valid.
 // Rules: 8+ chars, uppercase, digit, symbol, no Hebrew.
 function validPass(p) {
-  if (p.length < 8)                            return 'הסיסמה חייבת להכיל לפחות 8 תווים'
-  if (/[\u0590-\u05FF\uFB1D-\uFB4F]/.test(p)) return 'הסיסמה אינה יכולה להכיל תווים בעברית'
-  if (!/[A-Z]/.test(p))                        return 'הסיסמה חייבת להכיל לפחות אות גדולה אחת (A–Z)'
-  if (!/[0-9]/.test(p))                        return 'הסיסמה חייבת להכיל לפחות מספר אחד (0–9)'
-  if (!/[^A-Za-z0-9\s]/.test(p))              return 'הסיסמה חייבת להכיל לפחות תו מיוחד (!@#$%...)'
+  if (p.length < 8)                            return t('הסיסמה חייבת להכיל לפחות 8 תווים',         'Password must be at least 8 characters')
+  if (/[\u0590-\u05FF\uFB1D-\uFB4F]/.test(p)) return t('הסיסמה אינה יכולה להכיל תווים בעברית',     'Password cannot contain Hebrew characters')
+  if (!/[A-Z]/.test(p))                        return t('הסיסמה חייבת להכיל לפחות אות גדולה אחת (A–Z)', 'Password must contain at least one uppercase letter (A–Z)')
+  if (!/[0-9]/.test(p))                        return t('הסיסמה חייבת להכיל לפחות מספר אחד (0–9)',   'Password must contain at least one digit (0–9)')
+  if (!/[^A-Za-z0-9\s]/.test(p))              return t('הסיסמה חייבת להכיל לפחות תו מיוחד (!@#$%...)','Password must contain at least one special character (!@#$%...)')
   return ''
 }
 
@@ -737,8 +746,8 @@ async function doLogin() {
   if (document.getElementById('login-btn').disabled) return  // already in-flight
   var email = document.getElementById('login-email').value.trim()
   var pass  = document.getElementById('login-pass').value
-  if (!validEmail(email)) return showMsg('login-msg', 'error', 'כתובת אימייל לא תקינה')
-  if (!pass)              return showMsg('login-msg', 'error', 'יש להזין סיסמה')
+  if (!validEmail(email)) return showMsg('login-msg', 'error', t('כתובת אימייל לא תקינה', 'Invalid email address'))
+  if (!pass)              return showMsg('login-msg', 'error', t('יש להזין סיסמה', 'Please enter your password'))
 
   setLoading('login-btn', true)
   var { error } = await sb.auth.signInWithPassword({ email: email, password: pass })
@@ -751,12 +760,12 @@ async function doLogin() {
     showVerify(email); return
   }
   if (m.includes('Invalid login credentials') || m.includes('invalid_credentials')) {
-    showMsg('login-msg', 'error', 'אימייל או סיסמה שגויים'); return
+    showMsg('login-msg', 'error', t('אימייל או סיסמה שגויים', 'Incorrect email or password')); return
   }
   if (m.includes('Too many requests')) {
-    showMsg('login-msg', 'error', 'יותר מדי ניסיונות — נסה שוב בעוד מספר דקות'); return
+    showMsg('login-msg', 'error', t('יותר מדי ניסיונות — נסה שוב בעוד מספר דקות', 'Too many attempts — try again in a few minutes')); return
   }
-  showMsg('login-msg', 'error', 'שגיאה בכניסה — נסה שוב')
+  showMsg('login-msg', 'error', t('שגיאה בכניסה — נסה שוב', 'Sign in error — please try again'))
 }
 
 // ── SIGNUP ───────────────────────────────────────────────────
@@ -766,10 +775,10 @@ async function doSignup() {
   var pass  = document.getElementById('signup-pass').value
   var pass2 = document.getElementById('signup-pass2').value
 
-  if (!validEmail(email))   return showMsg('signup-msg', 'error', 'כתובת אימייל לא תקינה')
+  if (!validEmail(email))   return showMsg('signup-msg', 'error', t('כתובת אימייל לא תקינה', 'Invalid email address'))
   var passErr = validPass(pass)
   if (passErr)              return showMsg('signup-msg', 'error', passErr)
-  if (pass !== pass2)       return showMsg('signup-msg', 'error', 'הסיסמאות אינן תואמות')
+  if (pass !== pass2)       return showMsg('signup-msg', 'error', t('הסיסמאות אינן תואמות', 'Passwords do not match'))
 
   setLoading('signup-btn', true)
   var { error } = await sb.auth.signUp({
@@ -783,10 +792,10 @@ async function doSignup() {
 
   var m = error.message || ''
   if (m.includes('already registered') || m.includes('User already') || m.includes('already been registered')) {
-    showMsg('signup-msg', 'error', 'כתובת אימייל זו כבר רשומה — התחבר או אפס סיסמה')
+    showMsg('signup-msg', 'error', t('כתובת אימייל זו כבר רשומה — התחבר או אפס סיסמה', 'This email is already registered — sign in or reset your password'))
     return
   }
-  showMsg('signup-msg', 'error', 'שגיאה בהרשמה — נסה שוב')
+  showMsg('signup-msg', 'error', t('שגיאה בהרשמה — נסה שוב', 'Sign up error — please try again'))
 }
 
 // ── GOOGLE OAUTH ─────────────────────────────────────────────
@@ -808,14 +817,14 @@ async function doGoogle() {
   })
   // Only reached on error — success causes full page redirect to Google
   setLoading(btnId, false)
-  if (error) showMsg(msgId, 'error', 'שגיאה בכניסה עם Google — נסה שוב')
+  if (error) showMsg(msgId, 'error', t('שגיאה בכניסה עם Google — נסה שוב', 'Error signing in with Google — please try again'))
 }
 
 // ── RESEND VERIFY ────────────────────────────────────────────
 async function doResend() {
   if (resendTimer) return
   if (!pendingEmail) {
-    showMsg('verify-msg', 'error', 'טען את הדף מחדש ונסה שוב')
+    showMsg('verify-msg', 'error', t('טען את הדף מחדש ונסה שוב', 'Reload the page and try again'))
     return
   }
 
@@ -830,13 +839,13 @@ async function doResend() {
   if (error) {
     var m = error.message || ''
     if (m.toLowerCase().includes('already confirmed') || m.toLowerCase().includes('email_exists')) {
-      showMsg('verify-msg', 'info', 'המייל כבר מאושר — חזור להתחברות')
+      showMsg('verify-msg', 'info', t('המייל כבר מאושר — חזור להתחברות', 'Email already confirmed — go back to sign in'))
     } else {
-      showMsg('verify-msg', 'error', 'שגיאה בשליחה — נסה שוב בעוד כמה דקות')
+      showMsg('verify-msg', 'error', t('שגיאה בשליחה — נסה שוב בעוד כמה דקות', 'Send error — try again in a few minutes'))
     }
     return
   }
-  showMsg('verify-msg', 'success', 'קישור נשלח! בדוק גם ספאם')
+  showMsg('verify-msg', 'success', t('קישור נשלח! בדוק גם ספאם', 'Link sent! Check your spam folder too'))
   startCooldown()
 }
 
@@ -847,7 +856,7 @@ function startCooldown() {
   btn.disabled = true
   resendTimer = setInterval(function() {
     secs--
-    timerEl.textContent = 'ניתן לשלוח שוב בעוד ' + secs + ' שניות'
+    timerEl.textContent = t('ניתן לשלוח שוב בעוד ' + secs + ' שניות', 'You can resend in ' + secs + ' seconds')
     if (secs <= 0) {
       clearInterval(resendTimer); resendTimer = null
       timerEl.textContent = ''
@@ -860,7 +869,7 @@ function startCooldown() {
 async function doForgot() {
   if (document.getElementById('forgot-btn').disabled) return  // already in-flight
   var email = document.getElementById('forgot-email').value.trim()
-  if (!validEmail(email)) return showMsg('forgot-msg', 'error', 'כתובת אימייל לא תקינה')
+  if (!validEmail(email)) return showMsg('forgot-msg', 'error', t('כתובת אימייל לא תקינה', 'Invalid email address'))
 
   setLoading('forgot-btn', true)
   // Always call — never reveal whether email exists (prevents enumeration)
@@ -869,7 +878,7 @@ async function doForgot() {
   })
   setLoading('forgot-btn', false)
 
-  showMsg('forgot-msg', 'success', 'אם קיים חשבון לכתובת זו, נשלח קישור איפוס')
+  showMsg('forgot-msg', 'success', t('אם קיים חשבון לכתובת זו, נשלח קישור איפוס', 'If an account exists for this email, a reset link has been sent'))
 }
 
 // ── RESET PASSWORD ───────────────────────────────────────────
@@ -880,23 +889,37 @@ async function doReset() {
 
   var passErr = validPass(pass)
   if (passErr)         return showMsg('reset-msg', 'error', passErr)
-  if (pass !== pass2)  return showMsg('reset-msg', 'error', 'הסיסמאות אינן תואמות')
+  if (pass !== pass2)  return showMsg('reset-msg', 'error', t('הסיסמאות אינן תואמות', 'Passwords do not match'))
 
   setLoading('reset-btn', true)
   var { error } = await sb.auth.updateUser({ password: pass })
   setLoading('reset-btn', false)
 
-  if (error) { showMsg('reset-msg', 'error', 'שגיאה — הקישור פג, בקש קישור חדש'); return; }
+  if (error) { showMsg('reset-msg', 'error', t('שגיאה — הקישור פג, בקש קישור חדש', 'Error — the link has expired, request a new one')); return; }
 
   await sb.auth.signOut()
   window.location.replace('auth.html?msg=password_reset')
 }
 
-// ── THEME: sync with main app's light/dark setting ───────────
+// ── THEME + LANGUAGE: sync with main app settings ────────────
 ;(function(){
   try {
     var d = JSON.parse(localStorage.getItem('vibe_display') || '{}');
     if (d.theme === 'light') document.body.classList.add('light-mode');
+    // Apply language to document root
+    document.documentElement.lang = _lang === 'he' ? 'he' : 'en';
+    document.documentElement.dir  = _lang === 'he' ? 'rtl' : 'ltr';
+    document.title = _lang === 'he' ? 'VIBE.TESTING — כניסה' : 'VIBE.TESTING — Sign In';
+    // Apply data-en / data-he text nodes
+    document.querySelectorAll('[data-en]').forEach(function(el) {
+      var txt = _lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-he');
+      if (txt !== null) el.textContent = txt;
+    });
+    // Apply data-en-ph / data-he-ph placeholders
+    document.querySelectorAll('[data-en-ph]').forEach(function(el) {
+      var ph = _lang === 'en' ? el.getAttribute('data-en-ph') : el.getAttribute('data-he-ph');
+      if (ph !== null) el.placeholder = ph;
+    });
   } catch(e){}
 })();
 
