@@ -588,10 +588,10 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .report-actions{display:flex;gap:6px}
 .report-action-btn{background:transparent;border:1px solid var(--border2);border-radius:5px;padding:5px 10px;font-size:11px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:1px}
 .report-action-btn:hover{border-color:var(--cyan);color:var(--cyan)}
-.report-detail{display:none;border-top:1px solid var(--border);padding:14px 18px}
+.report-detail{display:none;border-top:1px solid var(--border);padding:16px 20px}
 .report-detail.open{display:block;animation:fadein .2s ease}
-.report-tc-list{display:flex;flex-direction:column;gap:6px}
-.report-tc-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(4,8,15,.5);border-radius:7px;font-size:12px}
+.report-tc-list{display:flex;flex-direction:column;gap:8px}
+.report-tc-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(4,8,15,.5);border-radius:8px;font-size:12px}
 .report-tc-status{width:16px;height:16px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
 .report-tc-status.pass{background:rgba(0,229,160,.15);color:var(--green);border:1px solid rgba(0,229,160,.3)}
 .report-tc-status.fail{background:rgba(244,63,94,.15);color:var(--red);border:1px solid rgba(244,63,94,.3)}
@@ -2176,16 +2176,28 @@ async function runSTPFromURL() {
   updateUI();
   showOut(1, '', true);
 
-  var sysPrompt = 'אתה אדריכל QA בכיר עם 20 שנות ניסיון.' +
-    ' קיבלת URL של אתר לניתוח. נתח את כתובת ה-URL, זהה את סוג האתר, הפלטפורמה, והפונקציונליות הצפויה.' +
-    ' בהתבסס על הידע שלך על אתרים דומים, צור STP מקצועי ומפורט בעברית הכולל:' +
-    ' (1) זיהוי סוג האתר ומטרתו העיקרית' +
-    ' (2) עץ בדיקות מקיף לפחות 40 פריטים ספציפיים לסוג האתר' +
-    ' (3) כיסוי: UI/UX, פונקציונלי, אבטחה, ביצועים, נגישות, מובייל, API' +
-    ' (4) עדיפויות P1/P2/P3 לכל פריט' +
-    ' (5) Risk Assessment ספציפי' +
-    ' (6) המלצות QA ממוקדות.' +
-    ' URL לניתוח: ' + url;
+  var _urlLang = (window.S_disp && S_disp.lang) || 'en';
+  var sysPrompt = _urlLang === 'he'
+    ? ('אתה אדריכל QA בכיר עם 20 שנות ניסיון.' +
+      ' קיבלת URL של אתר לניתוח. נתח את כתובת ה-URL, זהה את סוג האתר, הפלטפורמה, והפונקציונליות הצפויה.' +
+      ' בהתבסס על הידע שלך על אתרים דומים, צור STP מקצועי ומפורט בעברית הכולל:' +
+      ' (1) זיהוי סוג האתר ומטרתו העיקרית' +
+      ' (2) עץ בדיקות מקיף לפחות 40 פריטים ספציפיים לסוג האתר' +
+      ' (3) כיסוי: UI/UX, פונקציונלי, אבטחה, ביצועים, נגישות, מובייל, API' +
+      ' (4) עדיפויות P1/P2/P3 לכל פריט' +
+      ' (5) Risk Assessment ספציפי' +
+      ' (6) המלצות QA ממוקדות.' +
+      ' URL לניתוח: ' + url)
+    : ('You are a senior QA architect with 20 years of experience.' +
+      ' You have been given a URL to analyze. Based on the URL, identify the site type, platform, and expected functionality.' +
+      ' Using your knowledge of similar sites, create a professional and detailed STP in English including:' +
+      ' (1) Site type and main purpose' +
+      ' (2) Comprehensive test tree with at least 40 items specific to this site type' +
+      ' (3) Coverage: UI/UX, functional, security, performance, accessibility, mobile, API' +
+      ' (4) P1/P2/P3 priorities for each item' +
+      ' (5) Specific Risk Assessment' +
+      ' (6) Focused QA recommendations.' +
+      ' URL to analyze: ' + url);
 
   try {
     var full = await streamClaude(
@@ -2256,17 +2268,30 @@ async function runSTPFromPath() {
     ? '\n\nמידע שנסרק מהנתיב:\n' + JSON.stringify(pathInfo, null, 2)
     : '';
 
-  var sysPrompt = 'אתה אדריכל QA בכיר עם 20 שנות ניסיון.' +
-    ' קיבלת נתיב לאפליקציה מקומית לניתוח: ' + path +
-    contextBlock +
-    '\n\nבהתבסס על שם הקובץ/תיקייה, סיומת הקובץ, ומבנה הנתיב, זהה את סוג האפליקציה (desktop/web/mobile/service/CLI/library).' +
-    ' צור STP מקצועי ומפורט בעברית הכולל:' +
-    ' (1) זיהוי סוג האפליקציה, הפלטפורמה (Windows/Web/.NET/Java/Python/Node וכו\'), ומטרתה' +
-    ' (2) עץ בדיקות מקיף עם לפחות 35 פריטי בדיקה ספציפיים לסוג האפליקציה' +
-    ' (3) כיסוי: פונקציונלי, UI/UX, אינטגרציה, ביצועים, אבטחה, התקנה/הסרה (אם רלוונטי)' +
-    ' (4) עדיפויות P1/P2/P3' +
-    ' (5) Risk Assessment' +
-    ' (6) כלי אוטומציה מומלצים (pywinauto/Playwright/WinAppDriver וכו\' בהתאם לסוג)';
+  var _pathLang = (window.S_disp && S_disp.lang) || 'en';
+  var sysPrompt = _pathLang === 'he'
+    ? ('אתה אדריכל QA בכיר עם 20 שנות ניסיון.' +
+      ' קיבלת נתיב לאפליקציה מקומית לניתוח: ' + path +
+      contextBlock +
+      '\n\nבהתבסס על שם הקובץ/תיקייה, סיומת הקובץ, ומבנה הנתיב, זהה את סוג האפליקציה.' +
+      ' צור STP מקצועי ומפורט בעברית הכולל:' +
+      ' (1) זיהוי סוג האפליקציה, הפלטפורמה, ומטרתה' +
+      ' (2) עץ בדיקות מקיף עם לפחות 35 פריטי בדיקה ספציפיים' +
+      ' (3) כיסוי: פונקציונלי, UI/UX, אינטגרציה, ביצועים, אבטחה, התקנה/הסרה' +
+      ' (4) עדיפויות P1/P2/P3' +
+      ' (5) Risk Assessment' +
+      ' (6) כלי אוטומציה מומלצים')
+    : ('You are a senior QA architect with 20 years of experience.' +
+      ' You have been given a local application path to analyze: ' + path +
+      contextBlock +
+      '\n\nBased on the filename/directory, extension, and path structure, identify the application type.' +
+      ' Create a professional and detailed STP in English including:' +
+      ' (1) Application type, platform, and purpose' +
+      ' (2) Comprehensive test tree with at least 35 specific test items' +
+      ' (3) Coverage: functional, UI/UX, integration, performance, security, install/uninstall' +
+      ' (4) P1/P2/P3 priorities' +
+      ' (5) Risk Assessment' +
+      ' (6) Recommended automation tools (pywinauto/Playwright/WinAppDriver etc.)');
 
   try {
     var full = await streamClaude(
@@ -2854,6 +2879,28 @@ function il(s){
 // ── DOM UPDATES ──────────────────────────────────────────
 var _showOutLast = 0;
 var _showOutTimer = null;
+var _streamElapsed = 0;
+var _streamElapsedTimer = null;
+
+function _startStreamTimer(phaseId) {
+  _streamElapsed = 0;
+  if (_streamElapsedTimer) { clearInterval(_streamElapsedTimer); _streamElapsedTimer = null; }
+  _streamElapsedTimer = setInterval(function() {
+    _streamElapsed++;
+    var lbl = document.getElementById('out-lbl');
+    if (lbl && S.streaming) {
+      var ph = PHASES[S.ap] || PHASES[phaseId];
+      var _gtl = (window.S_disp && S_disp.lang) || 'en';
+      lbl.textContent = ph.l + ' OUTPUT · ⟳ ' + (_gtl==='he'?'מייצר':'Generating') + '... ' + _streamElapsed + 's';
+    }
+    if (!S.streaming) { clearInterval(_streamElapsedTimer); _streamElapsedTimer = null; }
+  }, 1000);
+}
+
+function _stopStreamTimer() {
+  if (_streamElapsedTimer) { clearInterval(_streamElapsedTimer); _streamElapsedTimer = null; }
+}
+
 function showOut(phaseId, text, streaming) {
   var ph = PHASES[phaseId];
   document.getElementById('empty').style.display = 'none';
@@ -2895,7 +2942,9 @@ function showOut(phaseId, text, streaming) {
   if (!text && streaming) {
     var _gll=(window.S_disp&&S_disp.lang)||'en';
     docEl.innerHTML = '<div style="color:var(--muted);font-size:0.85em;padding:8px 0;animation:pulse 1s infinite">◈ '+(_gll==='he'?'מייצר תוכן...':'Generating...')+'</div>';
+    _startStreamTimer(phaseId);
   } else {
+    if (!streaming) _stopStreamTimer();
     docEl.innerHTML = md2html(text);
   }
 
@@ -3366,16 +3415,48 @@ async function _vibeRunSaveOutput(outputType, content) {
   });
 }
 
+// Parse PASS/FAIL/SKIP counts from AI-generated run output text
+function _parseRunStats(text) {
+  if (!text) return null;
+  var pass = 0, fail = 0, skip = 0;
+  // Pattern 1: "PASS: 15 | FAIL: 3 | SKIP: 2" (summary line)
+  var m = text.match(/PASS[\s:=]+(\d+)[^\d\n]+FAIL[\s:=]+(\d+)[^\d\n]+SKIP[\s:=]+(\d+)/i);
+  if (m) { pass = +m[1]; fail = +m[2]; skip = +m[3]; }
+  else {
+    // Pattern 2: count table rows with PASS/FAIL/SKIP cells
+    text.split('\n').forEach(function(l) {
+      var u = l.toUpperCase();
+      if (/\|\s*PASS\s*\|/.test(u)||/\bPASS\b/.test(u)&&/^\|/.test(l.trim())) pass++;
+      else if (/\|\s*FAIL\s*\|/.test(u)||/\bFAIL\b/.test(u)&&/^\|/.test(l.trim())) fail++;
+      else if (/\|\s*SKIP\s*\|/.test(u)||/\bSKIP\b/.test(u)&&/^\|/.test(l.trim())) skip++;
+    });
+    // Pattern 3: simple word frequency (last resort)
+    if (pass+fail+skip === 0) {
+      var pm=text.match(/\bPASS\b/gi); var fm=text.match(/\bFAIL\b/gi); var sm=text.match(/\bSKIP\b/gi);
+      pass=(pm||[]).length; fail=(fm||[]).length; skip=(sm||[]).length;
+      // Divide by 2 since header row counts each word once too
+      if (pass>2&&fail>2) { pass=Math.round(pass/2); fail=Math.round(fail/2); skip=Math.round(skip/2); }
+    }
+  }
+  if (pass+fail+skip === 0) return null;
+  var overall = fail > 0 ? (pass > 0 ? 'partial' : 'fail') : 'pass';
+  var sumMatch = text.match(/(?:summary|overall|תקציר|סיכום)[:\s]+([^\n]{20,200})/i);
+  return { pass_count: pass, fail_count: fail, skip_count: skip, overall_status: overall,
+           summary: sumMatch ? sumMatch[1].trim().slice(0,200) : null };
+}
+
 function _vibeRunFinish(status, result) {
   if (!S.runId) return;
   var patch = { status: status };
-  if (result) {
-    if (result.overall_status) patch.overall_status = result.overall_status.toLowerCase(); // worker expects: pass|fail|partial
-    if (result.pass_count  != null) patch.pass_count   = result.pass_count;
-    if (result.fail_count  != null) patch.fail_count   = result.fail_count;
-    if (result.skip_count  != null) patch.skip_count   = result.skip_count;
-    if (result.duration_sec != null) patch.duration_sec = result.duration_sec;
-    if (result.summary)    patch.summary    = String(result.summary).slice(0, 1000);
+  // For AI simulation (result=null), parse stats from the generated run output
+  var resolvedResult = result || (S.data[3] ? _parseRunStats(S.data[3]) : null);
+  if (resolvedResult) {
+    if (resolvedResult.overall_status) patch.overall_status = resolvedResult.overall_status.toLowerCase();
+    if (resolvedResult.pass_count  != null) patch.pass_count   = resolvedResult.pass_count;
+    if (resolvedResult.fail_count  != null) patch.fail_count   = resolvedResult.fail_count;
+    if (resolvedResult.skip_count  != null) patch.skip_count   = resolvedResult.skip_count;
+    if (resolvedResult.duration_sec != null) patch.duration_sec = resolvedResult.duration_sec;
+    if (resolvedResult.summary)    patch.summary    = String(resolvedResult.summary).slice(0, 1000);
   }
   workerFetch('PATCH', '/api/runs/' + S.runId, patch);
 }
@@ -3764,6 +3845,43 @@ function renderPhaseTimeline(phaseStatus) {
   return html + '</div>';
 }
 
+// Parse individual test cases from AI-generated RUN output text
+function _parseTestCasesFromText(text) {
+  if (!text) return [];
+  var cases = [];
+  text.split('\n').forEach(function(line) {
+    // Match markdown table row with status: | N | Name | PASS/FAIL/SKIP | ... |
+    var m = line.match(/^\|\s*(\d+)[\.\s]*\|\s*(.+?)\s*\|\s*(PASS|FAIL|SKIP)\s*\|/i);
+    if (!m) m = line.match(/^\|\s*TC[-\s]?(\d+)\s*\|\s*(.+?)\s*\|\s*(PASS|FAIL|SKIP)\s*\|/i);
+    if (m) {
+      var errMatch = line.match(/\|\s*(PASS|FAIL|SKIP)\s*\|\s*([^|]{5,})\s*\|/i);
+      cases.push({ num: m[1], name: m[2].replace(/\*\*/g,'').trim(), status: m[3].toUpperCase(),
+                   notes: errMatch && errMatch[2] && !/^\s*[-—]\s*$/.test(errMatch[2]) ? errMatch[2].trim() : '' });
+    }
+  });
+  return cases;
+}
+
+function _renderTestCaseList(cases, lang) {
+  if (!cases || cases.length === 0) return '';
+  var html = '<div style="margin-top:12px">';
+  html += '<div style="font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;font-weight:700">'+(lang==='he'?'תסריטי בדיקה':'TEST CASES')+'</div>';
+  cases.forEach(function(tc) {
+    var s = tc.status === 'PASS' ? 'pass' : tc.status === 'FAIL' ? 'fail' : 'skip';
+    var icon = s==='pass'?'✓':s==='fail'?'✗':'⚠';
+    html += '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;margin-bottom:6px;background:rgba(4,8,15,.5);border-radius:8px;border-left:3px solid '+(s==='pass'?'var(--green)':s==='fail'?'var(--red)':'var(--amber)')+'">'
+      + '<div style="flex-shrink:0;width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:'+(s==='pass'?'rgba(0,229,160,.15)':s==='fail'?'rgba(244,63,94,.15)':'rgba(245,158,11,.15)')+';color:'+(s==='pass'?'var(--green)':s==='fail'?'var(--red)':'var(--amber)')+'">'+icon+'</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px"><span style="color:var(--dim);font-size:10px">#'+tc.num+' </span>'+esc(tc.name)+'</div>'
+      + (tc.notes ? '<div style="font-size:11px;color:'+(s==='fail'?'var(--red)':'var(--muted)')+';margin-top:3px">'+esc(tc.notes)+'</div>' : '')
+      + '</div>'
+      + '<div style="flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:1px;color:'+(s==='pass'?'var(--green)':s==='fail'?'var(--red)':'var(--amber)')+'">'+tc.status+'</div>'
+      + '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
 async function toggleReportDetail(id) {
   var detail = document.getElementById('rd-' + id);
   if (!detail) return;
@@ -3771,75 +3889,101 @@ async function toggleReportDetail(id) {
 
   var report = (S.runReports || []).find(function(r) { return r.id === id; });
   var isSupabase = report && report.source === 'supabase';
-
-  var html = '<div class="report-tc-list">';
+  var _dl = (window.S_disp && S_disp.lang) || 'en';
 
   if (isSupabase) {
-    // Supabase run — fetch phase outputs + timeline from the worker
+    // Try to fetch detailed outputs from backend
     var data = await workerFetch('GET', '/api/runs/' + id);
+
+    // Stat bar always shown first (from cached data)
+    var totalTests = (report.pass_count||0)+(report.fail_count||0)+(report.skip_count||0);
+    var statBar = '<div style="display:flex;gap:20px;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:12px">'
+      + '<span style="color:var(--green);font-weight:700;font-size:14px">✓ '+(report.pass_count||0)+'<span style="font-size:10px;font-weight:400;margin-left:3px">PASS</span></span>'
+      + '<span style="color:var(--red);font-weight:700;font-size:14px">✗ '+(report.fail_count||0)+'<span style="font-size:10px;font-weight:400;margin-left:3px">FAIL</span></span>'
+      + '<span style="color:var(--amber);font-weight:700;font-size:14px">⚠ '+(report.skip_count||0)+'<span style="font-size:10px;font-weight:400;margin-left:3px">SKIP</span></span>'
+      + (totalTests>0?'<span style="color:var(--dim);font-size:11px;margin-left:auto">'+totalTests+' '+(totalTests===1?'test':'tests')+'</span>':'')
+      + '</div>';
+    if (report.summary) {
+      statBar += '<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;padding:8px 10px;background:rgba(0,229,160,.04);border-radius:6px;border-left:2px solid var(--green)">'+esc(report.summary)+'</div>';
+    }
+
     if (!data) {
-      // Backend unavailable (CORS / server error) — show cached summary data
-      var _dtl=(window.S_disp&&S_disp.lang)||'en';
-      html += '<div class="report-tc-row" style="padding:12px 0">';
-      html += '<div style="width:100%">';
-      if (report.summary) {
-        html += '<div style="font-size:12px;color:var(--text);line-height:1.7;margin-bottom:10px">'+esc(report.summary)+'</div>';
-      }
-      var totalTests = (report.pass_count||0)+(report.fail_count||0)+(report.skip_count||0);
-      if (totalTests > 0) {
-        html += '<div style="display:flex;gap:16px;font-size:12px">'
-          + '<span style="color:var(--green)">✓ '+(report.pass_count||0)+' PASS</span>'
-          + '<span style="color:var(--red)">✗ '+(report.fail_count||0)+' FAIL</span>'
-          + '<span style="color:var(--amber)">⚠ '+(report.skip_count||0)+' SKIP</span>'
-          + '</div>';
-      }
-      html += '<div style="font-size:10px;color:var(--dim);margin-top:8px">'+(_dtl==='he'?'פרטים נוספים אינם זמינים (שגיאת חיבור לשרת)':'Detailed data unavailable — server connection error')+'</div>';
-      html += '</div></div>';
-      html += '</div>';
+      // Backend unavailable — try to parse from current session data or show summary only
+      var runText = (S.runId === id || !S.runId) ? S.data[3] : null;
+      var parsedCases = _parseTestCasesFromText(runText);
+      var html = statBar
+        + (parsedCases.length > 0 ? _renderTestCaseList(parsedCases, _dl) : '<div style="font-size:11px;color:var(--dim);padding:8px 0">'+(_dl==='he'?'פרטי תסריטים אינם זמינים (שגיאת חיבור לשרת)':'Test case details unavailable — server connection error')+'</div>');
       detail.innerHTML = html;
       detail.classList.add('open');
       return;
     }
-    html = renderPhaseTimeline(data.phase_status || []) + '<div class="report-tc-list">';
+
+    var html = renderPhaseTimeline(data.phase_status || []) + statBar;
     var outputs = data.outputs || [];
     if (outputs.length === 0) {
-      var _dtl2=(window.S_disp&&S_disp.lang)||'en';
-      html += '<div class="report-tc-row" style="color:var(--muted);font-size:12px">'+(_dtl2==='he'?'אין פלטים שמורים לריצה זו':'No saved outputs for this run')+'</div>';
+      html += '<div style="font-size:12px;color:var(--muted)">'+(_dl==='he'?'אין פלטים שמורים לריצה זו':'No saved outputs for this run')+'</div>';
     } else {
-      // Show one entry per phase output type (latest of each type)
+      // Find RUN output and parse test cases
+      var runOutput = null;
       var seen = {};
       outputs.slice().reverse().forEach(function(o) {
         if (seen[o.output_type]) return;
         seen[o.output_type] = true;
-        var label = {stp:'STP — Test Plan', std:'STD — Test Scripts', raw_text:'RUN — Execution', str:'STR — Summary', script:'Script'}[o.output_type] || o.output_type;
-        var preview = (o.content || '').slice(0, 150).replace(/\n/g, ' ');
-        html += '<div class="report-tc-row" style="padding:10px 0">'
-          + '<div class="report-tc-status pass">✓</div>'
-          + '<div style="flex:1;min-width:0">'
-          + '<div class="report-tc-name" style="font-weight:700;margin-bottom:3px">' + esc(label) + '</div>'
-          + '<div style="color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(preview) + (o.content.length > 150 ? '…' : '') + '</div>'
-          + '</div>'
+        if (o.output_type === 'raw_text' || o.output_type === 'run') runOutput = o.content;
+      });
+      var parsedCases = _parseTestCasesFromText(runOutput);
+      if (parsedCases.length > 0) {
+        html += _renderTestCaseList(parsedCases, _dl);
+      }
+      // Show phase output summaries
+      html += '<div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">';
+      Object.keys(seen).forEach(function(type) {
+        var o = outputs.slice().reverse().find(function(x){ return x.output_type===type; });
+        if (!o) return;
+        var label = {stp:'STP — Test Plan', std:'STD — Test Scripts', raw_text:'RUN — Execution', str:'STR — Summary', script:'Script'}[type] || type;
+        var preview = (o.content||'').replace(/\n+/g,' ').trim().slice(0,160);
+        html += '<div style="padding:10px 12px;background:rgba(4,8,15,.5);border-radius:8px;font-size:12px">'
+          + '<div style="font-weight:700;color:var(--text);margin-bottom:4px">'+esc(label)+'</div>'
+          + '<div style="color:var(--muted);font-size:11px">'+esc(preview)+(o.content.length>160?'…':'')+'</div>'
           + '</div>';
       });
+      html += '</div>';
     }
-  } else {
-    // Local runner run — existing behavior
-    var data = await serverFetch('GET', '/api/reports/' + id);
-    if (!data || data.error) { var _rltl=(window.S_disp&&S_disp.lang)||'en'; showToast(_rltl==='he'?'✗ לא ניתן לטעון דוח':'✗ Cannot load report', 'err'); return; }
-    (data.test_cases || []).forEach(function(tc) {
-      var s = tc.status || 'skip';
-      html += '<div class="report-tc-row">'
-        + '<div class="report-tc-status '+s+'">'+(s==='pass'?'✓':s==='fail'?'✗':'⚠')+'</div>'
-        + '<div class="report-tc-name">'+esc(tc.name||tc.id||'Test')+'</div>'
-        + '<div class="report-tc-dur">'+(tc.duration_ms||0)+'ms</div>'
-        + '</div>';
-      if (tc.error) html += '<div class="report-tc-err">'+esc(tc.error)+'</div>';
-    });
-  }
+    detail.innerHTML = html;
+    detail.classList.add('open');
 
-  html += '</div>';
-  detail.innerHTML = html;
-  detail.classList.add('open');
+  } else {
+    // Local runner run
+    var data = await serverFetch('GET', '/api/reports/' + id);
+    var html = '';
+    if (!data || data.error) {
+      var _rltl=(window.S_disp&&S_disp.lang)||'en';
+      showToast(_rltl==='he'?'✗ לא ניתן לטעון דוח':'✗ Cannot load report', 'err');
+      return;
+    }
+    var cases = data.test_cases || [];
+    if (cases.length === 0) {
+      html = '<div style="color:var(--muted);font-size:12px;padding:8px 0">'+(_dl==='he'?'אין תסריטי בדיקה בדוח זה':'No test cases in this report')+'</div>';
+    } else {
+      html = '<div style="display:flex;flex-direction:column;gap:8px">';
+      cases.forEach(function(tc) {
+        var s = tc.status || 'skip';
+        var icon = s==='pass'?'✓':s==='fail'?'✗':'⚠';
+        html += '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(4,8,15,.5);border-radius:8px;border-left:3px solid '+(s==='pass'?'var(--green)':s==='fail'?'var(--red)':'var(--amber)')+'">'
+          + '<div style="flex-shrink:0;width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:'+(s==='pass'?'rgba(0,229,160,.15)':s==='fail'?'rgba(244,63,94,.15)':'rgba(245,158,11,.15)')+';color:'+(s==='pass'?'var(--green)':s==='fail'?'var(--red)':'var(--amber)')+'">'+icon+'</div>'
+          + '<div style="flex:1">'
+          + '<div style="font-size:12px;font-weight:600;color:var(--text)">'+esc(tc.name||tc.id||'Test')+'</div>'
+          + (tc.duration_ms?'<div style="font-size:11px;color:var(--dim);margin-top:2px">'+(tc.duration_ms)+'ms</div>':'')
+          + (tc.error?'<div style="font-size:11px;color:var(--red);margin-top:4px">'+esc(tc.error)+'</div>':'')
+          + '</div>'
+          + '<div style="flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:1px;color:'+(s==='pass'?'var(--green)':s==='fail'?'var(--red)':'var(--amber)')+'">'+s.toUpperCase()+'</div>'
+          + '</div>';
+      });
+      html += '</div>';
+    }
+    detail.innerHTML = html;
+    detail.classList.add('open');
+  }
 }
 
 function dlReport(id) {
@@ -3856,12 +4000,13 @@ async function sendEmailReport() {
   var btn = document.getElementById('email-send-btn');
   if (!emailEl) return;
   var email = emailEl.value.trim();
+  var _emtl=(window.S_disp&&S_disp.lang)||'en';
   if (!email || !/\S+@\S+\.\S+/.test(email)) {
-    if (status) { status.className='target-status-msg err'; status.textContent='✗ כתובת מייל לא תקינה'; }
+    if (status) { status.className='target-status-msg err'; status.textContent='✗ '+(_emtl==='he'?'כתובת מייל לא תקינה':'Invalid email address'); }
     return;
   }
   btn.disabled = true;
-  if (status) { status.className='target-status-msg'; status.textContent='⟳ שולח...'; }
+  if (status) { status.className='target-status-msg'; status.textContent='⟳ '+(_emtl==='he'?'שולח...':'Sending...'); }
   var payload = {
     to: email,
     subject: 'VIBE.TESTING Run Report — ' + new Date().toLocaleString('he-IL'),
@@ -3871,15 +4016,26 @@ async function sendEmailReport() {
     std_text: S.data[2] || '',
     str_text: S.data[4] || '',
   };
+  // Email requires the local Runner server with SMTP configured
+  if (!S.serverOnline) {
+    btn.disabled = false;
+    var _etl2=(window.S_disp&&S_disp.lang)||'en';
+    var _emsg = _etl2==='he'
+      ? 'שליחת מייל דורשת את שרת ה-Runner המקומי עם הגדרות SMTP. הפעל: python vibe-runner.py והגדר SMTP_USER ו-SMTP_PASS ב-.env'
+      : 'Email requires the local Runner server with SMTP configured. Run: python vibe-runner.py and set SMTP_USER and SMTP_PASS in .env';
+    if (status) { status.className='target-status-msg err'; status.textContent='⚠ '+_emsg; }
+    return;
+  }
   var result = await serverFetch('POST', '/api/email', payload);
   btn.disabled = false;
+  var _etl3=(window.S_disp&&S_disp.lang)||'en';
   if (result && !result.error) {
-    if (status) { status.className='target-status-msg ok'; status.textContent='✓ דוח נשלח ל-'+email; }
-    showToast('✓ מייל נשלח!', 'ok');
+    if (status) { status.className='target-status-msg ok'; status.textContent=(_etl3==='he'?'✓ דוח נשלח ל-':'✓ Report sent to ')+email; }
+    showToast(_etl3==='he'?'✓ מייל נשלח!':'✓ Email sent!', 'ok');
   } else {
-    var msg = (result && result.error) || 'שגיאת שרת — ודא שהגדרת SMTP_USER ו-SMTP_PASS';
+    var msg = (result && result.error) || (_etl3==='he'?'שגיאת שרת — ודא שהגדרת SMTP_USER ו-SMTP_PASS ב-.env':'Server error — check SMTP_USER and SMTP_PASS in .env');
     if (status) { status.className='target-status-msg err'; status.textContent='✗ '+msg; }
-    showToast('✗ שגיאה בשליחת מייל', 'err');
+    showToast(_etl3==='he'?'✗ שגיאה בשליחת מייל':'✗ Email send failed', 'err');
   }
 }
 
@@ -4375,8 +4531,8 @@ function buildSimReport(runText) {
         en: 'Install requirements in a terminal or CMD (one time only):<br><code>pip install pywinauto playwright anthropic python-dotenv</code><br><code>playwright install chromium</code>'
       },
       'rob-step2': {
-        he: 'פתח טרמינל נפרד <strong>בתיקיית הפרויקט</strong> (היכן שנמצא vibe-runner.py) והפעל:<br><code>python vibe-runner.py</code>',
-        en: 'Open a new terminal <strong>inside the project folder</strong> (where vibe-runner.py is located) and run:<br><code>python vibe-runner.py</code>'
+        he: 'הקובץ <code>vibe-runner.py</code> נמצא בתיקיית הפרויקט (שם שמורה גם <code>index.html</code>).<br>פתח טרמינל נפרד <strong>בתיקייה זו</strong> והפעל:<br><code>python vibe-runner.py</code><br><span style="color:var(--dim);font-size:0.9em">לא מוצא את הקובץ? ודא שהורדת את כל תיקיית הפרויקט מ-GitHub.</span>',
+        en: 'The file <code>vibe-runner.py</code> is in the project folder (same folder as <code>index.html</code>).<br>Open a new terminal <strong>in that folder</strong> and run:<br><code>python vibe-runner.py</code><br><span style="color:var(--dim);font-size:0.9em">Can\'t find the file? Make sure you downloaded the full project folder from GitHub.</span>'
       }
     };
     Object.keys(_blocks).forEach(function(id) {
