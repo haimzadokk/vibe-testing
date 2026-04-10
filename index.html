@@ -885,7 +885,7 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
         <div class="wlc-feature"><span class="wlc-feat-icon">📄</span><span data-en="Professional PDF export for every phase" data-he="ייצוא PDF מקצועי לכל שלב">ייצוא PDF מקצועי לכל שלב</span></div>
       </div>
 
-      <button class="wlc-btn" id="wlc-start-btn" onclick="document.getElementById('modal').classList.add('hidden');updateUI();showToast((window.S_disp&&S_disp.lang)==='he'?'✓ ברוך הבא!':'✓ Welcome!','ok')">
+      <button class="wlc-btn" id="wlc-start-btn">
         <span data-en="Get Started" data-he="התחל עכשיו">התחל עכשיו</span>
         <span class="wlc-btn-arrow">→</span>
       </button>
@@ -1657,85 +1657,22 @@ var _vibeExplicitLogout = false
 })();
 // ── END MOCK SESSION BOOTSTRAP ────────────────────────────────────────────
 
-// Fast-path: if no Supabase session key exists at all, redirect immediately
-// without waiting for the SDK. Not authoritative — SDK check below is the gate.
-;(function vibeAuthFastPath() {
-  if (window._VIBE_MOCK_ACTIVE) return;  // TEST-ONLY: mock bypasses fast-path
-  var found = Object.keys(localStorage).some(function(k) {
-    return k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1
-  })
-  if (!found) window.location.replace('auth.html')
-})()
-
-// Authoritative guard: load SDK → getSession() → start app only on success.
-// initModal / updateUI / checkServerStatus are called here, not inline below.
-;(async function vibeAuthGuard() {
-  // ── TEST-ONLY: mock short-circuit ─────────────────────────────────────
+// ── OPEN ACCESS — no login required ──────────────────────
+// First-time visitors see the onboarding welcome screen.
+// Returning visitors (vibe_onboarded flag set) go straight to the app.
+;(function vibeInit() {
   if (window._VIBE_MOCK_ACTIVE) {
     var _ml = document.getElementById('user-email-lbl');
     if (_ml) _ml.textContent = window.VIBE_USER.email.split('@')[0];
     initModal(); updateUI(); checkServerStatus();
     return;
   }
-  // ─────────────────────────────────────────────────────────────────────
-
-  await new Promise(function(res, rej) {
-    var s = document.createElement('script')
-    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js'
-    s.onload = res; s.onerror = rej
-    document.head.appendChild(s)
-  })
-
-  var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { storage: localStorage, autoRefreshToken: true, persistSession: true,
-            detectSessionInUrl: false, flowType: 'pkce' }
-  })
-  window._sb = sb
-
-  var result = await sb.auth.getSession()
-  var session = result.data && result.data.session
-
-  if (!session || !session.user || !session.user.email_confirmed_at) {
-    window.location.replace('auth.html')
-    return
-  }
-
-  // Role: decode access_token directly — custom_access_token_hook injects
-  // claims into the JWT payload. This is the authoritative source, not
-  // session.user.app_metadata which reflects Supabase's own internal metadata.
-  // Decode JWT payload using base64url (not plain base64):
-  // replace URL-safe chars, restore stripped padding, then decode.
-  // On any failure, role falls back to 'user' and app continues safely.
-  var claims = {}
-  try {
-    var b64 = session.access_token.split('.')[1]
-      .replace(/-/g, '+').replace(/_/g, '/')
-    b64 += '=='.slice(0, (4 - b64.length % 4) % 4)  // restore padding
-    claims = JSON.parse(atob(b64))
-  } catch(e) {
-    console.warn('[vibe] JWT decode failed — role defaulting to user', e)
-  }
-  window.VIBE_USER = {
-    id:    session.user.id,
-    email: session.user.email,
-    role:  (claims && typeof claims.app_role === 'string') ? claims.app_role : 'user'
-  }
-
-  // Session listener: SIGNED_OUT fires for both explicit logout and failed
-  // token refresh. Distinguish by the _vibeExplicitLogout flag.
-  sb.auth.onAuthStateChange(function(event) {
-    if (event === 'SIGNED_OUT') {
-      var msg = _vibeExplicitLogout ? 'logged_out' : 'session_expired'
-      window.location.replace('auth.html?msg=' + msg)
-    }
-  })
-
-  // Auth confirmed — initialize app.
-  var _emailLbl = document.getElementById('user-email-lbl')
-  if (_emailLbl && window.VIBE_USER) _emailLbl.textContent = window.VIBE_USER.email.split('@')[0]
-  initModal()
-  updateUI()
-  // checkServerStatus fires on-demand when user navigates to phase 3
+  window.VIBE_USER = null;
+  // Hide the auth user-menu — no login needed
+  var uw = document.getElementById('user-menu-wrap');
+  if (uw) uw.style.display = 'none';
+  initModal();
+  updateUI();
 })()
 
 function toggleUserMenu() {
@@ -1751,13 +1688,9 @@ document.addEventListener('click', function(e) {
 })
 
 function logout() {
-  _vibeExplicitLogout = true
-  if (window._sb) { window._sb.auth.signOut(); return }
-  // SDK not yet ready — remove only Supabase auth keys and redirect.
-  Object.keys(localStorage)
-    .filter(function(k) { return k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1 })
-    .forEach(function(k) { localStorage.removeItem(k) })
-  window.location.replace('auth.html?msg=logged_out')
+  // No auth — clear session data and reload
+  localStorage.removeItem('vibe_onboarded');
+  window.location.reload();
 }
 // ══════════════════════════════════════════════════════════
 //  VIBE.TESTING v3 — Core Logic
@@ -2404,9 +2337,17 @@ function spawnParticles() {
 
 function initModal() {
   spawnParticles();
-  // כפתור התחל — סוגר את מסך Welcome ומתחיל
-  document.getElementById('wlc-start-btn').addEventListener('click', function() {
+  // Returning visitor — skip onboarding and go straight to the app
+  if (localStorage.getItem('vibe_onboarded')) {
     document.getElementById('modal').classList.add('hidden');
+    return;
+  }
+  // First-time visitor — show welcome screen, save flag on "Get Started"
+  document.getElementById('wlc-start-btn').addEventListener('click', function() {
+    localStorage.setItem('vibe_onboarded', '1');
+    document.getElementById('modal').classList.add('hidden');
+    var _tl = (window.S_disp && S_disp.lang) || 'en';
+    showToast(_tl === 'he' ? '✓ ברוך הבא ל-VIBE.TESTING!' : '✓ Welcome to VIBE.TESTING!', 'ok');
     updateUI();
   });
 }
