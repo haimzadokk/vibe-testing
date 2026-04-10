@@ -29,21 +29,30 @@ export default {
       return new Response('Method Not Allowed', { status: 405 });
     }
 
-    // ── AUTH: require valid Supabase JWT ──────────────────────
+    // ── AUTH: optional Supabase JWT (app is open-access) ─────
     const authHeader = request.headers.get('Authorization') || '';
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
-
-    if (!token) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
-      });
+    let payload = null;
+    if (token && env.SUPABASE_JWT_SECRET) {
+      payload = await verifySupabaseJWT(token, env.SUPABASE_JWT_SECRET);
     }
+    // No auth required — open access
+    // ─────────────────────────────────────────────────────────
 
-    const valid = await verifySupabaseJWT(token, env.SUPABASE_JWT_SECRET);
-    if (!valid) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
+    // ── RATE LIMITING: 20 req/min per IP or user ─────────────
+    const userId = (payload && payload.sub) ? payload.sub : (request.headers.get('CF-Connecting-IP') || 'anon');
+    const windowKey = Math.floor(Date.now() / 60000); // 1-minute window
+    if (!globalThis._rateMap) globalThis._rateMap = new Map();
+    // Clean stale windows (keep memory bounded)
+    for (const [k] of globalThis._rateMap) {
+      if (!k.endsWith(':' + windowKey)) globalThis._rateMap.delete(k);
+    }
+    const mapKey = `${userId}:${windowKey}`;
+    const reqCount = (globalThis._rateMap.get(mapKey) || 0) + 1;
+    globalThis._rateMap.set(mapKey, reqCount);
+    if (reqCount > 20) {
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again in a minute.' }), {
+        status: 429,
         headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
       });
     }
@@ -60,6 +69,18 @@ export default {
       });
     }
 
+    // ── PAYLOAD ENFORCEMENT: pin model, cap tokens, limit messages ──
+    const safeBody = {
+      model:     'claude-sonnet-4-20250514',
+      max_tokens: Math.min(Number(body.max_tokens) || 4000, 4000),
+      messages:  Array.isArray(body.messages) ? body.messages.slice(0, 20) : [],
+      stream:    body.stream === true,
+    };
+    if (body.system && typeof body.system === 'string') {
+      safeBody.system = body.system.slice(0, 2000);
+    }
+    // ────────────────────────────────────────────────────────────────
+
     const anthropicResp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -67,7 +88,7 @@ export default {
         'x-api-key': env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(safeBody),
     });
 
     return new Response(anthropicResp.body, {
@@ -82,14 +103,14 @@ export default {
 
 /**
  * Verifies a Supabase-issued JWT (HS256) against the project's JWT secret.
- * Returns true only if the signature is valid AND the token is not expired.
+ * Returns the decoded payload if valid, or null if invalid/expired.
  */
 async function verifySupabaseJWT(token, secret) {
   try {
     const parts = token.split('.');
-    if (parts.length !== 3) return false;
+    if (parts.length !== 3) return null;
 
-    // Decode payload (no signature check yet) to read exp
+    // Decode payload (no signature check yet) to read exp and sub
     const payload = JSON.parse(
       new TextDecoder().decode(
         Uint8Array.from(
@@ -100,7 +121,7 @@ async function verifySupabaseJWT(token, secret) {
     );
 
     // Reject expired tokens
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return false;
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
 
     // Verify HMAC-SHA256 signature
     const key = await crypto.subtle.importKey(
@@ -117,8 +138,9 @@ async function verifySupabaseJWT(token, secret) {
       c => c.charCodeAt(0)
     );
 
-    return await crypto.subtle.verify('HMAC', key, sigBytes, sigInput);
+    const valid = await crypto.subtle.verify('HMAC', key, sigBytes, sigInput);
+    return valid ? payload : null;
   } catch {
-    return false;
+    return null;
   }
 }

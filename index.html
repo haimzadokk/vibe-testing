@@ -809,6 +809,66 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
 @media(max-width:640px){
   .vt-sidebar{display:none}
 }
+/* ── MANUAL EXECUTION PANEL ── */
+.mex-panel{display:none;flex-direction:column;gap:0}
+.mex-panel.active{display:flex}
+.mex-header{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface);border:1px solid var(--border2);border-radius:12px 12px 0 0;flex-wrap:wrap}
+.mex-title{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--amber)}
+.mex-prog-wrap{display:flex;align-items:center;gap:8px}
+.mex-prog-bar{width:100px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.mex-prog-fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s;width:0%}
+.mex-prog-lbl{font-size:11px;color:var(--muted);white-space:nowrap}
+.mex-stats-row{display:flex;gap:14px;margin-left:auto}
+.mex-stat{font-size:12px;font-weight:700}
+.mex-stat.pass{color:var(--green)}.mex-stat.fail{color:var(--red)}.mex-stat.skip{color:var(--amber)}
+.mex-tests{display:flex;flex-direction:column;border:1px solid var(--border2);border-top:none;overflow:hidden}
+.mex-row{border-bottom:1px solid var(--border);background:var(--surface);transition:background .15s;border-left:3px solid transparent}
+.mex-row:last-child{border-bottom:none}
+.mex-row.status-pass{border-left-color:var(--green)}
+.mex-row.status-fail{border-left-color:var(--red)}
+.mex-row.status-skip{border-left-color:var(--amber)}
+.mex-row-hdr{display:flex;align-items:center;gap:8px;padding:10px 14px}
+.mex-tc-id{font-size:10px;color:var(--dim);letter-spacing:1px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.mex-tc-name{flex:1;font-size:12px;color:var(--text);font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mex-prio{font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 6px;border-radius:4px;flex-shrink:0}
+.mex-prio.p1{background:rgba(244,63,94,.15);color:var(--red)}
+.mex-prio.p2{background:rgba(245,158,11,.12);color:var(--amber)}
+.mex-prio.p3{background:rgba(6,182,212,.1);color:var(--cyan)}
+.mex-actions{display:flex;gap:4px;flex-shrink:0}
+.mex-btn{background:transparent;border:1px solid var(--border2);border-radius:5px;padding:4px 9px;font-size:11px;color:var(--muted);cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:all .15s;white-space:nowrap}
+.mex-btn.pass-btn.active{border-color:var(--green);color:var(--green);background:rgba(0,229,160,.08)}
+.mex-btn.fail-btn.active{border-color:var(--red);color:var(--red);background:rgba(244,63,94,.08)}
+.mex-btn.skip-btn.active{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.08)}
+.mex-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.mex-bug-btn{background:transparent;border:1px solid rgba(244,63,94,.4);border-radius:5px;padding:4px 9px;font-size:11px;color:var(--red);cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:all .15s;display:none}
+.mex-bug-btn.show{display:inline-block}
+.mex-bug-btn:hover{background:rgba(244,63,94,.08)}
+.mex-expand{background:transparent;border:none;color:var(--dim);cursor:pointer;font-size:11px;padding:4px 6px;transition:transform .2s;flex-shrink:0}
+.mex-detail{display:none;padding:10px 14px 14px 20px;background:var(--bg);border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7}
+.mex-detail.open{display:block}
+.mex-detail strong{color:var(--text)}
+.mex-footer{padding:14px 18px;background:var(--surface);border:1px solid var(--border2);border-top:none;border-radius:0 0 12px 12px;display:flex;align-items:center;gap:10px}
+.mex-footer-hint{font-size:11px;color:var(--dim);flex:1}
+.mex-complete-btn{background:var(--surface2);color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:9px 20px;font-size:12px;font-weight:700;font-family:inherit;letter-spacing:1px;cursor:not-allowed;transition:all .2s}
+.mex-complete-btn.ready{background:var(--green);color:#04080f;border-color:var(--green);cursor:pointer}
+.mex-complete-btn.ready:hover{background:var(--green2);box-shadow:0 0 16px rgba(0,229,160,.3)}
+/* ── BUG POPUP ── */
+.bug-overlay{position:fixed;inset:0;background:rgba(2,5,12,.92);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.bug-overlay.open{display:flex}
+.bug-popup{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid rgba(244,63,94,.3);border-radius:16px;padding:26px;width:560px;max-width:94vw;max-height:90vh;overflow-y:auto;position:relative}
+.bug-popup::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.bug-popup-title{font-size:14px;font-weight:700;letter-spacing:2px;color:var(--red);margin-bottom:4px}
+.bug-field-group{display:flex;flex-direction:column;gap:10px}
+.bug-row{display:flex;gap:10px}
+.bug-label{font-size:10px;letter-spacing:1.5px;color:var(--dim);font-weight:700;margin-bottom:4px}
+.bug-input,.bug-select,.bug-textarea{background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:8px 11px;font-family:inherit;font-size:12px;color:var(--text);outline:none;width:100%;transition:border-color .2s;box-sizing:border-box}
+.bug-input:focus,.bug-textarea:focus{border-color:rgba(244,63,94,.6)}
+.bug-textarea{resize:vertical;min-height:56px}
+.bug-popup-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.bug-cancel-btn{background:transparent;border:1px solid var(--border2);border-radius:7px;padding:8px 16px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s}
+.bug-cancel-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.bug-save-btn{background:var(--red);color:white;border:none;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;font-family:inherit;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.bug-save-btn:hover{background:#d73050}
 </style>
 <!-- Stitch design layer — loads after inline styles so overrides take effect -->
 <link rel="stylesheet" href="ui/stitch.css"/>
@@ -1231,6 +1291,27 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
           <div class="target-status-msg" id="email-status"></div>
         </div>
 
+        <!-- MANUAL EXECUTION PANEL (Phase 3 — manual run mode) -->
+        <div class="mex-panel" id="mex-panel">
+          <div class="mex-header">
+            <div class="mex-title" data-en="✍ MANUAL TEST EXECUTION" data-he="✍ הרצה ידנית">✍ MANUAL TEST EXECUTION</div>
+            <div class="mex-prog-wrap">
+              <div class="mex-prog-bar"><div class="mex-prog-fill" id="mex-prog-fill"></div></div>
+              <div class="mex-prog-lbl" id="mex-prog-lbl">0 / 0</div>
+            </div>
+            <div class="mex-stats-row">
+              <span class="mex-stat pass">✓ <span id="mex-pass-val">0</span></span>
+              <span class="mex-stat fail">✗ <span id="mex-fail-val">0</span></span>
+              <span class="mex-stat skip">⤳ <span id="mex-skip-val">0</span></span>
+            </div>
+          </div>
+          <div class="mex-tests" id="mex-tests"></div>
+          <div class="mex-footer">
+            <span class="mex-footer-hint" id="mex-footer-hint" style="font-size:11px;color:var(--dim);flex:1">Mark all tests to enable completion</span>
+            <button class="mex-complete-btn" id="mex-complete-btn" onclick="completeMex()">◆ Complete &amp; Generate STR Data</button>
+          </div>
+        </div>
+
         <!-- REPORTS PANEL (Phase 5 — automation history) -->
         <div class="reports-panel" id="reports-panel">
           <div class="reports-toolbar">
@@ -1529,6 +1610,48 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
   </div>
 </div>
 
+<!-- BUG REPORT POPUP -->
+<div class="bug-overlay" id="bug-overlay">
+  <div class="bug-popup">
+    <div class="bug-popup-title" data-en="🐛 Open Bug Report" data-he="🐛 פתח דוח באג">🐛 Open Bug Report</div>
+    <div class="bug-popup-sub" id="bug-popup-sub" style="font-size:11px;color:var(--dim);letter-spacing:1px;margin-bottom:20px"></div>
+    <div class="bug-field-group">
+      <div><div class="bug-label" data-en="BUG TITLE *" data-he="כותרת הבאג *">BUG TITLE *</div>
+      <input class="bug-input" id="bug-title-input" type="text" placeholder="e.g. Login crashes with invalid credentials"/></div>
+      <div class="bug-row">
+        <div style="flex:1"><div class="bug-label" data-en="SEVERITY" data-he="חומרה">SEVERITY</div>
+        <select class="bug-select bug-input" id="bug-severity-select" style="width:100%">
+          <option>Critical</option><option>High</option><option selected>Medium</option><option>Low</option>
+        </select></div>
+        <div style="flex:1"><div class="bug-label" data-en="PRIORITY" data-he="עדיפות">PRIORITY</div>
+        <select class="bug-select bug-input" id="bug-priority-select" style="width:100%">
+          <option>P1</option><option selected>P2</option><option>P3</option>
+        </select></div>
+        <div style="flex:1"><div class="bug-label" data-en="MODULE" data-he="מודול">MODULE</div>
+        <input class="bug-input" id="bug-module-input" type="text" placeholder="e.g. Auth"/></div>
+      </div>
+      <div><div class="bug-label" data-en="STEPS TO REPRODUCE *" data-he="שלבי שחזור *">STEPS TO REPRODUCE *</div>
+      <textarea class="bug-textarea" id="bug-steps-input" rows="3" placeholder="1. Go to login&#10;2. Enter invalid creds&#10;3. Click submit"></textarea></div>
+      <div class="bug-row">
+        <div style="flex:1"><div class="bug-label" data-en="EXPECTED" data-he="צפוי">EXPECTED</div>
+        <textarea class="bug-textarea" id="bug-expected-input" rows="2" placeholder="Error message shown"></textarea></div>
+        <div style="flex:1"><div class="bug-label" data-en="ACTUAL *" data-he="בפועל *">ACTUAL *</div>
+        <textarea class="bug-textarea" id="bug-actual-input" rows="2" placeholder="App crashes / white screen"></textarea></div>
+      </div>
+      <div class="bug-row">
+        <div style="flex:1"><div class="bug-label" data-en="ENVIRONMENT" data-he="סביבה">ENVIRONMENT</div>
+        <input class="bug-input" id="bug-env-input" type="text" placeholder="Chrome 124, Win11"/></div>
+        <div style="flex:1"><div class="bug-label" data-en="REPORTER" data-he="מדווח">REPORTER</div>
+        <input class="bug-input" id="bug-reporter-input" type="text" placeholder="Your name"/></div>
+      </div>
+    </div>
+    <div class="bug-popup-footer">
+      <button class="bug-cancel-btn" onclick="mexCloseBug()" data-en="Cancel" data-he="ביטול">Cancel</button>
+      <button class="bug-save-btn" onclick="mexSaveBug()" data-en="💾 Save Bug" data-he="💾 שמור באג">💾 Save Bug</button>
+    </div>
+  </div>
+</div>
+
 <!-- RUN ONBOARDING -->
 <div class="run-onboard-overlay hidden" id="run-onboard-overlay">
   <div class="run-onboard-modal">
@@ -1610,6 +1733,13 @@ body.light-mode .vts-ctl-btn:hover{border-color:var(--green);color:var(--green)}
         <div>
           <div class="runmode-opt-title" data-en="Real Automation" data-he="אוטומציה אמיתית">Real Automation</div>
           <div class="runmode-opt-desc" id="rmo-real-desc">Playwright (web) or pywinauto (desktop) — real run on the app.<br>Requires: python vibe-runner.py running.</div>
+        </div>
+      </div>
+      <div class="runmode-opt" id="rmo-manual" onclick="selectRunMode('manual')">
+        <div class="runmode-opt-icon">✍️</div>
+        <div>
+          <div class="runmode-opt-title" data-en="Manual Execution" data-he="הרצה ידנית">Manual Execution</div>
+          <div class="runmode-opt-desc" data-en="Run each test case manually — mark Pass / Fail / Skip.<br>Failed tests support Jira-style bug reports. Always available." data-he="הרץ כל תסריט ידנית — סמן עבר / נכשל / דלג.<br>תסריטים שנכשלו תומכים בדוח באג בסגנון Jira. תמיד זמין.">Run each test case manually — mark Pass / Fail / Skip.<br>Failed tests support Jira-style bug reports. Always available.</div>
         </div>
       </div>
     </div>
@@ -2091,15 +2221,16 @@ function closeDashboard() {
 async function runSTPFromURL() {
   var url = document.getElementById('stp-url-input').value.trim();
   var st = document.getElementById('stp-url-status');
+  var _urlst_lang = (window.S_disp && S_disp.lang) || 'en';
   if (!url || !url.startsWith('http')) {
     st.className = 'url-status show';
-    st.innerHTML = '<span style="color:var(--red)">⚠ הכנס כתובת URL תקינה (https://...)</span>';
+    st.innerHTML = '<span style="color:var(--red)">⚠ ' + (_urlst_lang==='he' ? 'הכנס כתובת URL תקינה (https://...)' : 'Enter a valid URL (https://...)') + '</span>';
     return;
   }
   if (S.streaming) return;
 
   st.className = 'url-status show';
-  st.innerHTML = '<span style="color:var(--amber)">⟳ מנתח את האתר ומייצר STP...</span>';
+  st.innerHTML = '<span style="color:var(--amber)">⟳ ' + (_urlst_lang==='he' ? 'מנתח את האתר ומייצר STP...' : 'Analyzing site and generating STP...') + '</span>';
 
   S.runId = null; _vibeRunPromise = null; _vibeRunStart();
   _vibePhaseStatus(1, 'running');
@@ -2142,7 +2273,8 @@ async function runSTPFromURL() {
     S.targetUrl = url; S.targetType = 'url'; S_conn.url = url;
     showOut(1, full, false);
     updateTabDones();
-    st.innerHTML = '<span style="color:var(--green)">✓ STP נוצר מ-' + esc(url) + ' — יעד נשמר לשלב RUN</span>';
+    var _urlst_lang2 = (window.S_disp && S_disp.lang) || 'en';
+    st.innerHTML = '<span style="color:var(--green)">✓ ' + (_urlst_lang2==='he' ? 'STP נוצר מ-' + esc(url) + ' — יעד נשמר לשלב RUN' : 'STP created from ' + esc(url) + ' — target saved for RUN phase') + '</span>';
     var _stptl=(window.S_disp&&S_disp.lang)||'en'; showToast(_stptl==='he'?'✓ STP נוצר מניתוח האתר!':'✓ STP created from site analysis!', 'ok');
     _vibeRunSaveOutput('stp', full);
     _vibePhaseStatus(1, 'completed');
@@ -2592,10 +2724,11 @@ async function streamClaude(messages, onChunk) {
 
 // ── SYSTEM PROMPTS ───────────────────────────────────────
 function getContext(p) {
+  var _ctxl = (window.S_disp && S_disp.lang) || 'en';
   var c = '';
-  if (p>=2 && S.data[1]) c += '\n\n=== STP (עץ בדיקות) ===\n'+S.data[1].slice(0,8000);
-  if (p>=3 && S.data[2]) c += '\n\n=== STD (תסריטי בדיקה) ===\n'+S.data[2].slice(0,12000);
-  if (p>=4 && S.data[3]) c += '\n\n=== RUN (הרצת בדיקות) ===\n'+S.data[3].slice(0,12000);
+  if (p>=2 && S.data[1]) c += (_ctxl==='he' ? '\n\n=== STP (עץ בדיקות) ===\n' : '\n\n=== STP (Test Plan) ===\n') + S.data[1].slice(0,8000);
+  if (p>=3 && S.data[2]) c += (_ctxl==='he' ? '\n\n=== STD (תסריטי בדיקה) ===\n' : '\n\n=== STD (Test Scripts) ===\n') + S.data[2].slice(0,12000);
+  if (p>=4 && S.data[3]) c += (_ctxl==='he' ? '\n\n=== RUN (הרצת בדיקות) ===\n' : '\n\n=== RUN (Execution Report) ===\n') + S.data[3].slice(0,12000);
   return c;
 }
 function canRun(p) {
@@ -3053,6 +3186,9 @@ function updateUI() {
   // Reports panel (Phase 5)
   var rp = document.getElementById('reports-panel');
   if (rp) rp.classList.toggle('active', p===5);
+  // Hide manual exec panel when leaving phase 3
+  var mexPnl = document.getElementById('mex-panel');
+  if (mexPnl && p!==3) mexPnl.classList.remove('active');
   if (p===5) {
     document.getElementById('empty').style.display = 'none';
     document.getElementById('out-card').style.display = 'none';
@@ -4287,6 +4423,8 @@ function selectRunMode(mode) {
   _pendingRunMode = mode;
   document.getElementById('rmo-sim').classList.toggle('selected', mode==='sim');
   document.getElementById('rmo-real').classList.toggle('selected', mode==='real');
+  var mman = document.getElementById('rmo-manual');
+  if (mman) mman.classList.toggle('selected', mode==='manual');
 }
 
 function closeRunModePicker() {
@@ -4301,9 +4439,311 @@ async function confirmRunMode() {
       return;
     }
     await runRealAutomation();
+  } else if (_pendingRunMode === 'manual') {
+    showManualExec();
   } else {
     await runGenSim(3);
   }
+}
+
+// ── MANUAL TEST EXECUTION ─────────────────────────────────
+var _mexCurrentBugId = null;
+
+function parseSTDTests(text) {
+  if (!text) return [];
+  var tests = [];
+  var blocks = text.split(/(?=###\s+TC-\d+)/);
+  blocks.forEach(function(block) {
+    var hdr = block.match(/###\s+(TC-\d+)\s*\|\s*([^|\n]+?)\s*\|\s*([^\n]+)/);
+    if (!hdr) return;
+    function extract(pattern) {
+      var m = block.match(new RegExp('\\*\\*(?:' + pattern + ')\\*\\*[:\\s]+([\\s\\S]+?)(?=\\n\\*\\*[A-ZPRFT]|\\n-{3}|$)', 'i'));
+      return m ? m[1].trim().replace(/\n+$/, '') : '';
+    }
+    var priority = (block.match(/\|\s*Priority\s*\|\s*(P[123])\s*\|/i) || block.match(/Priority\s*\|\s*(P[123])/i) || [])[1] || 'P2';
+    tests.push({
+      id: hdr[1].trim(),
+      category: hdr[2].trim(),
+      name: hdr[3].trim().split('\n')[0].trim().replace(/[*|]/g,'').trim(),
+      priority: priority,
+      preconditions: extract('Preconditions?|תנאים מוקדמים|Pre-?conditions?'),
+      steps: extract('Test Steps?|צעדי הבדיקה'),
+      expected: extract('Expected Result?|תוצאה צפויה'),
+      status: 'pending',
+      bug: null
+    });
+  });
+  return tests;
+}
+
+function showManualExec() {
+  if (!S.data[2]) {
+    var _ml=(window.S_disp&&S_disp.lang)||'en';
+    showToast(_ml==='he'?'✗ הפעל שלב STD (2) תחילה':'✗ Run STD phase (2) first', 'err');
+    return;
+  }
+  var tests = parseSTDTests(S.data[2]);
+  if (!tests || tests.length === 0) {
+    var _ml=(window.S_disp&&S_disp.lang)||'en';
+    showToast(_ml==='he'?'✗ לא נמצאו תסריטים בSTD':'✗ No test scripts found in STD', 'err');
+    return;
+  }
+  S.manualTests = tests;
+  S.manualRunDone = false;
+  S.status[3] = 'generating';
+  document.getElementById('empty').style.display = 'none';
+  document.getElementById('out-card').style.display = 'none';
+  var mex = document.getElementById('mex-panel');
+  if (mex) mex.classList.add('active');
+  renderMexTests();
+  mexUpdateProgress();
+}
+
+function renderMexTests() {
+  var _ml = (window.S_disp && S_disp.lang) || 'en';
+  var tests = S.manualTests || [];
+  var html = '';
+  tests.forEach(function(t) {
+    var isPass = t.status==='pass', isFail = t.status==='fail', isSkip = t.status==='skip';
+    var stepsHtml = '';
+    if (t.steps) {
+      var stepsArr = t.steps.split(/\n?\s*\d+[.)]\s+/).filter(Boolean);
+      if (stepsArr.length > 1) {
+        stepsHtml = stepsArr.map(function(s,i){return '<div><span style="color:var(--dim);margin-right:6px">'+(i+1)+'.</span>'+esc(s.trim())+'</div>';}).join('');
+      } else {
+        stepsHtml = esc(t.steps);
+      }
+    }
+    html += '<div class="mex-row status-'+t.status+'" id="mexr-'+t.id+'">'
+      + '<div class="mex-row-hdr">'
+      + '<div class="mex-tc-id">'+esc(t.id)+'</div>'
+      + '<div class="mex-tc-name" title="'+esc(t.name)+'">'+esc(t.name)+'</div>'
+      + '<span class="mex-prio '+t.priority.toLowerCase()+'">'+esc(t.priority)+'</span>'
+      + '<div class="mex-actions">'
+      + '<button class="mex-btn pass-btn'+(isPass?' active':'')+'" onclick="mexMark(\''+t.id+'\',\'pass\')">✓ '+(_ml==='he'?'עבר':'Pass')+'</button>'
+      + '<button class="mex-btn fail-btn'+(isFail?' active':'')+'" onclick="mexMark(\''+t.id+'\',\'fail\')">✗ '+(_ml==='he'?'נכשל':'Fail')+'</button>'
+      + '<button class="mex-btn skip-btn'+(isSkip?' active':'')+'" onclick="mexMark(\''+t.id+'\',\'skip\')">⤳ '+(_ml==='he'?'דלג':'Skip')+'</button>'
+      + '<button class="mex-bug-btn'+(isFail?' show':'')+'" id="mexbug-'+t.id+'" onclick="mexOpenBug(\''+t.id+'\')">🐛 '+(_ml==='he'?'פתח באג':'Bug')+'</button>'
+      + '</div>'
+      + '<button class="mex-expand" onclick="mexToggle(\''+t.id+'\')">▾</button>'
+      + '</div>'
+      + '<div class="mex-detail" id="mexd-'+t.id+'">'
+      + (t.preconditions ? '<div style="margin-bottom:8px"><strong>'+(_ml==='he'?'תנאים מקדימים:':'Preconditions:')+'</strong><br><span style="white-space:pre-wrap">'+esc(t.preconditions)+'</span></div>' : '')
+      + (t.steps ? '<div style="margin-bottom:8px"><strong>'+(_ml==='he'?'צעדים:':'Steps:')+'</strong><div style="margin-top:4px;padding-right:8px">'+stepsHtml+'</div></div>' : '')
+      + (t.expected ? '<div style="margin-bottom:8px"><strong>'+(_ml==='he'?'תוצאה צפויה:':'Expected:')+'</strong><br>'+esc(t.expected)+'</div>' : '')
+      + (t.bug ? '<div style="margin-top:8px;padding:8px 10px;background:rgba(244,63,94,.06);border-radius:6px;border-left:2px solid var(--red)"><strong style="color:var(--red)">🐛 '+esc(t.bug.id)+': '+esc(t.bug.title)+'</strong><br><span style="font-size:11px;color:var(--dim)">'+esc(t.bug.severity)+' · '+(_ml==='he'?'בפועל:':'Actual:')+'</span> <span style="font-size:11px">'+esc(t.bug.actual)+'</span></div>' : '')
+      + '</div>'
+      + '</div>';
+  });
+  var el = document.getElementById('mex-tests');
+  if (el) el.innerHTML = html;
+}
+
+function mexMark(tcId, status) {
+  var t = (S.manualTests||[]).find(function(x){return x.id===tcId;});
+  if (!t) return;
+  var prev = t.status;
+  t.status = status;
+  if (status !== 'fail') t.bug = null;
+  var row = document.getElementById('mexr-'+tcId);
+  if (row) {
+    row.className = 'mex-row status-'+status;
+    row.querySelectorAll('.mex-btn').forEach(function(b){
+      b.classList.toggle('active',
+        (b.classList.contains('pass-btn') && status==='pass') ||
+        (b.classList.contains('fail-btn') && status==='fail') ||
+        (b.classList.contains('skip-btn') && status==='skip')
+      );
+    });
+    var bugBtn = document.getElementById('mexbug-'+tcId);
+    if (bugBtn) bugBtn.classList.toggle('show', status==='fail');
+  }
+  mexUpdateProgress();
+}
+
+function mexToggle(tcId) {
+  var d = document.getElementById('mexd-'+tcId);
+  if (d) d.classList.toggle('open');
+}
+
+function mexOpenBug(tcId) {
+  var t = (S.manualTests||[]).find(function(x){return x.id===tcId;});
+  if (!t) return;
+  _mexCurrentBugId = tcId;
+  document.getElementById('bug-title-input').value   = t.bug ? t.bug.title : (tcId+' — '+t.name);
+  document.getElementById('bug-steps-input').value   = t.bug ? t.bug.steps_to_reproduce : (t.steps||'');
+  document.getElementById('bug-expected-input').value= t.bug ? t.bug.expected : (t.expected||'');
+  document.getElementById('bug-actual-input').value  = t.bug ? t.bug.actual : '';
+  document.getElementById('bug-severity-select').value = t.bug ? t.bug.severity : 'High';
+  document.getElementById('bug-priority-select').value = t.bug ? t.bug.priority : 'P2';
+  document.getElementById('bug-module-input').value  = t.bug ? (t.bug.module||'') : (t.category||'');
+  document.getElementById('bug-env-input').value     = t.bug ? (t.bug.environment||'') : '';
+  document.getElementById('bug-reporter-input').value= t.bug ? (t.bug.reporter||'') : '';
+  document.getElementById('bug-popup-sub').textContent = tcId+' — '+t.name;
+  document.getElementById('bug-overlay').classList.add('open');
+}
+
+function mexCloseBug() {
+  document.getElementById('bug-overlay').classList.remove('open');
+  _mexCurrentBugId = null;
+}
+
+function mexSaveBug() {
+  var tcId = _mexCurrentBugId;
+  if (!tcId) return;
+  var t = (S.manualTests||[]).find(function(x){return x.id===tcId;});
+  if (!t) return;
+  var title = document.getElementById('bug-title-input').value.trim();
+  var _ml=(window.S_disp&&S_disp.lang)||'en';
+  if (!title) { showToast(_ml==='he'?'⚠ כותרת הבאג חובה':'⚠ Bug title is required','err'); return; }
+  var bugIdx = (S.manualTests||[]).filter(function(x){return x.bug;}).length + (t.bug?0:1);
+  t.bug = {
+    id: 'BUG-'+String(bugIdx).padStart(3,'0'),
+    title: title,
+    steps_to_reproduce: document.getElementById('bug-steps-input').value.trim(),
+    expected: document.getElementById('bug-expected-input').value.trim(),
+    actual: document.getElementById('bug-actual-input').value.trim(),
+    severity: document.getElementById('bug-severity-select').value,
+    priority: document.getElementById('bug-priority-select').value,
+    module: document.getElementById('bug-module-input').value.trim(),
+    environment: document.getElementById('bug-env-input').value.trim(),
+    reporter: document.getElementById('bug-reporter-input').value.trim()
+  };
+  document.getElementById('bug-overlay').classList.remove('open');
+  _mexCurrentBugId = null;
+  renderMexTests();
+  mexUpdateProgress();
+  showToast(_ml==='he'?'✓ באג נשמר: '+t.bug.id:'✓ Bug saved: '+t.bug.id,'ok');
+}
+
+function mexUpdateProgress() {
+  var tests = S.manualTests || [];
+  var total = tests.length;
+  var done  = tests.filter(function(t){return t.status!=='pending';}).length;
+  var pass  = tests.filter(function(t){return t.status==='pass';}).length;
+  var fail  = tests.filter(function(t){return t.status==='fail';}).length;
+  var skip  = tests.filter(function(t){return t.status==='skip';}).length;
+  var fill  = document.getElementById('mex-prog-fill');
+  var lbl   = document.getElementById('mex-prog-lbl');
+  var pv    = document.getElementById('mex-pass-val');
+  var fv    = document.getElementById('mex-fail-val');
+  var sv    = document.getElementById('mex-skip-val');
+  var btn   = document.getElementById('mex-complete-btn');
+  var hint  = document.getElementById('mex-footer-hint');
+  var _ml   = (window.S_disp&&S_disp.lang)||'en';
+  if (fill) fill.style.width = (total>0?Math.round(done/total*100):0)+'%';
+  if (lbl)  lbl.textContent  = done+' / '+total+' '+(_ml==='he'?'הושלמו':'completed');
+  if (pv)   pv.textContent   = pass;
+  if (fv)   fv.textContent   = fail;
+  if (sv)   sv.textContent   = skip;
+  var allDone = done===total && total>0;
+  if (btn)  btn.classList.toggle('ready', allDone);
+  if (hint) hint.textContent = allDone
+    ? (_ml==='he'?'כל התסריטים סומנו — לחץ לסיום':'All tests marked — ready to complete')
+    : (_ml==='he'?'סמן את כל התסריטים כדי להמשיך':'Mark all tests to proceed');
+}
+
+function completeMex() {
+  var tests = S.manualTests || [];
+  var allDone = tests.length > 0 && tests.every(function(t){return t.status!=='pending';});
+  var _ml = (window.S_disp&&S_disp.lang)||'en';
+  if (!allDone) { showToast(_ml==='he'?'⚠ יש לסמן את כל התסריטים':'⚠ Mark all tests first','err'); return; }
+
+  var pass=tests.filter(function(t){return t.status==='pass';}).length;
+  var fail=tests.filter(function(t){return t.status==='fail';}).length;
+  var skip=tests.filter(function(t){return t.status==='skip';}).length;
+  var total=tests.length;
+
+  var lines = [];
+  if (_ml==='en') {
+    lines.push('# Test Execution Report — Manual Run\n');
+    lines.push('## Summary\n');
+    lines.push('| Metric | Value |','|--------|-------|',
+      '| Total Scripts | '+total+' |','| PASS ✅ | '+pass+' |','| FAIL ❌ | '+fail+' |','| SKIP ⚠️ | '+skip+' |',
+      '| Pass Rate | '+Math.round(pass/total*100)+'% |','| Fail Rate | '+Math.round(fail/total*100)+'% |',
+      '| Overall | '+(fail===0?'✅ ALL PASS':fail>=pass?'❌ FAIL':'⚠️ PARTIAL PASS')+' |\n');
+    lines.push('## Execution Log\n');
+    tests.forEach(function(t) {
+      var icon=t.status==='pass'?'✅ PASS':t.status==='fail'?'❌ FAIL':'⚠️ SKIP';
+      lines.push('### '+t.id+' | '+t.name+' | '+icon+'\n');
+      if (t.preconditions) lines.push('**Preconditions:** '+t.preconditions+'\n');
+      if (t.steps) lines.push('**Steps:**\n'+t.steps+'\n');
+      lines.push('**Expected:** '+(t.expected||'—')+'\n');
+      if (t.bug) {
+        lines.push('**Bug:** '+t.bug.id+' — '+t.bug.title);
+        lines.push('  - Severity: '+t.bug.severity+' | Priority: '+t.bug.priority);
+        lines.push('  - Actual: '+t.bug.actual+'\n');
+      }
+    });
+    var bugged=tests.filter(function(t){return t.bug;});
+    if (bugged.length>0) {
+      lines.push('## Bug Report Summary\n');
+      bugged.forEach(function(t) {
+        var b=t.bug;
+        lines.push('### '+b.id+' | '+b.title);
+        lines.push('- **Test:** '+t.id+' — '+t.name);
+        lines.push('- **Severity:** '+b.severity+' | **Priority:** '+b.priority);
+        if (b.module)lines.push('- **Module:** '+b.module);
+        lines.push('- **Steps to Reproduce:** '+(b.steps_to_reproduce||'—'));
+        lines.push('- **Expected:** '+(b.expected||'—'));
+        lines.push('- **Actual:** '+(b.actual||'—'));
+        if (b.environment)lines.push('- **Environment:** '+b.environment);
+        if (b.reporter)lines.push('- **Reporter:** '+b.reporter);
+        lines.push('');
+      });
+    }
+    lines.push('## Statistics\n- PASS: '+pass+' | FAIL: '+fail+' | SKIP: '+skip);
+  } else {
+    lines.push('# דוח הרצת בדיקות — הרצה ידנית\n');
+    lines.push('## סיכום\n');
+    lines.push('| מדד | ערך |','|-----|-----|',
+      '| סה"כ תסריטים | '+total+' |','| עברו ✅ | '+pass+' |','| נכשלו ❌ | '+fail+' |','| דולגו ⚠️ | '+skip+' |',
+      '| אחוז הצלחה | '+Math.round(pass/total*100)+'% |',
+      '| סטטוס כולל | '+(fail===0?'✅ הכל עבר':fail>=pass?'❌ כשל':'⚠️ עבר חלקי')+' |\n');
+    lines.push('## לוג הרצה\n');
+    tests.forEach(function(t) {
+      var icon=t.status==='pass'?'✅ עבר':t.status==='fail'?'❌ נכשל':'⚠️ דולג';
+      lines.push('### '+t.id+' | '+t.name+' | '+icon+'\n');
+      if (t.preconditions) lines.push('**תנאים מוקדמים:** '+t.preconditions+'\n');
+      if (t.steps) lines.push('**צעדים:**\n'+t.steps+'\n');
+      lines.push('**תוצאה צפויה:** '+(t.expected||'—')+'\n');
+      if (t.bug) {
+        lines.push('**באג:** '+t.bug.id+' — '+t.bug.title);
+        lines.push('  - חומרה: '+t.bug.severity+' | עדיפות: '+t.bug.priority);
+        lines.push('  - בפועל: '+t.bug.actual+'\n');
+      }
+    });
+    var bugged=tests.filter(function(t){return t.bug;});
+    if (bugged.length>0) {
+      lines.push('## דוח באגים\n');
+      bugged.forEach(function(t) {
+        var b=t.bug;
+        lines.push('### '+b.id+' | '+b.title);
+        lines.push('- **תסריט:** '+t.id+' — '+t.name);
+        lines.push('- **חומרה:** '+b.severity+' | **עדיפות:** '+b.priority);
+        if (b.module)lines.push('- **מודול:** '+b.module);
+        lines.push('- **שלבי שחזור:** '+(b.steps_to_reproduce||'—'));
+        lines.push('- **תוצאה צפויה:** '+(b.expected||'—'));
+        lines.push('- **תוצאה בפועל:** '+(b.actual||'—'));
+        lines.push('');
+      });
+    }
+    lines.push('## סטטיסטיקות\n- עברו: '+pass+' | נכשלו: '+fail+' | דולגו: '+skip);
+  }
+
+  var reportText = lines.join('\n');
+  S.data[3] = reportText;
+  S.status[3] = 'done';
+  S.manualRunDone = true;
+  var mex = document.getElementById('mex-panel');
+  if (mex) mex.classList.remove('active');
+  _vibeRunStart();
+  _vibePhaseStatus(3, 'completed');
+  _vibeRunSaveOutput('raw_text', reportText);
+  showOut(3, reportText, false);
+  updateTabDones();
+  showToast(_ml==='he'?'✓ הרצה ידנית הושלמה — '+pass+' עברו, '+fail+' נכשלו':'✓ Manual run complete — '+pass+' pass, '+fail+' fail','ok');
+  updateUI();
 }
 
 async function runGenSim(phaseId) {
